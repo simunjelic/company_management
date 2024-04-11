@@ -73,6 +73,7 @@ namespace Praksa_projectV1.ViewModels
         //--> Commands
         public ICommand ShowProjectsViewCommand { get; }
         public ICommand ShowWorkersViewCommand { get; }
+        public ICommand ShowJobsViewCommand { get; }
 
 
         public MainViewModel()
@@ -83,10 +84,18 @@ namespace Praksa_projectV1.ViewModels
             //Initialize commands
             ShowProjectsViewCommand = new ViewModelCommand(ExecuteShowProjectsViewCommand);
             ShowWorkersViewCommand = new ViewModelCommand(ExecuteShowWorkersViewCommand);
+            ShowJobsViewCommand = new ViewModelCommand(ExecuteShowJobsViewCommand);
             //Default view
             ExecuteShowProjectsViewCommand(null);
 
             LoadCurrentUserData();
+        }
+
+        private void ExecuteShowJobsViewCommand(object obj)
+        {
+            CurrentChildView = new JobsViewModel();
+            Caption = "Jobs";
+            Icon = IconChar.Briefcase;
         }
 
         private void ExecuteShowWorkersViewCommand(object obj)

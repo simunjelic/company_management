@@ -24,6 +24,9 @@
         <DataTemplate DataType="{x:Type viewModel:WorkersViewModel}">
             <local:WorkersView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:JobsViewModel}">
+            <local:JobsView/>
+        </DataTemplate>
 
     </Window.Resources>
 
@@ -89,10 +92,11 @@
 
                     </RadioButton>
                     <RadioButton Style="{StaticResource menuButton}"
-               Tag="{StaticResource color3}">
+               Tag="{StaticResource color3}"
+                                 Command="{Binding ShowJobsViewCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <fa:IconImage Icon="Table" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Projects" Style="{StaticResource menuButtonText}"/>
+                            <fa:IconImage Icon="Briefcase" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Jobs" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
 
                     </RadioButton>
