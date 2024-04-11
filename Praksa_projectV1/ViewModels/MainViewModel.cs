@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.DataAccess;
 using System.Threading;
+using System.Printing;
+using FontAwesome.Sharp;
+using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
 {
@@ -14,6 +17,9 @@ namespace Praksa_projectV1.ViewModels
         //Fields
         private UserAccountModel _currentUserAccount;
         private IUserRepository userRepository;
+        private ViewModelBase _currentChildView;
+        private string _caption;
+        private IconChar _icon;
 
         public UserAccountModel CurrentUserAccount
         {
@@ -28,22 +34,88 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(CurrentUserAccount));
             }
         }
+        public ViewModelBase CurrentChildView
+        {
+            get
+            {
+                return _currentChildView;
+            }
+            set
+            {
+                _currentChildView = value;
+                OnPropertyChanged(nameof(CurrentChildView));
+            }
+        }
+        public string Caption
+        {
+            get
+            {
+                return _caption;
+            }
+            set
+            {
+                _caption = value;
+                OnPropertyChanged(nameof(Caption));
+            }
+        }
+        public IconChar Icon
+        {
+            get
+            {
+                return _icon;
+            }
+            set
+            {
+                _icon = value;
+                OnPropertyChanged(nameof(Icon));
+            }
+        }
+        //--> Commands
+        public ICommand ShowProjectsViewCommand { get; }
+        public ICommand ShowWorkersViewCommand { get; }
+
 
         public MainViewModel()
         {
             userRepository = new UserRepository();
             CurrentUserAccount = new UserAccountModel();
+
+            //Initialize commands
+            ShowProjectsViewCommand = new ViewModelCommand(ExecuteShowProjectsViewCommand);
+            ShowWorkersViewCommand = new ViewModelCommand(ExecuteShowWorkersViewCommand);
+            //Default view
+            ExecuteShowProjectsViewCommand(null);
+
             LoadCurrentUserData();
+        }
+
+        private void ExecuteShowWorkersViewCommand(object obj)
+        {
+            CurrentChildView = new WorkersViewModel();
+            Caption = "Workers";
+            Icon = IconChar.UserGroup;
+        }
+
+        private void ExecuteShowProjectsViewCommand(object obj)
+        {
+            CurrentChildView = new ProjectsViewModel();
+            Caption = "Projects";
+            Icon = IconChar.Table;
         }
 
         private void LoadCurrentUserData()
         {
             
-            
+                if(Thread.CurrentPrincipal.Identity.Name != null) { 
                 CurrentUserAccount.Username = Thread.CurrentPrincipal.Identity.Name;
-                CurrentUserAccount.DisplayName = $"Welcome {Thread.CurrentPrincipal.Identity.Name} ;)";
+                CurrentUserAccount.DisplayName = Thread.CurrentPrincipal.Identity.Name.ToString();
                 CurrentUserAccount.ProfilePicture = null;
-            
+            }
+            else
+            {
+                CurrentUserAccount.DisplayName = "Invalid user, not logged in";
+            }
+
         }
 
     }

@@ -16,6 +16,16 @@
     <Window.DataContext>
         <viewModel:MainViewModel></viewModel:MainViewModel>
     </Window.DataContext>
+    <Window.Resources>
+
+        <DataTemplate DataType="{x:Type viewModel:ProjectsViewModel}">
+            <local:ProjectsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:WorkersViewModel}">
+            <local:WorkersView/>
+        </DataTemplate>
+
+    </Window.Resources>
 
     <Border CornerRadius="10"                    
     BorderThickness="2">
@@ -61,18 +71,20 @@
                     </StackPanel>
                     <!--Menu buttons-->
                     <RadioButton Style="{StaticResource menuButton}"
-                                 Tag="{StaticResource color1}">
+                                 Tag="{StaticResource color1}"
+                                 Command="{Binding ShowProjectsViewCommand}">
                         <StackPanel Orientation="Horizontal">
-                            <fa:IconImage Icon="Home" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Dashboard" Style="{StaticResource menuButtonText}"/>
+                            <fa:IconImage Icon="Table" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Projects" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
                         
                     </RadioButton>
                     <RadioButton Style="{StaticResource menuButton}"
-                                  Tag="{StaticResource color2}">
+                                  Tag="{StaticResource color2}"
+                                 Command="{Binding ShowWorkersViewCommand}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="UserGroup" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Users" Style="{StaticResource menuButtonText}"/>
+                            <TextBlock Text="Workers" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
 
                     </RadioButton>
@@ -145,13 +157,13 @@
                         <StackPanel Grid.Column="0"
                                     Orientation="Horizontal"
                                     VerticalAlignment="Center">
-                            <fa:IconImage Icon="Home"
+                            <fa:IconImage Icon="{Binding Icon}"
                                           Height="20"
                                           Width="20"
                                           Foreground="{StaticResource titleColor2}"
                                           Margin="35,0,10,0"/>
 
-                            <TextBlock Text="Dashboard"
+                            <TextBlock Text="{Binding Caption}"
                                        Foreground="{StaticResource titleColor2}"
                                        FontSize="16"
                                        FontFamily="Montserrat"
@@ -178,9 +190,11 @@
                                        VerticalAlignment="Center"/>
                         </StackPanel>
                     </Grid>
-                    
-                    
-                    
+
+                    <ContentControl Content="{Binding CurrentChildView}"
+                                    Grid.Row="2"
+                                    Margin="25"/>
+
                 </Grid>
 
             </Border>
