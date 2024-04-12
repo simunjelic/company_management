@@ -95,7 +95,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Path=Id}" ClipboardContentBinding="{x:Null}" Header="ID" HeaderStringFormat=""/>
                     <DataGridTextColumn Binding="{Binding Path=Name}" ClipboardContentBinding="{x:Null}" Header="Name"/>
-                    <DataGridTextColumn Binding="{Binding Path=Deparment}" ClipboardContentBinding="{x:Null}" Header="Department"/>
+                    <DataGridTextColumn Binding="{Binding Path=Department.Name}" ClipboardContentBinding="{x:Null}" Header="Department"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

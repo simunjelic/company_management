@@ -16,7 +16,22 @@ namespace Praksa_projectV1.DataAccess
         }
         public List<Job> GetAllJobs()
         {
-            return jobContext.Jobs.ToList();
+           var deps = jobContext.Departments.ToList();
+            var jobList = new List<Job>();
+            jobList = jobContext.Jobs.ToList();
+            foreach(var job in jobList)
+            {
+                foreach(var dep in deps)
+                {
+                    if(dep.Id == job.DepartmentId)
+                    {
+                        job.Department = dep;
+                        break;
+                    }
+                }
+            }
+
+            return jobList;
         }
         public void AddJob(Job job)
         {
