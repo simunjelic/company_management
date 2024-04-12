@@ -18,5 +18,16 @@ namespace Praksa_projectV1.DataAccess
         {
             return jobContext.Jobs.ToList();
         }
+        public void AddJob(Job job)
+        {
+            using (jobContext)
+            {
+                if (job != null)
+                {
+                    jobContext.Jobs.Add(job);
+                    jobContext.SaveChanges();
+                }
+            }
+        }
     }
 }

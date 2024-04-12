@@ -7,6 +7,9 @@ namespace Praksa_projectV1.Models;
 
 public partial class Job
 {
+
+    
+
     public int Id { get; set; }
 
     public string Name { get; set; }
