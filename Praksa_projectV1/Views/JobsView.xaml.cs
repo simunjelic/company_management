@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Praksa_projectV1.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace Praksa_projectV1.Views
         public JobsView()
         {
             InitializeComponent();
+            this.DataContext = new JobsViewModel();
         }
     }
 }
