@@ -37,15 +37,18 @@ namespace Praksa_projectV1.DataAccess
             return jobList;
             }
         }
-        public void AddJob(Job job)
+        public bool AddJob(Job job)
         {
             using (jobContext = new Context())
             {
-                if (job != null)
+                Job checkJob = jobContext.Jobs.FirstOrDefault(i => i.Name == job.Name);
+                if (checkJob == null)
                 {
                     jobContext.Jobs.Add(job);
                     jobContext.SaveChanges();
-                }
+                    return true;
+                }else return false;
+
             }
         }
         public void RemoveJob(int Id)

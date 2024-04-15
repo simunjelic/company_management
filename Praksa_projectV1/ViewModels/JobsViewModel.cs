@@ -73,12 +73,22 @@ namespace Praksa_projectV1.ViewModels
                     
               };
 
-            repository.AddJob(newJob);
-            IsViewVisible = false;
+            if (repository.AddJob(newJob)== true)
+            {
+
+                MessageBox.Show("New record successfully saved.");
+                IsViewVisible = false;JobRecords.Add(newJob);
+            }
+            else
+            {
+                MessageBox.Show("Job with same name exist.");
+            }
+            
 
 
 
         }
+       
        
 
         private bool CanShowWindow(object obj)
