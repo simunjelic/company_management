@@ -22,8 +22,6 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowWindowCommand { get;}
         public ICommand AddjobCommand { get; }
         public ICommand DeleteJobCommand { get; }
-        public event Action? ShowJobsWindow;
-        
 
 
 
@@ -51,12 +49,12 @@ namespace Praksa_projectV1.ViewModels
             if (obj is int Id && result == MessageBoxResult.Yes)
             {
                 repository.RemoveJob(Id);
-                OnPropertyChanged(nameof(JobRecords));
-                ShowJobsWindow?.Invoke();
+                JobRecords.Remove(JobRecords.Where(x => x.Id == Id).Single());
             }
 
             
         }
+
 
         private bool CanAddJob(object obj)
         {
@@ -68,17 +66,16 @@ namespace Praksa_projectV1.ViewModels
         private void AddJob(object obj)
         {
             
-                var newJob = new Job();
+                Job newJob = new Job();
               { 
                 newJob.Name = AddName;
                 newJob.DepartmentId = SelectedDepartment.Id;
                     
               };
-            
-                repository.AddJob(newJob);
-                IsViewVisible = false;
-                OnPropertyChanged(nameof(JobRecords));
-                ShowJobsWindow?.Invoke();
+
+            repository.AddJob(newJob);
+            IsViewVisible = false;
+
 
 
         }
@@ -175,6 +172,7 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _jobRecords = value;
+               
                 OnPropertyChanged(nameof(JobRecords));
             }
         }

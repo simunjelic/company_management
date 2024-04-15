@@ -75,7 +75,7 @@
             CornerRadius="10" 
             Padding="10">
             <DataGrid ColumnWidth="*"
-                      ItemsSource="{Binding JobRecords,  Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                      ItemsSource="{Binding JobRecords,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
               Background="#17345C"
               BorderThickness="0"
                       IsReadOnly="True"

@@ -16,8 +16,10 @@ namespace Praksa_projectV1.DataAccess
         }
         public List<Job> GetAllJobs()
         {
+            using (jobContext = new Context())
+            { 
 
-           var deps = jobContext.Departments.ToList();
+                var deps = jobContext.Departments.ToList();
             var jobList = new List<Job>();
             jobList = jobContext.Jobs.ToList();
             foreach(var job in jobList)
@@ -33,10 +35,11 @@ namespace Praksa_projectV1.DataAccess
             }
 
             return jobList;
+            }
         }
         public void AddJob(Job job)
         {
-            using (jobContext)
+            using (jobContext = new Context())
             {
                 if (job != null)
                 {

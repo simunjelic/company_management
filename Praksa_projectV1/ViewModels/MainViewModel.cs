@@ -20,7 +20,7 @@ namespace Praksa_projectV1.ViewModels
         private ViewModelBase _currentChildView;
         private string _caption;
         private IconChar _icon;
-        JobsViewModel jobsVieModel;
+        JobsViewModel jobsViewModel;
 
 
 
@@ -83,8 +83,6 @@ namespace Praksa_projectV1.ViewModels
         {
             userRepository = new UserRepository();
             CurrentUserAccount = new UserAccountModel();
-            jobsVieModel = new JobsViewModel();
-            jobsVieModel.ShowJobsWindow += RefreshJobsList;
             //Initialize commands
             ShowProjectsViewCommand = new ViewModelCommand(ExecuteShowProjectsViewCommand);
             ShowWorkersViewCommand = new ViewModelCommand(ExecuteShowWorkersViewCommand);
@@ -94,17 +92,17 @@ namespace Praksa_projectV1.ViewModels
 
             LoadCurrentUserData();
         }
-        public void RefreshJobsList()
-        {
-            ExecuteShowProjectsViewCommand(null);
-        }
+       
 
         private void ExecuteShowJobsViewCommand(object obj)
         {
+            
             CurrentChildView = new JobsViewModel();
             Caption = "Jobs";
             Icon = IconChar.Briefcase;
         }
+
+       
 
         private void ExecuteShowWorkersViewCommand(object obj)
         {
