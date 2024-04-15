@@ -9,6 +9,13 @@
         Background="#17345C"
         Foreground="White"
         WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+    </Window.Resources>
+    <Window.Visibility>
+        <Binding Path="IsViewVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibility}"/>
+    </Window.Visibility>
     <Grid>
 
         <Label Content="Name" Margin="25" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="left"/>

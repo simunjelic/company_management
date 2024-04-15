@@ -16,6 +16,7 @@ namespace Praksa_projectV1.DataAccess
         }
         public List<Job> GetAllJobs()
         {
+
            var deps = jobContext.Departments.ToList();
             var jobList = new List<Job>();
             jobList = jobContext.Jobs.ToList();
@@ -44,5 +45,17 @@ namespace Praksa_projectV1.DataAccess
                 }
             }
         }
+        public void RemoveJob(int Id)
+        {
+            using (jobContext = new Context())
+            {
+                Job jobToDelete = jobContext.Jobs.FirstOrDefault(i => i.Id == Id);
+
+                if (jobToDelete != null)
+                jobContext.Jobs.Remove(jobToDelete);
+                jobContext.SaveChanges();
+            }
+        }
+        
     }
 }

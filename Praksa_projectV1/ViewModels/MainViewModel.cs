@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
 {
-    public class MainViewModel: ViewModelBase
+    public class MainViewModel : ViewModelBase
     {
         //Fields
         private UserAccountModel _currentUserAccount;
@@ -20,6 +20,9 @@ namespace Praksa_projectV1.ViewModels
         private ViewModelBase _currentChildView;
         private string _caption;
         private IconChar _icon;
+        JobsViewModel jobsVieModel;
+
+
 
         public UserAccountModel CurrentUserAccount
         {
@@ -80,7 +83,8 @@ namespace Praksa_projectV1.ViewModels
         {
             userRepository = new UserRepository();
             CurrentUserAccount = new UserAccountModel();
-
+            jobsVieModel = new JobsViewModel();
+            jobsVieModel.ShowJobsWindow += RefreshJobsList;
             //Initialize commands
             ShowProjectsViewCommand = new ViewModelCommand(ExecuteShowProjectsViewCommand);
             ShowWorkersViewCommand = new ViewModelCommand(ExecuteShowWorkersViewCommand);
@@ -89,6 +93,10 @@ namespace Praksa_projectV1.ViewModels
             ExecuteShowProjectsViewCommand(null);
 
             LoadCurrentUserData();
+        }
+        public void RefreshJobsList()
+        {
+            ExecuteShowProjectsViewCommand(null);
         }
 
         private void ExecuteShowJobsViewCommand(object obj)

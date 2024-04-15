@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
@@ -19,6 +21,11 @@ namespace Praksa_projectV1.ViewModels
         private DepartmentRepository departmentRepository;
         public ICommand ShowWindowCommand { get;}
         public ICommand AddjobCommand { get; }
+        public ICommand DeleteJobCommand { get; }
+        public event Action? ShowJobsWindow;
+        
+
+
 
         public JobsViewModel()
         {
@@ -26,8 +33,29 @@ namespace Praksa_projectV1.ViewModels
             departmentRepository = new DepartmentRepository();
             ShowWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
             AddjobCommand = new ViewModelCommand(AddJob, CanAddJob);
+            DeleteJobCommand = new ViewModelCommand(DeleteJob, CanDeleteJob);
             GetAll();
             GetAllDepartments();
+        }
+
+        private bool CanDeleteJob(object obj)
+        {
+            return true;
+        }
+
+        private void DeleteJob(object obj)
+        {
+            var result = MessageBox.Show("Are you sure you want to delete this job?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            
+
+            if (obj is int Id && result == MessageBoxResult.Yes)
+            {
+                repository.RemoveJob(Id);
+                OnPropertyChanged(nameof(JobRecords));
+                ShowJobsWindow?.Invoke();
+            }
+
+            
         }
 
         private bool CanAddJob(object obj)
@@ -48,9 +76,13 @@ namespace Praksa_projectV1.ViewModels
               };
             
                 repository.AddJob(newJob);
+                IsViewVisible = false;
+                OnPropertyChanged(nameof(JobRecords));
+                ShowJobsWindow?.Invoke();
 
 
         }
+       
 
         private bool CanShowWindow(object obj)
         {
@@ -117,6 +149,19 @@ namespace Praksa_projectV1.ViewModels
             }
 
         }
+        private bool _isViewVisible = true;
+        public bool IsViewVisible
+        {
+            get
+            {
+                return _isViewVisible;
+            }
+            set
+            {
+                _isViewVisible = value;
+                OnPropertyChanged(nameof(IsViewVisible));
+            }
+        }
 
 
 
@@ -130,7 +175,7 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _jobRecords = value;
-                OnPropertyChanged("JobRecords");
+                OnPropertyChanged(nameof(JobRecords));
             }
         }
         private ObservableCollection<Department> _departmentRecords;
