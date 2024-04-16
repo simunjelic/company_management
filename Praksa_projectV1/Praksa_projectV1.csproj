@@ -12,6 +12,7 @@
     <None Remove="Images\ath-logo.png" />
     <None Remove="Images\ath-zgrada.jpeg" />
     <None Remove="Images\key-icon.png" />
+    <None Remove="Images\must-enter.png" />
     <None Remove="Images\user-icon.png" />
   </ItemGroup>
 
@@ -26,6 +27,7 @@
     <Resource Include="Images\ath-logo.png" />
     <Resource Include="Images\ath-zgrada.jpeg" />
     <Resource Include="Images\key-icon.png" />
+    <Resource Include="Images\must-enter.png" />
     <Resource Include="Images\user-icon.png" />
   </ItemGroup>
 

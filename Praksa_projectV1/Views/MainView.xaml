@@ -27,6 +27,9 @@
         <DataTemplate DataType="{x:Type viewModel:JobsViewModel}">
             <local:JobsView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:DepartmentsViewModel}">
+            <local:DepartmentsView/>
+        </DataTemplate>
 
     </Window.Resources>
 
@@ -92,11 +95,20 @@
 
                     </RadioButton>
                     <RadioButton Style="{StaticResource menuButton}"
-               Tag="{StaticResource color3}"
+                                Tag="{StaticResource color3}"
                                  Command="{Binding ShowJobsViewCommand}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="Briefcase" Style="{StaticResource menuButtonIcon}"/>
                             <TextBlock Text="Jobs" Style="{StaticResource menuButtonText}"/>
+                        </StackPanel>
+
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource menuButton}"
+            Tag="{StaticResource color4}"
+             Command="{Binding ShowDepartmentsViewCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconImage Icon="Building" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Departments" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
 
                     </RadioButton>

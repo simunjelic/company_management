@@ -25,5 +25,42 @@ namespace Praksa_projectV1.DataAccess
                 return dContext.Departments.FirstOrDefault(i => i.Id == id);
             }
         }
+
+        public bool Remove(int id)
+        {
+            using(var dContext = new Context())
+            {
+                try { 
+                var depToDelete = dContext.Departments.FirstOrDefault(i => i.Id == id);
+                dContext.Remove(depToDelete);
+                dContext.SaveChanges();
+                    return true;
+                }
+                catch(Exception ex) {
+                    return false;
+
+                }
+
+            }
+        }
+
+        internal bool Add(Department newDepartment)
+        {
+            using (var dContext = new Context())
+            {
+                var checkDepartment = dContext.Departments.FirstOrDefault(i => i.Name == newDepartment.Name);
+
+                if (checkDepartment == null)
+                {
+                    dContext.Add(newDepartment);
+                    dContext.SaveChanges();
+                    return true;
+                }
+                else return false;
+
+            }
+        }
+
+       
     }
 }
