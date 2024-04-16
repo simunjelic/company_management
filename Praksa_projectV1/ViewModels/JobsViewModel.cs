@@ -22,6 +22,8 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowWindowCommand { get;}
         public ICommand AddjobCommand { get; }
         public ICommand DeleteJobCommand { get; }
+        public ICommand UpdateJobCommand { get; }
+        public UpdateJobViewModel updateJobViewModel;
 
 
 
@@ -32,8 +34,25 @@ namespace Praksa_projectV1.ViewModels
             ShowWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
             AddjobCommand = new ViewModelCommand(AddJob, CanAddJob);
             DeleteJobCommand = new ViewModelCommand(DeleteJob, CanDeleteJob);
+            UpdateJobCommand = new ViewModelCommand(UpdateJob, CanUpdateJob);
             GetAll();
             GetAllDepartments();
+        }
+
+        private bool CanUpdateJob(object obj)
+        {
+            return true;
+        }
+
+        private void UpdateJob(object obj)
+        {
+            if(obj is int Id)
+            {
+                updateJobViewModel = new UpdateJobViewModel();
+                updateJobViewModel.ShowWindow(Id);
+                GetAll();
+
+            }
         }
 
         private bool CanDeleteJob(object obj)
@@ -99,6 +118,7 @@ namespace Praksa_projectV1.ViewModels
         private void ShowWindow(object obj)
         {
             AddJobView addJobView = new AddJobView();
+            addJobView.DataContext = this;
             addJobView.Show();
         }
 

@@ -18,5 +18,12 @@ namespace Praksa_projectV1.DataAccess
         {
             return dContext.Departments.ToList();
         }
+        public Department GetDepart(int? id)
+        {
+            using (var dContext = new Context())
+            {
+                return dContext.Departments.FirstOrDefault(i => i.Id == id);
+            }
+        }
     }
 }

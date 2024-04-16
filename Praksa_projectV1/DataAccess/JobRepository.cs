@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Praksa_projectV1.DataAccess
 {
@@ -60,6 +61,28 @@ namespace Praksa_projectV1.DataAccess
                 if (jobToDelete != null)
                 jobContext.Jobs.Remove(jobToDelete);
                 jobContext.SaveChanges();
+            }
+        }
+        public Job GetJob(int Id)
+        {
+            using (jobContext = new Context())
+            {
+                Job job = jobContext.Jobs.FirstOrDefault(i => i.Id == Id);
+                return job;
+            }
+        }
+        public  bool updateJob(Job job)
+        {
+            using (jobContext = new Context())
+            {
+                
+                    jobContext.Update(job);
+                    jobContext.SaveChanges();
+                    return true;
+                
+                
+
+                
             }
         }
         
