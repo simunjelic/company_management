@@ -4,6 +4,7 @@ using Praksa_projectV1.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,8 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowWindowCommand { get; }
         public ICommand AddDepartmentCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
+        public ICommand UpdateDepartmentCommand {  get; }
+
         public DepartmentsViewModel()
         {
            departmentRepository = new DepartmentRepository();
@@ -28,6 +31,43 @@ namespace Praksa_projectV1.ViewModels
             ShowWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
             AddDepartmentCommand = new ViewModelCommand(AddDepartment, CanAddDepartment);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
+            UpdateDepartmentCommand = new ViewModelCommand(UpdateDepartment, CanUpdateDepartmentCommand);
+        }
+
+        private bool CanUpdateDepartmentCommand(object obj)
+        {
+            if (string.IsNullOrEmpty(Name))
+            {
+                return false;
+            }else return true;
+        }
+
+        private void UpdateDepartment(object obj)
+        {
+            Department department = new Department();
+            department.Id = this.Id;
+            department.Name = Name; 
+            if(SelectedDepartment != null)
+                department.ParentDepartmentId = SelectedDepartment.Id; ;
+
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to update this record?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                bool isSuccessful = departmentRepository.Update(department);
+                if (isSuccessful)
+                {
+                    string message = "Success!";
+                    int index = -1;
+                    index = DepartmentRecords.IndexOf(DepartmentRecords.Where(x => x.Id == Id).Single());
+                    department.ParentDepartment = SelectedDepartment;
+                    DepartmentRecords[index] = department;
+
+
+
+                    MessageBox.Show(message);
+
+                }
+            }
         }
 
         private bool CanShowUpdateWindow(object obj)
@@ -43,7 +83,7 @@ namespace Praksa_projectV1.ViewModels
                 if(department.ParentDepartmentId != null)
                   SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == department.ParentDepartmentId).Single();
                 Name = department.Name;
-                Id = department.Id;
+                this.Id = Id;
                 DepartmentsEditView view = new DepartmentsEditView();
                 view.Title = "Update department";
                 view.DataContext = this;
@@ -127,7 +167,7 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _id = value;
-                OnPropertyChanged("Id");
+                OnPropertyChanged(nameof(Id));
             }
         }
         private string _name;

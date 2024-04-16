@@ -22,23 +22,29 @@
 
 
         <Label Content="Name" Margin="25" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="left"/>
-        <TextBox  Height="30" Text="{Binding Name}" Width="200" Margin="25,50" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="1" BorderBrush="#E0E0E0" >
-            <TextBox.Background >
-                <ImageBrush ImageSource="/Images/must-enter.png"
-                Stretch="Uniform" AlignmentX="Right" AlignmentY="Center"
-                />
-            </TextBox.Background>
+        <TextBox  Height="30" Text="{Binding Name}" Width="200" Margin="25,50" 
+                  VerticalAlignment="Top" 
+                  HorizontalAlignment="left" 
+                  BorderThickness="0,0,0,2"
+                  BorderBrush="#E0E0E0"
+                  FontWeight="Medium"
+                 FontFamily="Montserrat"
+                  Background="Transparent"
+                  Foreground="White"
+                  >
+                 
+
         </TextBox>
 
         <Label Content="Parent department" Margin="25,100" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="left"/>
-        <ComboBox Height="30" Width="200"  Margin="25,125" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="1" BorderBrush="#E0E0E0"
+        <ComboBox Height="30" Width="200"  Margin="25,125" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
               ItemsSource="{Binding Path=DepartmentRecords}"   
               SelectedItem="{Binding Path=SelectedDepartment}"  
                 DisplayMemberPath="Name"/>
 
 
 
-        <Button Height="30" Command="{Binding AddDepartmentCommand}" Content="Update" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="125,205,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Height="30" Command="{Binding UpdateDepartmentCommand}" Content="Update" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="125,205,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
                     FontFamily="Montserrat"
             Cursor="Hand"
           Foreground="White"

@@ -61,6 +61,14 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-       
+        internal bool Update(Department department)
+        {
+            using (var dContext = new Context())
+            {
+                dContext.Departments.Update(department);
+                dContext.SaveChanges();
+                return true;
+            }
+            }
     }
 }
