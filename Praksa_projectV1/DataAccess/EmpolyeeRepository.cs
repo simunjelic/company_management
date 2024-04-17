@@ -27,5 +27,18 @@ namespace Praksa_projectV1.DataAccess
                 return emps;
             }
         }
+
+        internal void DeleteById(int id)
+        {
+            using (dContext = new Context())
+            {
+                var record = dContext.Employees.FirstOrDefault(i => i.Id == id);
+                if (record != null)
+                {
+                    dContext.Employees.Remove(record);
+                    dContext.SaveChanges();
+                }
+            }
+        }
     }
 }
