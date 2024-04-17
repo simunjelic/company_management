@@ -1,12 +1,16 @@
-﻿using Praksa_projectV1.DataAccess;
+﻿using Microsoft.IdentityModel.Tokens;
+using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
+using Praksa_projectV1.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
@@ -15,16 +19,108 @@ namespace Praksa_projectV1.ViewModels
     public class WorkersViewModel: ViewModelBase
     {
         EmpolyeeRepository EmpolyeeRepository { get; }
+        UserRepository UserRepository { get; }
+        DepartmentRepository departmentRepository { get; }
+        JobRepository jobRepository { get; }
         public ICommand ShowWindowCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand AddEmployeeCommand { get; }
 
 
         public WorkersViewModel()
         {
             EmpolyeeRepository = new EmpolyeeRepository();
+            UserRepository = new UserRepository();
+            departmentRepository = new DepartmentRepository();
+            jobRepository = new JobRepository();
             GetAllWorkers();
             ShowWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
             DeleteCommand = new ViewModelCommand(Delete, CanDelete);
+            AddEmployeeCommand = new ViewModelCommand(AddEmployee, CanAddEmployee);
+            SelectedDate = DateTime.Today;
+        }
+
+        private bool CanAddEmployee(object obj)
+        {
+            return true;
+        }
+
+        private void AddEmployee(object obj)
+        {
+            Employee newEmployee = new();
+            if (validationInput())
+            {
+                newEmployee.UserId = SelectedUser.Id;
+                if(SelectedJob!=null)
+                newEmployee.JobId = SelectedJob.Id;
+                if (SelectedDepartment != null)
+                    newEmployee.DepartmentId = SelectedDepartment.Id;
+                newEmployee.Name = Name;
+                newEmployee.Surname = Surname;
+                    newEmployee.Birthday = new DateOnly(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day);
+                if (Jmbg != null)
+                    newEmployee.Jmbg = (int?)long.Parse(Jmbg);
+                if (Address != null)
+                    newEmployee.Address = Address;
+                if (Email != null)
+                    newEmployee.Email = Email;
+                if (Phone != null)
+                    newEmployee.Phone = Phone;
+
+                if (EmpolyeeRepository.Add(newEmployee))
+                {
+                    MessageBox.Show("New employee added");
+                    WorkersRecords.Add(EmpolyeeRepository.FindByUserId(newEmployee.UserId));
+                    ResetData();
+                }
+                else
+                {
+                    MessageBox.Show("User connected with other employee record.");
+                }
+                
+
+            }
+        }
+
+        private bool validationInput()
+        {
+            if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Surname))
+            {
+                MessageBox.Show("Enter name or surname");
+                return false;
+            }
+            if(SelectedUser == null) {
+                MessageBox.Show("Enter user");
+                return false;
+            }
+            if(!string.IsNullOrEmpty(Jmbg))
+            {
+                if(Jmbg.Length != 13) { 
+                MessageBox.Show("JMBG must contain 13 numbers");
+                return false;
+                }
+            }
+            if(!string.IsNullOrEmpty(Email) && !Email.Contains("@"))
+            {
+                MessageBox.Show("Email must contain @");
+                return false;
+            }
+            TimeSpan age = DateTime.Today - SelectedDate;
+
+            // Check if the age is outside the specified range
+            if (age.TotalDays < 3650) // Less than 10 years (3650 days)
+            {
+                MessageBox.Show("Selected date should be older than 10 years.");
+                return false;
+            }
+            else if (age.TotalDays > 36500) // More than 100 years (36500 days)
+            {
+                MessageBox.Show("Selected date should be younger than 100 years.");
+                return false;
+            }
+            
+            return true;
+           
         }
 
         private bool CanDelete(object obj)
@@ -42,6 +138,8 @@ namespace Praksa_projectV1.ViewModels
                 EmpolyeeRepository.DeleteById(SelectedItem.Id);
                 WorkersRecords.Remove(SelectedItem);
                 
+
+
             }
             SelectedItem = null;
         }
@@ -53,8 +151,13 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowWindow(object obj)
         {
-
-            MessageBox.Show("Delete all jobs associated with the selected department.");
+            GetAllUsers();
+            GetAllDepartments();
+            GetAllJobs();
+            WorkersEditView workersEditView = new();
+            workersEditView.DataContext = this;
+            workersEditView.Title = "Add user";
+            workersEditView.Show();
             
         }
 
@@ -98,6 +201,66 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged("Surname");
             }
         }
+        private string _jmbg;
+        public string Jmbg
+        {
+            get
+            {
+                return _jmbg;
+            }
+            set
+            {
+                _jmbg = value;
+                OnPropertyChanged("Jmbg");
+            }
+        }
+            private string _address;
+        public string Address
+        {
+            get
+            {
+                return _address;
+            }
+            set
+            {
+                _address = value;
+                OnPropertyChanged("Address");
+            }
+        }
+        private string _email;
+        public string Email
+        {
+            get
+            {
+                return _email;
+            }
+            set
+            {
+                _email = value;
+                OnPropertyChanged("Email");
+            }
+        }
+        private string _phone;
+        public string Phone
+        {
+            get
+            {
+                return _phone;
+            }
+            set
+            {
+                if (value != null && value.Length > 0 && value[0] != '+')
+                {
+                    // If the first character is not '+', add it
+                    _phone = "+" + value;
+                }
+                else
+                {
+                    _phone = value;
+                }
+                OnPropertyChanged(nameof(Phone));
+            }
+        }
         private ObservableCollection<Employee> _workersRecords;
         public ObservableCollection<Employee> WorkersRecords
         {
@@ -109,6 +272,19 @@ namespace Praksa_projectV1.ViewModels
             {
                 _workersRecords = value;
                 OnPropertyChanged(nameof(WorkersRecords));
+            }
+        }
+        private ObservableCollection<User> _usersRecords;
+        public ObservableCollection<User> UsersRecords
+        {
+            get
+            {
+                return _usersRecords;
+            }
+            set
+            {
+                _usersRecords = value;
+                OnPropertyChanged(nameof(UsersRecords));
             }
         }
         private Employee _selectedItem;
@@ -124,6 +300,90 @@ namespace Praksa_projectV1.ViewModels
                 }
             }
         }
+        private User _selectedUser;
+        public User? SelectedUser
+        {
+            get { return _selectedUser; }
+            set
+            {
+                if (_selectedUser != value)
+                {
+                    _selectedUser = value;
+                    OnPropertyChanged(nameof(SelectedUser));
+                }
+            }
+        }
+       
+        private Department _selectedDepartment;
+
+        public Department SelectedDepartment
+        {
+            get
+            {
+                return _selectedDepartment;
+            }
+            set
+            {
+                _selectedDepartment = value;
+                OnPropertyChanged("SelectedDepartment");
+            }
+
+        }
+
+        private ObservableCollection<Department> _departmentRecords;
+        public ObservableCollection<Department> DepartmentRecords
+        {
+            get
+            {
+                return _departmentRecords;
+            }
+            set
+            {
+                _departmentRecords = value;
+                OnPropertyChanged("DepartmentRecords");
+            }
+        }
+        private ObservableCollection<Job> _jobRecords;
+        public ObservableCollection<Job> JobRecords
+        {
+            get
+            {
+                return _jobRecords;
+            }
+            set
+            {
+                _jobRecords = value;
+                OnPropertyChanged("JobRecords");
+            }
+        }
+        private Department _selectedJob;
+
+        public Department SelectedJob
+        {
+            get
+            {
+                return _selectedJob;
+            }
+            set
+            {
+                _selectedJob = value;
+                OnPropertyChanged("SelectedJob");
+            }
+
+        }
+        private DateTime _selectedDate;
+        public DateTime SelectedDate
+        {
+            get { return _selectedDate; }
+            set
+            {
+                if (_selectedDate != value)
+                {
+                    _selectedDate = value;
+                    OnPropertyChanged(nameof(SelectedDate));
+                }
+            }
+        }
 
         public void GetAllWorkers()
         {
@@ -132,6 +392,45 @@ namespace Praksa_projectV1.ViewModels
          
 
             WorkersRecords = new ObservableCollection<Employee>(employes);
+
+        }
+        public void GetAllUsers()
+        {
+            UsersRecords = new ObservableCollection<User>(UserRepository.getAllUsers());
+        }
+        public void GetAllDepartments()
+        {
+            var departments = departmentRepository.GetAllDepartments();
+            foreach (var department in departments)
+            {
+                if (department.ParentDepartmentId != null)
+                {
+                    department.ParentDepartment = departments.Where(i => i.Id == department.ParentDepartmentId).FirstOrDefault();
+                }
+            }
+            DepartmentRecords = new ObservableCollection<Department>(departments);
+
+        }
+        public void GetAllJobs()
+        {
+            
+            JobRecords = new ObservableCollection<Job>(jobRepository.GetAllJobs());
+
+        }
+        public void ResetData()
+        {
+            SelectedDate = DateTime.Now;
+            Id = -1;
+            Name = string.Empty;
+            Surname = string.Empty;
+            Jmbg = string.Empty;
+            Address = string.Empty;
+            Email = string.Empty;
+            Phone = string.Empty;
+            SelectedDepartment = null;
+            SelectedJob = null;
+            SelectedUser = null;
+            SelectedItem = null;    
 
         }
     }

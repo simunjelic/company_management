@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Windows;
 
 namespace Praksa_projectV1.DataAccess
 {
@@ -21,13 +22,29 @@ namespace Praksa_projectV1.DataAccess
                                    .Include(e => e.Job)
                                    .Include(e => e.Department)
                                    .ToList();
-                
+
 
 
                 return emps;
             }
         }
 
+        public bool Add(Employee newEmployee)
+        {
+            using (dContext = new Context())
+            {
+                var userCheck = dContext.Employees.FirstOrDefault(i => i.UserId == newEmployee.UserId);
+                if (userCheck == null)
+                {
+                    dContext.Employees.Add(newEmployee);
+                    dContext.SaveChanges();
+                    return true;
+                }
+                else return false;
+
+
+            }
+        }
         internal void DeleteById(int id)
         {
             using (dContext = new Context())
@@ -37,6 +54,28 @@ namespace Praksa_projectV1.DataAccess
                 {
                     dContext.Employees.Remove(record);
                     dContext.SaveChanges();
+                }
+            }
+        }
+
+        internal Employee FindByUserId(int? userId)
+        {
+            using (dContext = new Context())
+            {
+                try
+                {
+
+                    return dContext.Employees
+                                   .Include(e => e.Job)
+                                   .Include(e => e.Department)
+                                   .FirstOrDefault(i => i.UserId == userId);
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("No user in database: " + ex);
+
+                    return null;
                 }
             }
         }

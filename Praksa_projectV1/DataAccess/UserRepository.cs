@@ -39,7 +39,10 @@ namespace Praksa_projectV1.DataAccess
 
         public IEnumerable<User> getAllUsers()
         {
-            throw new NotImplementedException();
+            using(var dbContext = new Context())
+            {
+                return dbContext.Users.ToList();
+            }
         }
 
         public User getByUsername(string username)
