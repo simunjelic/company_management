@@ -251,8 +251,9 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(ErrorMessage));
             }
         }
+   
 
-        public void GetAllDepartments()
+    public void GetAllDepartments()
         {
             var departments = departmentRepository.GetAllDepartments();
             foreach (var department in departments)

@@ -26,5 +26,7 @@ namespace Praksa_projectV1.Views
             InitializeComponent();
             this.DataContext = new DepartmentsViewModel();
         }
+
+        
     }
 }
