@@ -10,7 +10,7 @@ using System.Windows;
 
 namespace Praksa_projectV1.DataAccess
 {
-    public class EmpolyeeRepository
+    public class EmployeeRepository
     {
         private Context dContext = null;
         public List<Employee> GetAll()
@@ -79,5 +79,31 @@ namespace Praksa_projectV1.DataAccess
                 }
             }
         }
+        internal bool Update(Employee employee)
+        {
+            using (dContext = new Context())
+            {
+                
+                
+                    dContext.Employees.Update(employee);
+                    dContext.SaveChanges();
+                    return true;
+                
+
+
+            }
+        }
+
+        internal Employee GetById(int id)
+        {
+            using (dContext = new Context())
+            {
+               return dContext.Employees
+                    .Include(e => e.Job)
+                    .Include(e => e.Department)
+                    .FirstOrDefault(i => i.Id == id);
+            }
+
+          }
     }
 }

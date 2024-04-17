@@ -73,7 +73,7 @@
                 </Button.Style>
             </Button>
             <Button Grid.Column="2"
-        Command="{Binding ShowWindowCommand}"                            
+        Command="{Binding ShowUpdateWindowCommand}"                            
         Content="Update"                            
         FontSize="12"
         FontFamily="Montserrat"
@@ -178,8 +178,10 @@ VerticalAlignment="Top">
                     <DataGridTextColumn Binding="{Binding Path=Surname}"  Header="Surname"/>
                     <DataGridTextColumn Binding="{Binding Path=Phone}"  Header="Phone"/>
                     <DataGridTextColumn Binding="{Binding Path=Email}"  Header="Email"/>
-                    <DataGridTextColumn Binding="{Binding Path=Department.Name}"  Header="Department"/>
                     <DataGridTextColumn Binding="{Binding Path=Job.Name}"  Header="Job"/>
+                    <DataGridTextColumn Binding="{Binding Path=Department.Name}"  Header="Department"/>
+                    <DataGridTextColumn Binding="{Binding Path=Birthday}"  Header="BirthDay"/>
+                    <DataGridTextColumn Binding="{Binding Path=Jmbg}"  Header="Jmbg"/>
 
                 </DataGrid.Columns>
             </DataGrid>

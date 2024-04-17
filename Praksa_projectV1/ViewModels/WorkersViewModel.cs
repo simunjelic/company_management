@@ -18,18 +18,20 @@ namespace Praksa_projectV1.ViewModels
    
     public class WorkersViewModel: ViewModelBase
     {
-        EmpolyeeRepository EmpolyeeRepository { get; }
+        EmployeeRepository EmpolyeeRepository { get; }
         UserRepository UserRepository { get; }
         DepartmentRepository departmentRepository { get; }
         JobRepository jobRepository { get; }
         public ICommand ShowWindowCommand { get; }
         public ICommand DeleteCommand { get; }
         public ICommand AddEmployeeCommand { get; }
+        public ICommand ShowUpdateWindowCommand { get; }
+        public ICommand UpdateEmployeeCommand { get; }
 
 
         public WorkersViewModel()
         {
-            EmpolyeeRepository = new EmpolyeeRepository();
+            EmpolyeeRepository = new EmployeeRepository();
             UserRepository = new UserRepository();
             departmentRepository = new DepartmentRepository();
             jobRepository = new JobRepository();
@@ -37,7 +39,83 @@ namespace Praksa_projectV1.ViewModels
             ShowWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
             DeleteCommand = new ViewModelCommand(Delete, CanDelete);
             AddEmployeeCommand = new ViewModelCommand(AddEmployee, CanAddEmployee);
+            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindowCommand);
+            UpdateEmployeeCommand = new ViewModelCommand(UpdateEmployee, CanUpdateEmployee);
             SelectedDate = DateTime.Today;
+        }
+
+        private bool CanUpdateEmployee(object obj)
+        {
+            if (SelectedItem != null)
+                return true;
+            return false;
+        }
+
+        private void UpdateEmployee(object obj)
+        {
+            if (validationInput()) { 
+            Employee employee = EmpolyeeRepository.GetById(Id);
+            employee = populateEmployeeData(employee);
+            if (EmpolyeeRepository.Update(employee))
+            {
+                MessageBox.Show(" Employee updated");
+                    int index = -1;
+                    index = WorkersRecords.IndexOf(WorkersRecords.Where(x => x.Id == Id).Single());
+                    
+                    WorkersRecords[index] = EmpolyeeRepository.GetById(Id);
+                    ResetData();
+            }
+            else
+            {
+                MessageBox.Show("Error.");
+            }
+            }
+        }
+
+        private bool CanShowUpdateWindowCommand(object obj)
+        {
+            if (SelectedItem != null)
+                return true;
+            return false;
+        }
+
+        private void ShowUpdateWindow(object obj)
+        {
+            
+            GetAllUsers();
+            GetAllDepartments();
+            GetAllJobs();
+            populateUpdateWindow();
+            WorkersEditView workersEditView = new();
+            workersEditView.DataContext = this;
+            workersEditView.Title = "Edit user";
+            workersEditView.Show();
+
+        }
+
+       
+
+        private void populateUpdateWindow()
+        {
+            
+            Id = SelectedItem.Id;
+            SelectedUser = UsersRecords.Where(i => i.Id == SelectedItem.UserId).Single();
+            if(SelectedItem.DepartmentId != null)
+            SelectedDepartment = DepartmentRecords.Where(i => i.Id == SelectedItem.DepartmentId).Single();
+            if (SelectedItem.JobId != null)
+                SelectedJob = JobRecords.Where(i => i.Id == SelectedItem.JobId).Single();
+            Name = SelectedItem.Name;
+            Surname = SelectedItem.Surname;
+            DateOnly dateOnly = (DateOnly)SelectedItem.Birthday;
+            SelectedDate = dateOnly.ToDateTime(TimeOnly.Parse("10:00 PM"));
+            if (SelectedItem.Jmbg != null)
+                Jmbg = SelectedItem.Jmbg.ToString();
+            Address = SelectedItem.Address;
+            Email = SelectedItem.Email;
+            Phone = SelectedItem.Phone;
+            
+
+
         }
 
         private bool CanAddEmployee(object obj)
@@ -50,23 +128,7 @@ namespace Praksa_projectV1.ViewModels
             Employee newEmployee = new();
             if (validationInput())
             {
-                newEmployee.UserId = SelectedUser.Id;
-                if(SelectedJob!=null)
-                newEmployee.JobId = SelectedJob.Id;
-                if (SelectedDepartment != null)
-                    newEmployee.DepartmentId = SelectedDepartment.Id;
-                newEmployee.Name = Name;
-                newEmployee.Surname = Surname;
-                    newEmployee.Birthday = new DateOnly(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day);
-                if (Jmbg != null)
-                    newEmployee.Jmbg = (int?)long.Parse(Jmbg);
-                if (Address != null)
-                    newEmployee.Address = Address;
-                if (Email != null)
-                    newEmployee.Email = Email;
-                if (Phone != null)
-                    newEmployee.Phone = Phone;
-
+                populateEmployeeData(newEmployee);
                 if (EmpolyeeRepository.Add(newEmployee))
                 {
                     MessageBox.Show("New employee added");
@@ -77,9 +139,30 @@ namespace Praksa_projectV1.ViewModels
                 {
                     MessageBox.Show("User connected with other employee record.");
                 }
-                
-
             }
+        }
+
+        private Employee populateEmployeeData(Employee newEmployee)
+        {
+            newEmployee.UserId = SelectedUser.Id;
+            if (SelectedJob != null)
+                newEmployee.JobId = SelectedJob.Id;
+            if (SelectedDepartment != null)
+                newEmployee.DepartmentId = SelectedDepartment.Id;
+            newEmployee.Name = Name;
+            newEmployee.Surname = Surname;
+            newEmployee.Birthday = new DateOnly(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day);
+            if (!string.IsNullOrEmpty(Jmbg))
+                newEmployee.Jmbg = (int?)long.Parse(Jmbg);
+            if (Address != null)
+                newEmployee.Address = Address;
+            if (Email != null)
+                newEmployee.Email = Email;
+            if (Phone != null)
+                newEmployee.Phone = Phone;
+
+            
+            return newEmployee;
         }
 
         private bool validationInput()
@@ -356,9 +439,9 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged("JobRecords");
             }
         }
-        private Department _selectedJob;
+        private Job _selectedJob;
 
-        public Department SelectedJob
+        public Job SelectedJob
         {
             get
             {
