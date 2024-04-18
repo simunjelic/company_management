@@ -21,7 +21,7 @@ public partial class Employee
 
     public DateOnly? Birthday { get; set; }
 
-    public int? Jmbg { get; set; }
+    public long? Jmbg { get; set; }
 
     public string Address { get; set; }
 

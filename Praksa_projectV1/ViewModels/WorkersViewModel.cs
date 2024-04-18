@@ -187,7 +187,7 @@ namespace Praksa_projectV1.ViewModels
             if(Jmbg != null)
             {
                
-                if (false) { 
+                if (Jmbg.ToString().Length != 13) { 
                 MessageBox.Show("JMBG must contain 13 numbers");
                 return false;
                 }
@@ -293,8 +293,8 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged("Surname");
             }
         }
-        private int? _jmbg;
-        public int? Jmbg
+        private long? _jmbg;
+        public long? Jmbg
         {
             get
             {
