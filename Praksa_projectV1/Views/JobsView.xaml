@@ -79,7 +79,8 @@
               Background="#17345C"
               BorderThickness="0"
                       IsReadOnly="True"
-                      AutoGenerateColumns="False">
+                      AutoGenerateColumns="False"
+                      RowHeaderWidth="0">
 
 
                 <DataGrid.ColumnHeaderStyle>

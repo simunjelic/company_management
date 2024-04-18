@@ -148,7 +148,8 @@ VerticalAlignment="Top">
       BorderThickness="0"
               IsReadOnly="True"
               AutoGenerateColumns="False"
-                  GridLinesVisibility="None">
+                  GridLinesVisibility="None"
+                      RowHeaderWidth="0">
 
 
                 <DataGrid.ColumnHeaderStyle>
@@ -173,7 +174,7 @@ VerticalAlignment="Top">
                 </DataGrid.RowStyle>
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Path=Id}"  Header="ID" HeaderStringFormat=""/>
+                    <DataGridTextColumn Binding="{Binding Path=Id}"  Header="ID"/>
                     <DataGridTextColumn Binding="{Binding Path=Name}"  Header="Name"/>
                     <DataGridTextColumn Binding="{Binding Path=Surname}"  Header="Surname"/>
                     <DataGridTextColumn Binding="{Binding Path=Phone}"  Header="Phone"/>

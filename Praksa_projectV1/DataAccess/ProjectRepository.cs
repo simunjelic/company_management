@@ -24,6 +24,15 @@ namespace Praksa_projectV1.DataAccess
             
         }
 
+        internal void Add(Project newProject)
+        {
+            using (var _context = new Context())
+            {
+                _context.Projects.Add(newProject);
+                _context.SaveChanges();
+            }
+        }
+
         internal void DeleteById(int id)
         {
             using(var _context = new Context())
@@ -35,6 +44,22 @@ namespace Praksa_projectV1.DataAccess
                     _context.SaveChanges();
                 }
 
+            }
+        }
+
+        internal IEnumerable<Location> GetAllLocations()
+        {
+            using(_context = new Context())
+            {
+                return _context.Locations.ToList();
+            }
+        }
+
+        internal IEnumerable<Models.Type> GetAllTypes()
+        {
+            using( var _context = new Context())
+            {
+                return _context.Types.ToList();
             }
         }
     }

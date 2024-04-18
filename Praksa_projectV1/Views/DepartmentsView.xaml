@@ -77,7 +77,8 @@
           BorderThickness="0"
                   IsReadOnly="True"
                   AutoGenerateColumns="False"
-                      GridLinesVisibility="None">
+                      GridLinesVisibility="None"
+                      RowHeaderWidth="0">
 
 
                 <DataGrid.ColumnHeaderStyle>

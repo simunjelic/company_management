@@ -39,8 +39,8 @@
                  Margin="5,5,0,0"></TextBox>
             </StackPanel>
             <Button Grid.Column="1"
-                Command="{Binding ShowWindowCommand}"                            
-                Content="Add"                            
+                Command="{Binding ShowAddWindowCommand}"                            
+                Content="Dodaj"                            
                 FontSize="12"
                 FontFamily="Montserrat"
                 Cursor="Hand"
@@ -72,7 +72,7 @@
             </Button>
             <Button Grid.Column="2"
         Command="{Binding ShowUpdateWindowCommand}"                            
-        Content="Update"                            
+        Content="Uredi"                            
         FontSize="12"
         FontFamily="Montserrat"
         Cursor="Hand"
@@ -104,7 +104,7 @@ VerticalAlignment="Top">
             </Button>
             <Button Grid.Column="3"
         Command="{Binding DeleteCommand}"                            
-        Content="Delete"                            
+        Content="Obriši"                            
         FontSize="12"
         FontFamily="Montserrat"
         Cursor="Hand"
@@ -146,7 +146,8 @@ VerticalAlignment="Top">
       BorderThickness="0"
               IsReadOnly="True"
               AutoGenerateColumns="False"
-                  GridLinesVisibility="None">
+                  GridLinesVisibility="None"
+                      RowHeaderWidth="0">
 
 
                 <DataGrid.ColumnHeaderStyle>
@@ -171,13 +172,13 @@ VerticalAlignment="Top">
                 </DataGrid.RowStyle>
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Path=Id}"  Header="ID" HeaderStringFormat=""/>
-                    <DataGridTextColumn Binding="{Binding Path=Name}"  Header="Name"/>
-                    <DataGridTextColumn Binding="{Binding Path=Location.Name}"  Header="Location"/>
-                    <DataGridTextColumn Binding="{Binding Path=Type.Name}"  Header="Type"/>
+                    <DataGridTextColumn Binding="{Binding Path=Id}"  Header="Šifra" HeaderStringFormat=""/>
+                    <DataGridTextColumn Binding="{Binding Path=Name}"  Header="Naziv projekta"/>
+                    <DataGridTextColumn Binding="{Binding Path=Location.Name}"  Header="Lokacija"/>
+                    <DataGridTextColumn Binding="{Binding Path=Type.Name}"  Header="Tip"/>
                     <DataGridTextColumn Binding="{Binding Path=Status}"  Header="Status"/>
-                    <DataGridTextColumn Binding="{Binding Path=StartDate}"  Header="Start Date"/>
-                    <DataGridTextColumn Binding="{Binding Path=EndDate}"  Header="End Date"/>
+                    <DataGridTextColumn Binding="{Binding Path=StartDate}"  Header="Datum početka"/>
+                    <DataGridTextColumn Binding="{Binding Path=EndDate}"  Header="Datum kraja"/>
 
                 </DataGrid.Columns>
             </DataGrid>
