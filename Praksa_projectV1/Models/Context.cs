@@ -136,9 +136,11 @@ public partial class Context : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
-            entity.Property(e => e.EndDate).HasColumnName("end_date");
+            entity.Property(e => e.Manager)
+                .HasMaxLength(2)
+                .IsUnicode(false)
+                .HasColumnName("manager");
             entity.Property(e => e.ProjectId).HasColumnName("project_id");
-            entity.Property(e => e.StartDate).HasColumnName("start_date");
 
             entity.HasOne(d => d.Employee).WithMany(p => p.EmployeeProjects)
                 .HasForeignKey(d => d.EmployeeId)
@@ -205,12 +207,14 @@ public partial class Context : DbContext
             entity.ToTable("project");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.EndDate).HasColumnName("end_date");
             entity.Property(e => e.LocationId).HasColumnName("location_id");
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("name");
+            entity.Property(e => e.StartDate).HasColumnName("start_date");
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .IsUnicode(false)

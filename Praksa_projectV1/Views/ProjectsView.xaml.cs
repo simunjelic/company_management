@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Praksa_projectV1.Models;
+using Praksa_projectV1.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,10 +25,25 @@ namespace Praksa_projectV1.Views
         public ProjectsView()
         {
             InitializeComponent();
+
+            this.DataContext = new ProjectsViewModel();
         }
 
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (sender is DataGrid grid)
+            {
+                // Get the selected item
+                var selectedItem = (Project)grid.SelectedItem;
+                if (selectedItem != null)
+                {
+                    // Set the selected item in the view model
+                    if (DataContext is ProjectsViewModel viewModel)
+                    {
+                        viewModel.SelectedItem = selectedItem;
+                    }
+                }
+            }
 
         }
     }

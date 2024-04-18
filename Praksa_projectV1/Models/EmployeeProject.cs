@@ -13,9 +13,7 @@ public partial class EmployeeProject
 
     public int? EmployeeId { get; set; }
 
-    public DateOnly? StartDate { get; set; }
-
-    public DateOnly? EndDate { get; set; }
+    public string Manager { get; set; }
 
     public virtual Employee Employee { get; set; }
 

@@ -17,6 +17,10 @@ public partial class Project
 
     public string Status { get; set; }
 
+    public DateOnly? StartDate { get; set; }
+
+    public DateOnly? EndDate { get; set; }
+
     public virtual ICollection<EmployeeProject> EmployeeProjects { get; set; } = new List<EmployeeProject>();
 
     public virtual Location Location { get; set; }

@@ -140,7 +140,7 @@ VerticalAlignment="Top">
     CornerRadius="10" 
     Padding="10">
             <DataGrid ColumnWidth="*"
-              ItemsSource="{Binding WorkersRecords,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+              ItemsSource="{Binding ProjectRecords,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
               SelectedItem="{Binding SelectedItem}" MouseDoubleClick="DataGrid_MouseDoubleClick"        
       Background="#17345C"
       BorderThickness="0"
@@ -175,11 +175,9 @@ VerticalAlignment="Top">
                     <DataGridTextColumn Binding="{Binding Path=Name}"  Header="Name"/>
                     <DataGridTextColumn Binding="{Binding Path=Location.Name}"  Header="Location"/>
                     <DataGridTextColumn Binding="{Binding Path=Type.Name}"  Header="Type"/>
-                    <DataGridTextColumn Binding="{Binding Path=Email}"  Header="Status"/>
-                    <DataGridTextColumn Binding="{Binding Path=Job.Name}"  Header="Job"/>
-                    <DataGridTextColumn Binding="{Binding Path=Department.Name}"  Header="Department"/>
-                    <DataGridTextColumn Binding="{Binding Path=Birthday}"  Header="BirthDay"/>
-                    <DataGridTextColumn Binding="{Binding Path=Jmbg}"  Header="Jmbg"/>
+                    <DataGridTextColumn Binding="{Binding Path=Status}"  Header="Status"/>
+                    <DataGridTextColumn Binding="{Binding Path=StartDate}"  Header="Start Date"/>
+                    <DataGridTextColumn Binding="{Binding Path=EndDate}"  Header="End Date"/>
 
                 </DataGrid.Columns>
             </DataGrid>
