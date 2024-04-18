@@ -9,6 +9,10 @@
 Background="#17345C"
 Foreground="White"
 WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </Window.Resources>
+
 
     <Grid RenderTransformOrigin="0.52,0.583" Margin="0,0,0,-6">
 
@@ -121,10 +125,11 @@ FontFamily="Montserrat"
 
 
 
-        <Button Height="30" Command="{Binding UpdateEmployeeCommand}" Content="Update" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,361,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Height="30" Command="{Binding UpdateEmployeeCommand}" Content="Edit" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,361,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
                   FontFamily="Montserrat"
           Cursor="Hand"
         Foreground="White"
+        Visibility="{Binding IsUpdateButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
           >
 
             <Button.Style>
@@ -150,10 +155,13 @@ FontFamily="Montserrat"
                 </Style>
             </Button.Style>
         </Button>
-        <Button Command="{Binding AddEmployeeCommand}" Content="Add" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="289,361,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Command="{Binding AddEmployeeCommand}" Content="Add" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,361,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
           FontFamily="Montserrat"
   Cursor="Hand"
 Foreground="White" RenderTransformOrigin="0.497,0.085" Height="30" VerticalAlignment="Top"
+                Visibility="{Binding IsAddButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+        
+                
   >
 
             <Button.Style>
