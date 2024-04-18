@@ -246,6 +246,7 @@ namespace Praksa_projectV1.ViewModels
             GetAllUsers();
             GetAllDepartments();
             GetAllJobs();
+            ResetData();
             WorkersEditView workersEditView = new();
             workersEditView.DataContext = this;
             workersEditView.Title = "Add user";

@@ -24,5 +24,10 @@ namespace Praksa_projectV1.Views
         {
             InitializeComponent();
         }
+
+        private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }
