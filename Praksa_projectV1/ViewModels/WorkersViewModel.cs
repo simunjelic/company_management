@@ -53,10 +53,10 @@ namespace Praksa_projectV1.ViewModels
 
         private void UpdateEmployee(object obj)
         {
-            if (validationInput()) { 
-            Employee employee = EmpolyeeRepository.GetById(Id);
-            employee = populateEmployeeData(employee);
-            if (EmpolyeeRepository.Update(employee))
+            if (validationInput()) {
+
+                SelectedItem = populateEmployeeData(SelectedItem);
+            if (EmpolyeeRepository.Update(SelectedItem))
             {
                 MessageBox.Show(" Employee updated");
                     int index = -1;
@@ -109,7 +109,7 @@ namespace Praksa_projectV1.ViewModels
             DateOnly dateOnly = (DateOnly)SelectedItem.Birthday;
             SelectedDate = dateOnly.ToDateTime(TimeOnly.Parse("10:00 PM"));
             if (SelectedItem.Jmbg != null)
-                Jmbg = SelectedItem.Jmbg.ToString();
+                Jmbg = SelectedItem.Jmbg;
             Address = SelectedItem.Address;
             Email = SelectedItem.Email;
             Phone = SelectedItem.Phone;
@@ -146,14 +146,22 @@ namespace Praksa_projectV1.ViewModels
         {
             newEmployee.UserId = SelectedUser.Id;
             if (SelectedJob != null)
+            {
                 newEmployee.JobId = SelectedJob.Id;
+                newEmployee.Job = null;
+            }
+                
             if (SelectedDepartment != null)
+            {
                 newEmployee.DepartmentId = SelectedDepartment.Id;
+                newEmployee.Department = null;
+            }
+                
             newEmployee.Name = Name;
             newEmployee.Surname = Surname;
             newEmployee.Birthday = new DateOnly(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day);
-            if (!string.IsNullOrEmpty(Jmbg))
-                newEmployee.Jmbg = (int?)long.Parse(Jmbg);
+            if (Jmbg!= null)
+                newEmployee.Jmbg = Jmbg;
             if (Address != null)
                 newEmployee.Address = Address;
             if (Email != null)
@@ -176,9 +184,10 @@ namespace Praksa_projectV1.ViewModels
                 MessageBox.Show("Enter user");
                 return false;
             }
-            if(!string.IsNullOrEmpty(Jmbg))
+            if(Jmbg != null)
             {
-                if(Jmbg.Length != 13) { 
+               
+                if (false) { 
                 MessageBox.Show("JMBG must contain 13 numbers");
                 return false;
                 }
@@ -284,8 +293,8 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged("Surname");
             }
         }
-        private string _jmbg;
-        public string Jmbg
+        private int? _jmbg;
+        public int? Jmbg
         {
             get
             {
@@ -506,7 +515,7 @@ namespace Praksa_projectV1.ViewModels
             Id = -1;
             Name = string.Empty;
             Surname = string.Empty;
-            Jmbg = string.Empty;
+            Jmbg = null;
             Address = string.Empty;
             Email = string.Empty;
             Phone = string.Empty;
