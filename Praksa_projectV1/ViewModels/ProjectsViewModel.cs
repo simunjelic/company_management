@@ -19,6 +19,8 @@ namespace Praksa_projectV1.ViewModels
         public ICommand DeleteCommand { get; }
         public ICommand ShowAddWindowCommand { get; }
         public ICommand AddEmployeeCommand { get; }
+        public ICommand UpdateEmployeeCommand { get; }
+
 
 
         public ProjectsViewModel()
@@ -28,8 +30,21 @@ namespace Praksa_projectV1.ViewModels
             DeleteCommand = new ViewModelCommand(Delete, CanDelete);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             AddEmployeeCommand = new ViewModelCommand(AddEmployee, CanAddEmployee);
+            UpdateEmployeeCommand = new ViewModelCommand(UpdateEmployee, CanUpdateEmployee);
 
 
+        }
+
+        private bool CanUpdateEmployee(object obj)
+        {
+            if (SelectedItem != null)
+                return true;
+            return false;
+        }
+
+        private void UpdateEmployee(object obj)
+        {
+            
         }
 
         private bool CanAddEmployee(object obj)

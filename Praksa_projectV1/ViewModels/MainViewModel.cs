@@ -90,7 +90,7 @@ namespace Praksa_projectV1.ViewModels
             ShowJobsViewCommand = new ViewModelCommand(ExecuteShowJobsViewCommand);
             ShowDepartmentsViewCommand = new ViewModelCommand(ExecuteShowDepartmentsViewCommand);
             //Default view
-            ExecuteShowProjectsViewCommand(null);
+            //ExecuteShowProjectsViewCommand(null);
 
             LoadCurrentUserData();
         }
