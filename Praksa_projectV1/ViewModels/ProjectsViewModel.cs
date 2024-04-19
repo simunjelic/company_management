@@ -22,6 +22,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand AddCommand { get; }
         public ICommand UpdateCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
+        public ICommand ShowProjectTeamWindowCommand { get; }
 
 
 
@@ -34,11 +35,22 @@ namespace Praksa_projectV1.ViewModels
             AddCommand = new ViewModelCommand(AddEmployee, CanAddEmployee);
             UpdateCommand = new ViewModelCommand(UpdateEmployee, CanUpdateEmployee);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
+            ShowProjectTeamWindowCommand = new ViewModelCommand(ShowProjectTeamWindow, CanShowProjectTeamWindow);
 
 
         }
 
+        private bool CanShowProjectTeamWindow(object obj)
+        {
+            if (SelectedItem != null)
+                return true;
+            return false;
+        }
 
+        private void ShowProjectTeamWindow(object obj)
+        {
+            throw new NotImplementedException();
+        }
 
         private bool CanUpdateEmployee(object obj)
         {
@@ -85,94 +97,7 @@ namespace Praksa_projectV1.ViewModels
 
 
         }
-        public void ResetData()
-        {
-            Id = -1;
-            Location = null;
-            Type = null;
-            Name = string.Empty;
-            Status = null;
-            StartDate = null;
-            EndDate = null;
-
-        }
-        private void FillUpdateForm()
-        {
-            try
-            {
-                Id = SelectedItem.Id;
-                if (SelectedItem.Location != null)
-                {
-                    Location = LocationRecords.Where(i => i.Id == SelectedItem.LocationId).Single();
-                }
-                if (SelectedItem.Type != null)
-                {
-                    Type = TypeRecords.Where(i => i.Id == SelectedItem.TypeId).Single();
-                }
-                Name = SelectedItem.Name;
-                if (SelectedItem.Status != null)
-                    Status = (Status)Enum.Parse(typeof(Status), SelectedItem.Status);
-                if (SelectedItem.StartDate != null)
-                {
-                    DateOnly dateOnly = (DateOnly)SelectedItem.StartDate;
-                    StartDate = dateOnly.ToDateTime(TimeOnly.Parse("10:00 PM"));
-                }
-                if (SelectedItem.EndDate != null)
-                {
-                    DateOnly dateOnly = (DateOnly)SelectedItem.EndDate;
-                    EndDate = dateOnly.ToDateTime(TimeOnly.Parse("10:00 PM"));
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
-
-        private Project PopulateData(Project newProject)
-        {
-            if(Name != null)
-            newProject.Name = Name;
-            if (Status != null)
-            {
-                newProject.Status = Status.ToString();
-            }
-            if (Location != null)
-            {
-                newProject.LocationId = Location.Id;
-            }
-            if (Type != null)
-            {
-                newProject.TypeId = Type.Id;
-            }
-            if (StartDate != null)
-            {
-                newProject.StartDate = new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day);
-            }
-            if (EndDate != null)
-            {
-                newProject.EndDate = new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day);
-            }
-            return newProject;
-        }
-
-        private bool ValidationData()
-        {
-            if (string.IsNullOrEmpty(Name))
-            {
-                MessageBox.Show("Unesi ime projekta");
-                return false;
-            }
-            if (StartDate != null && StartDate != null)
-            {
-                if (StartDate >= EndDate)
-                {
-                    MessageBox.Show("Unesi ispravne datume");
-                    return false;
-                }
-            }
-            return true;
-        }
+        
         private bool CanShowUpdateWindow(object obj)
         {
             if (SelectedItem != null)
@@ -182,6 +107,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowUpdateWindow(object obj)
         {
+            
             ProjectEditView projectEditView = new ProjectEditView();
             projectEditView.DataContext = this;
             projectEditView.Title = "Edit project";
@@ -199,6 +125,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowAddWindow(object obj)
         {
+            
             ProjectEditView projectEditView = new ProjectEditView();
             projectEditView.DataContext = this;
             projectEditView.Title = "Add project";
@@ -403,7 +330,36 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
+        private bool _isViewVisible = true;
+        public bool IsViewVisible
+        {
+            get
+            {
+                return _isViewVisible;
+            }
+            set
+            {
+                _isViewVisible = value;
+                OnPropertyChanged(nameof(IsViewVisible));
+            }
+        }
+        private string _searchQuery;
+        public string SearchQuery
+        {
+            get { return _searchQuery; }
+            set
+            {
+                _searchQuery = value;
+                OnPropertyChanged(nameof(SearchQuery));
+                FilterData(); // Call method to filter data when search query changes
+            }
+        }
 
+        private async void FilterData()
+        {
+            //if(!string.IsNullOrWhiteSpace(SearchQuery))
+            ProjectRecords = new ObservableCollection<Project>(await ProjectRepository.FilterData(SearchQuery));
+        }
 
         public void gatAllProjects()
         {
@@ -415,6 +371,94 @@ namespace Praksa_projectV1.ViewModels
             LocationRecords = new ObservableCollection<Location>(ProjectRepository.GetAllLocations());
             TypeRecords = new ObservableCollection<Type>(ProjectRepository.GetAllTypes());
 
+        }
+        public void ResetData()
+        {
+            Id = -1;
+            Location = null;
+            Type = null;
+            Name = string.Empty;
+            Status = null;
+            StartDate = null;
+            EndDate = null;
+
+        }
+        private void FillUpdateForm()
+        {
+            try
+            {
+                Id = SelectedItem.Id;
+                if (SelectedItem.Location != null)
+                {
+                    Location = LocationRecords.Where(i => i.Id == SelectedItem.LocationId).Single();
+                }
+                if (SelectedItem.Type != null)
+                {
+                    Type = TypeRecords.Where(i => i.Id == SelectedItem.TypeId).Single();
+                }
+                Name = SelectedItem.Name;
+                if (SelectedItem.Status != null)
+                    Status = (Status)Enum.Parse(typeof(Status), SelectedItem.Status);
+                if (SelectedItem.StartDate != null)
+                {
+                    DateOnly dateOnly = (DateOnly)SelectedItem.StartDate;
+                    StartDate = dateOnly.ToDateTime(TimeOnly.Parse("10:00 PM"));
+                }
+                if (SelectedItem.EndDate != null)
+                {
+                    DateOnly dateOnly = (DateOnly)SelectedItem.EndDate;
+                    EndDate = dateOnly.ToDateTime(TimeOnly.Parse("10:00 PM"));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private Project PopulateData(Project newProject)
+        {
+            if (Name != null)
+                newProject.Name = Name;
+            if (Status != null)
+            {
+                newProject.Status = Status.ToString();
+            }
+            if (Location != null)
+            {
+                newProject.LocationId = Location.Id;
+            }
+            if (Type != null)
+            {
+                newProject.TypeId = Type.Id;
+            }
+            if (StartDate != null)
+            {
+                newProject.StartDate = new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day);
+            }
+            if (EndDate != null)
+            {
+                newProject.EndDate = new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day);
+            }
+            return newProject;
+        }
+
+        private bool ValidationData()
+        {
+            if (string.IsNullOrEmpty(Name))
+            {
+                MessageBox.Show("Unesi ime projekta");
+                return false;
+            }
+            if (StartDate != null && StartDate != null)
+            {
+                if (StartDate >= EndDate)
+                {
+                    MessageBox.Show("Unesi ispravne datume");
+                    return false;
+                }
+            }
+            return true;
         }
     }
 

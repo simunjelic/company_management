@@ -10,14 +10,17 @@
         Foreground="White"
         WindowStartupLocation="CenterScreen"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
-        xmlns:helper="clr-namespace:Praksa_projectV1.Enums"
->
+        xmlns:helper="clr-namespace:Praksa_projectV1.Enums" d:DataContext="{d:DesignInstance Type=viewmodels:ProjectsViewModel}"
+        >
     
     
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
     </Window.Resources>
+    <Window.Visibility>
+        <Binding Path="IsViewVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibilityConverter}"/>
+    </Window.Visibility>
 
 
 

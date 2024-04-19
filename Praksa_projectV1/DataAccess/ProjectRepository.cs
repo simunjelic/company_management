@@ -35,6 +35,7 @@ namespace Praksa_projectV1.DataAccess
 
         internal void DeleteById(int id)
         {
+            try { 
             using(var _context = new Context())
             {
                 var check =_context.Projects.FirstOrDefault(i => i.Id == id);
@@ -44,6 +45,10 @@ namespace Praksa_projectV1.DataAccess
                     _context.SaveChanges();
                 }
 
+            }
+            }catch (Exception ex)
+            {
+                MessageBox.Show("Nije moguće obrisati projekt");
             }
         }
 
@@ -94,6 +99,26 @@ namespace Praksa_projectV1.DataAccess
             {
                 MessageBox.Show($"Error getting project: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null; // Or throw the exception if you want to handle it differently
+            }
+        }
+
+        internal async Task<IEnumerable<Project>> FilterData(string searchQuery)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return await context.Projects
+                              .Include(p => p.Type)
+                              .Include(p => p.Location)
+                              .Where(p => p.Name.Contains(searchQuery) || p.Id.ToString().Contains(searchQuery))
+                              .ToListAsync();
+                }
+
+            }
+            catch(Exception ex)
+            {
+                return null;
             }
         }
     }

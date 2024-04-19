@@ -14,17 +14,19 @@
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
 
-                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="100"/>
 
-                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal"
             VerticalAlignment="Top"
             Grid.Column="0">
                 <fa:IconImage Icon="Search" Height="20" Width="20" Foreground="{StaticResource plainTextColor3}"/>
-                <TextBox x:Name="searchBox" Text="Search..."
+                <TextBox x:Name="searchBox" 
+                Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
         FontSize="13"
              Height="24"
                Width="300"
@@ -39,6 +41,39 @@
                  Margin="5,5,0,0"></TextBox>
             </StackPanel>
             <Button Grid.Column="1"
+        Command="{Binding ShowProjectTeamWindowCommand}"                            
+        Content="Projektni Tim"                            
+        FontSize="12"
+        FontFamily="Montserrat"
+        Cursor="Hand"
+        BorderThickness="0"
+        Foreground="White"
+            Margin="0,0,5,0"
+VerticalAlignment="Top">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#9497CD"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Height="30"
+                                CornerRadius="15"
+                                Background="{TemplateBinding Background}">
+                                        <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#836EFB"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Grid.Column="2"
                 Command="{Binding ShowAddWindowCommand}"                            
                 Content="Dodaj"                            
                 FontSize="12"
@@ -46,6 +81,7 @@
                 Cursor="Hand"
                 BorderThickness="0"
                 Foreground="White"
+                    Margin="0,0,5,0"
         VerticalAlignment="Top">
                 <Button.Style>
                     <Style TargetType="Button">
@@ -70,7 +106,7 @@
                     </Style>
                 </Button.Style>
             </Button>
-            <Button Grid.Column="2"
+            <Button Grid.Column="3"
         Command="{Binding ShowUpdateWindowCommand}"                            
         Content="Uredi"                            
         FontSize="12"
@@ -78,6 +114,7 @@
         Cursor="Hand"
         BorderThickness="0"
         Foreground="White"
+                    Margin="0,0,5,0"
 VerticalAlignment="Top">
                 <Button.Style>
                     <Style TargetType="Button">
@@ -102,7 +139,7 @@ VerticalAlignment="Top">
                     </Style>
                 </Button.Style>
             </Button>
-            <Button Grid.Column="3"
+            <Button Grid.Column="4"
         Command="{Binding DeleteCommand}"                            
         Content="Obriši"                            
         FontSize="12"
