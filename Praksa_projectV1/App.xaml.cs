@@ -18,9 +18,12 @@ namespace Praksa_projectV1
             {
                 if (loginView.IsVisible == false && loginView.IsLoaded)
                 {
-                    var mainView = new MainView();
-                    mainView.Show();
-                    loginView.Close();
+                    try
+                    {
+                        var mainView = new MainView();
+                        mainView.Show();
+                        loginView.Close();
+                    }catch(Exception ex) { }
                 }
             };
         }

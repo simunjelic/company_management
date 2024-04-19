@@ -62,5 +62,40 @@ namespace Praksa_projectV1.DataAccess
                 return _context.Types.ToList();
             }
         }
+        public async Task UpdateProjectAsync(Project project)
+        {
+            try
+            {
+                using (_context = new Context())
+                {
+                    _context.Projects.Update(project);
+                    await _context.SaveChangesAsync();
+                    MessageBox.Show("Project updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error updating project: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        public async Task<Project> GetProjectByIdAsync(int projectId)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return await context.Projects
+                              .Include(p => p.Type)       
+                              .Include(p => p.Location)   
+                              .FirstOrDefaultAsync(p => p.Id == projectId);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error getting project: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null; // Or throw the exception if you want to handle it differently
+            }
+        }
     }
+
 }

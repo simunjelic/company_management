@@ -129,7 +129,7 @@ namespace Praksa_projectV1.ViewModels
         private void LoadCurrentUserData()
         {
             
-                if(Thread.CurrentPrincipal.Identity.Name != null) { 
+                if(Thread.CurrentPrincipal?.Identity.Name != null) { 
                 CurrentUserAccount.Username = Thread.CurrentPrincipal.Identity.Name;
                 CurrentUserAccount.DisplayName = Thread.CurrentPrincipal.Identity.Name.ToString();
                 CurrentUserAccount.ProfilePicture = null;

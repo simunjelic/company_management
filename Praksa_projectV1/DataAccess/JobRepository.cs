@@ -54,6 +54,7 @@ namespace Praksa_projectV1.DataAccess
         }
         public void RemoveJob(int Id)
         {
+            try { 
             using (jobContext = new Context())
             {
                 Job jobToDelete = jobContext.Jobs.FirstOrDefault(i => i.Id == Id);
@@ -61,6 +62,10 @@ namespace Praksa_projectV1.DataAccess
                 if (jobToDelete != null)
                 jobContext.Jobs.Remove(jobToDelete);
                 jobContext.SaveChanges();
+            }
+            }catch(Exception ex)
+            {
+                MessageBox.Show("Nije moguće izbrisati, posao povezan sa drugim poljima.");
             }
         }
         public Job GetJob(int Id)

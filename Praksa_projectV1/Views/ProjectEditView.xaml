@@ -68,7 +68,7 @@ SelectedItem="{Binding Path=Status}"/>
 
 
 
-        <Button Height="30" Command="{Binding UpdateEmployeeCommand}" Content="Uredi" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,220,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Height="30" Command="{Binding UpdateCommand}" Content="Uredi" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,220,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
                   FontFamily="Montserrat"
           Cursor="Hand"
         Foreground="White"
@@ -98,7 +98,7 @@ SelectedItem="{Binding Path=Status}"/>
                 </Style>
             </Button.Style>
         </Button>
-        <Button Command="{Binding AddEmployeeCommand}" Content="Dodaj" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,220,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Command="{Binding AddCommand}" Content="Dodaj" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,220,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
           FontFamily="Montserrat"
   Cursor="Hand"
 Foreground="White" RenderTransformOrigin="0.497,0.085" Height="30" VerticalAlignment="Top"

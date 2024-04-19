@@ -105,5 +105,10 @@ namespace Praksa_projectV1.DataAccess
             }
 
           }
+
+        internal async Task<Employee> GetProjectByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
