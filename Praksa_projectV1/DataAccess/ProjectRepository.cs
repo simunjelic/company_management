@@ -121,6 +121,43 @@ namespace Praksa_projectV1.DataAccess
                 return null;
             }
         }
+
+        internal async Task<IEnumerable<EmployeeProject>> GetAllTeams(int id)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return await context.EmployeeProjects
+                              .Include(p => p.Project)
+                              .Include(p => p.Employee)
+                              .Where(p => p.ProjectId == id)
+                              .ToListAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        internal async Task DeleteEmployeeFromProjectAsync(EmployeeProject member)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    context.EmployeeProjects.Remove(member);
+                    context.SaveChangesAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Greška pri brisanju zaposlenika sa projekta.");
+            }
+        }
     }
 
 }

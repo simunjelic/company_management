@@ -17,18 +17,22 @@ namespace Praksa_projectV1.ViewModels
     public class ProjectsViewModel : ViewModelBase
     {
         ProjectRepository ProjectRepository;
+        EmployeeRepository EmployeeRepository { get; }
         public ICommand DeleteCommand { get; }
         public ICommand ShowAddWindowCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand UpdateCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
         public ICommand ShowProjectTeamWindowCommand { get; }
+        public ICommand AddMemberCommand { get; }
+        public ICommand DeleteMemberCommand { get; }
 
 
 
         public ProjectsViewModel()
         {
             ProjectRepository = new ProjectRepository();
+            EmployeeRepository = new EmployeeRepository();
             gatAllProjects();
             DeleteCommand = new ViewModelCommand(Delete, CanDelete);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
@@ -36,8 +40,39 @@ namespace Praksa_projectV1.ViewModels
             UpdateCommand = new ViewModelCommand(UpdateEmployee, CanUpdateEmployee);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             ShowProjectTeamWindowCommand = new ViewModelCommand(ShowProjectTeamWindow, CanShowProjectTeamWindow);
+            AddMemberCommand = new ViewModelCommand(AddMember, CanAddMember);
+            DeleteMemberCommand = new ViewModelCommand(DeleteMember, CanDeleteMember);
 
 
+        }
+
+        private bool CanDeleteMember(object obj)
+        {
+            if (SelectedEmployee != null)
+                return true;
+            return false;
+        }
+
+        private async void DeleteMember(object obj)
+        {
+            var result = MessageBox.Show("Jeste li sigurni da želite ukoloniti: " + SelectedEmployee.Employee.Name + " " + SelectedEmployee.Employee.Name + " sa projekta " + SelectedEmployee.Project.Name, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                await ProjectRepository.DeleteEmployeeFromProjectAsync(SelectedEmployee);
+                TeamRecords.Remove(SelectedEmployee);
+                SelectedEmployee = null;
+            }
+        }
+
+        private bool CanAddMember(object obj)
+        {
+            return true;
+        }
+
+        private void AddMember(object obj)
+        {
+            throw new NotImplementedException();
         }
 
         private bool CanShowProjectTeamWindow(object obj)
@@ -49,7 +84,13 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowProjectTeamWindow(object obj)
         {
-            throw new NotImplementedException();
+
+            ProjectTeamView projectTeamView = new ProjectTeamView();
+            projectTeamView.DataContext = this;
+            projectTeamView.Title = SelectedItem.Name;
+            GetTeamAsync();
+            projectTeamView.Show();
+
         }
 
         private bool CanUpdateEmployee(object obj)
@@ -460,6 +501,56 @@ namespace Praksa_projectV1.ViewModels
             }
             return true;
         }
-    }
+        private ObservableCollection<Employee> _employeeRecords;
+        public ObservableCollection<Employee> EmployeeRecords
+        {
+            get
+            {
+                return _employeeRecords;
+            }
+            set
+            {
+                _employeeRecords = value;
+                OnPropertyChanged(nameof(EmployeeRecords));
+            }
+        }
+        private ObservableCollection<EmployeeProject> _teamRecords;
+        public ObservableCollection<EmployeeProject> TeamRecords
+        {
+            get
+            {
+                return _teamRecords;
+            }
+            set
+            {
+                _teamRecords = value;
+                OnPropertyChanged(nameof(TeamRecords));
+            }
+        }
+        private EmployeeProject? _selectedEmployee = null;
+        public EmployeeProject? SelectedEmployee
+        {
+            get { return _selectedEmployee; }
+            set
+            {
+                if (_selectedEmployee != value)
+                {
+                    _selectedEmployee = value;
+                    OnPropertyChanged(nameof(SelectedEmployee));
+                }
+            }
+        }
 
+        public async Task GetTeamAsync()
+        {
+
+            var team = await ProjectRepository.GetAllTeams(SelectedItem.Id);
+            TeamRecords = new ObservableCollection<EmployeeProject>(team);
+        }
+        public void GetAllEmployees()
+        {
+            var employes = EmployeeRepository.GetAll();
+            EmployeeRecords = new ObservableCollection<Employee>(employes);
+        }
+    }
 }
