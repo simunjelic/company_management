@@ -31,4 +31,8 @@
     <Resource Include="Images\user-icon.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Sql\" />
+  </ItemGroup>
+
 </Project>

@@ -35,24 +35,28 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal void DeleteById(int id)
+        internal async Task<bool> DeleteByIdAsync(int id)
         {
             try
             {
+                
                 using (var _context = new Context())
                 {
-                    var check = _context.Projects.FirstOrDefault(i => i.Id == id);
+                    var check = await _context.Projects.FirstOrDefaultAsync(i => i.Id == id);
                     if (check != null)
                     {
                         _context.Projects.Remove(check);
-                        _context.SaveChanges();
+                        await _context.SaveChangesAsync();
+                        return true;
                     }
+                    return false;
 
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Nije moguće obrisati projekt");
+                
+                return false;
             }
         }
 
@@ -153,11 +157,11 @@ namespace Praksa_projectV1.DataAccess
                 using (var context = new Context())
                 {
 
-                    var recordToDelete = context.EmployeeProjects.FirstOrDefault(i => i.ProjectId == member.ProjectId && i.EmployeeId == member.EmployeeId);
+                    var recordToDelete = await context.EmployeeProjects.FirstOrDefaultAsync(i => i.ProjectId == member.ProjectId && i.EmployeeId == member.EmployeeId);
                     if (recordToDelete != null)
                     {
                         context.EmployeeProjects.Remove(recordToDelete);
-                        context.SaveChangesAsync();
+                        await context.SaveChangesAsync();
                         return true;
                     }
                     return false;

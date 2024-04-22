@@ -97,6 +97,11 @@ public partial class Context : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("email");
+            entity.Property(e => e.FullName)
+                .IsRequired()
+                .HasMaxLength(101)
+                .IsUnicode(false)
+                .HasComputedColumnSql("(([name]+' ')+[surname])", false);
             entity.Property(e => e.Jmbg).HasColumnName("jmbg");
             entity.Property(e => e.JobId).HasColumnName("job_id");
             entity.Property(e => e.Name)
@@ -137,7 +142,7 @@ public partial class Context : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.Manager)
-                .HasMaxLength(2)
+                .HasMaxLength(3)
                 .IsUnicode(false)
                 .HasColumnName("manager");
             entity.Property(e => e.ProjectId).HasColumnName("project_id");

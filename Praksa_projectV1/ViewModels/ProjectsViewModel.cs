@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using Type = Praksa_projectV1.Models.Type;
 
@@ -36,8 +37,8 @@ namespace Praksa_projectV1.ViewModels
             gatAllProjects();
             DeleteCommand = new ViewModelCommand(Delete, CanDelete);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
-            AddCommand = new ViewModelCommand(AddEmployee, CanAddEmployee);
-            UpdateCommand = new ViewModelCommand(UpdateEmployee, CanUpdateEmployee);
+            AddCommand = new ViewModelCommand(AddProject, CanAddProject);
+            UpdateCommand = new ViewModelCommand(UpdateProject, CanUpdateProject);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             ShowProjectTeamWindowCommand = new ViewModelCommand(ShowProjectTeamWindow, CanShowProjectTeamWindow);
             AddMemberCommand = new ViewModelCommand(AddMemberAsync, CanAddMember);
@@ -65,7 +66,7 @@ namespace Praksa_projectV1.ViewModels
                     TeamRecords.Remove(SelectedEmployee);
                     MessageBox.Show("Zaposlenik ukoljen sa projekta.");
                 }
-                SelectedEmployee = null;
+                SelectedNewEmployee = null;
             }
         }
 
@@ -114,12 +115,12 @@ namespace Praksa_projectV1.ViewModels
 
         }
 
-        private bool CanUpdateEmployee(object obj)
+        private bool CanUpdateProject(object obj)
         {
             return true;
         }
 
-        private async void UpdateEmployee(object obj)
+        private async void UpdateProject(object obj)
         {
             if (ValidationData())
             {
@@ -133,12 +134,12 @@ namespace Praksa_projectV1.ViewModels
 
         }
 
-        private bool CanAddEmployee(object obj)
+        private bool CanAddProject(object obj)
         {
             return true;
         }
 
-        private void AddEmployee(object obj)
+        private void AddProject(object obj)
         {
 
             Project newProject = new Project();
@@ -205,14 +206,16 @@ namespace Praksa_projectV1.ViewModels
             return false;
         }
 
-        private void Delete(object obj)
+        private async void Delete(object obj)
         {
             var result = MessageBox.Show("Are you sure you want to delete this Project with name: " + SelectedItem.Name + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
-                ProjectRepository.DeleteById(SelectedItem.Id);
-                ProjectRecords.Remove(SelectedItem);
+                var check = await ProjectRepository.DeleteByIdAsync(SelectedItem.Id);
+                if(check)
+                 ProjectRecords.Remove(SelectedItem);
+                else MessageBox.Show("Nije moguće obrisati projekt.");
 
 
 
@@ -575,7 +578,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
         private Employee _selectedNewEmployee;
-        public Employee SelectedNewEmployee
+        public Employee? SelectedNewEmployee
         {
             get { return _selectedNewEmployee; }
             set
