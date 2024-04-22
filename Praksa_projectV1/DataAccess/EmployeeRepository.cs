@@ -110,5 +110,10 @@ namespace Praksa_projectV1.DataAccess
         {
             throw new NotImplementedException();
         }
+
+        internal IEnumerable<Employee> FilterByNameSurnameProjectId(string searchText, int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

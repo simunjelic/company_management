@@ -40,7 +40,7 @@ namespace Praksa_projectV1.ViewModels
             UpdateCommand = new ViewModelCommand(UpdateEmployee, CanUpdateEmployee);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             ShowProjectTeamWindowCommand = new ViewModelCommand(ShowProjectTeamWindow, CanShowProjectTeamWindow);
-            AddMemberCommand = new ViewModelCommand(AddMember, CanAddMember);
+            AddMemberCommand = new ViewModelCommand(AddMemberAsync, CanAddMember);
             DeleteMemberCommand = new ViewModelCommand(DeleteMember, CanDeleteMember);
 
 
@@ -59,20 +59,40 @@ namespace Praksa_projectV1.ViewModels
 
             if (result == MessageBoxResult.Yes)
             {
-                await ProjectRepository.DeleteEmployeeFromProjectAsync(SelectedEmployee);
-                TeamRecords.Remove(SelectedEmployee);
+                var check = await ProjectRepository.DeleteEmployeeFromProjectAsync(SelectedEmployee);
+                if (check)
+                {
+                    TeamRecords.Remove(SelectedEmployee);
+                    MessageBox.Show("Zaposlenik ukoljen sa projekta.");
+                }
                 SelectedEmployee = null;
             }
         }
 
         private bool CanAddMember(object obj)
         {
-            return true;
+            if (SelectedNewEmployee != null)
+                return true;
+            return false;
         }
 
-        private void AddMember(object obj)
+        private async void AddMemberAsync(object obj)
         {
-            throw new NotImplementedException();
+            EmployeeProject teamMember = new EmployeeProject();
+            teamMember.ProjectId = SelectedItem.Id;
+            teamMember.EmployeeId = SelectedNewEmployee.Id;
+            if (IsManager) teamMember.Manager = "Da";
+            else teamMember.Manager = "Ne";
+            var check = await ProjectRepository.AddMemberToProject(teamMember);
+
+            if (check)
+            {
+                teamMember.Project = ProjectRecords.Where(i => i.Id == SelectedItem.Id).FirstOrDefault();
+                teamMember.Employee = SelectedNewEmployee;
+                TeamRecords.Add(teamMember);
+                IsManager = false;
+                SelectedNewEmployee = null;
+            }
         }
 
         private bool CanShowProjectTeamWindow(object obj)
@@ -89,6 +109,7 @@ namespace Praksa_projectV1.ViewModels
             projectTeamView.DataContext = this;
             projectTeamView.Title = SelectedItem.Name;
             GetTeamAsync();
+            GetAllEmployees();
             projectTeamView.Show();
 
         }
@@ -138,7 +159,7 @@ namespace Praksa_projectV1.ViewModels
 
 
         }
-        
+
         private bool CanShowUpdateWindow(object obj)
         {
             if (SelectedItem != null)
@@ -148,7 +169,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowUpdateWindow(object obj)
         {
-            
+
             ProjectEditView projectEditView = new ProjectEditView();
             projectEditView.DataContext = this;
             projectEditView.Title = "Edit project";
@@ -166,7 +187,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowAddWindow(object obj)
         {
-            
+
             ProjectEditView projectEditView = new ProjectEditView();
             projectEditView.DataContext = this;
             projectEditView.Title = "Add project";
@@ -514,6 +535,19 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(EmployeeRecords));
             }
         }
+        private ObservableCollection<Employee> _employeeShow;
+        public ObservableCollection<Employee> EmployeeShow
+        {
+            get
+            {
+                return _employeeShow;
+            }
+            set
+            {
+                _employeeShow = value;
+                OnPropertyChanged(nameof(EmployeeShow));
+            }
+        }
         private ObservableCollection<EmployeeProject> _teamRecords;
         public ObservableCollection<EmployeeProject> TeamRecords
         {
@@ -540,17 +574,81 @@ namespace Praksa_projectV1.ViewModels
                 }
             }
         }
+        private Employee _selectedNewEmployee;
+        public Employee SelectedNewEmployee
+        {
+            get { return _selectedNewEmployee; }
+            set
+            {
+                if (_selectedNewEmployee != value)
+                {
+                    _selectedNewEmployee = value;
+                    OnPropertyChanged(nameof(SelectedNewEmployee));
+                }
+            }
+        }
+        private string _searchText;
+        public string SearchText
+        {
+            get { return _searchText; }
+            set
+            {
+                if (_searchText != value)
+                {
+                    _searchText = value;
+                    FilterSuggestions();
+                    OnPropertyChanged(nameof(SearchText));
+                }
+            }
+        }
+        private bool _isComboBoxDropDownOpen;
+        public bool IsComboBoxDropDownOpen
+        {
+            get { return _isComboBoxDropDownOpen; }
+            set
+            {
+                _isComboBoxDropDownOpen = value;
+                OnPropertyChanged(nameof(IsComboBoxDropDownOpen));
+            }
+        }
+        private bool _isManager;
+
+        public bool IsManager
+        {
+            get { return _isManager; }
+            set
+            {
+                if (_isManager != value)
+                {
+                    _isManager = value;
+                    // Notify property changed if you're using a ViewModel
+                    OnPropertyChanged(nameof(IsManager));
+                }
+            }
+        }
+        private void FilterSuggestions()
+        {
+
+            var filteredSuggestions = EmployeeRecords.Where(item =>
+                                     (item.Name + " " + item.Surname).Contains(SearchText) ||
+                                      (item.Id.ToString() == SearchText));
+            EmployeeShow = new ObservableCollection<Employee>(filteredSuggestions);
+
+
+        }
+
 
         public async Task GetTeamAsync()
         {
 
-            var team = await ProjectRepository.GetAllTeams(SelectedItem.Id);
+            var team = await ProjectRepository.GetTeam(SelectedItem.Id);
             TeamRecords = new ObservableCollection<EmployeeProject>(team);
         }
         public void GetAllEmployees()
         {
             var employes = EmployeeRepository.GetAll();
             EmployeeRecords = new ObservableCollection<Employee>(employes);
+            EmployeeShow = new ObservableCollection<Employee>(employes);
         }
     }
 }

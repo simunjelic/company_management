@@ -5,46 +5,85 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Praksa_projectV1.Views" 
         xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp" 
-        xmlns:viewmodels="clr-namespace:Praksa_projectV1.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:ProjectTeamViewModel}"
+        xmlns:viewmodels="clr-namespace:Praksa_projectV1.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:ProjectsViewModel}"
         mc:Ignorable="d"
         xmlns:viewModel="clr-namespace:Praksa_projectV1.ViewModels"
         Title="ProjectTeamView" Height="450" Width="800"
-        Background="#17345C">
-    
+        Background="#17345C"
+        WindowStartupLocation="CenterScreen">
 
 
-    <Grid>
+
+    <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
             <RowDefinition Height="50"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
+            <TextBlock Text="Naziv projekta: "
+    Height="15"
+    FontWeight="Medium"
+   FontFamily="Montserrat"
+           VerticalAlignment="Center"
+           Foreground="#BCBEE0" >
+
+
+            </TextBlock>
+            <TextBlock Text="{Binding SelectedItem.Name}"
+                Height="16"
+                FontWeight="Medium"
+               FontFamily="Montserrat"
+                       VerticalAlignment="Center"
+                       Foreground="#BCBEE0" Margin="90,0,-90,0" >
+
+
+            </TextBlock>
+        </Grid>
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="57*"/>
+                <ColumnDefinition Width="43*"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal"
+            <StackPanel Orientation="Horizontal"   
             VerticalAlignment="Top"
-            Grid.Column="0">
+            Grid.Column="0" Grid.ColumnSpan="2">
                 <fa:IconImage Icon="Search" Height="20" Width="20" Foreground="{StaticResource plainTextColor3}"/>
-                <TextBox x:Name="searchBox" 
-                Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-        FontSize="13"
-             Height="24"
-               Width="300"
-               Background="Transparent"
-                 FontWeight="Medium"
-                 FontFamily="Montserrat"                            
-                 Foreground="{StaticResource plainTextColor3}"
-                 CaretBrush="{StaticResource plainTextColor3}"
-                 BorderBrush="{StaticResource plainTextColor3}"
-                 BorderThickness="0,0,0,1"                             
-                 VerticalContentAlignment="Center"
-                 Margin="5,5,0,0"></TextBox>
+                <ComboBox Width="200"
+                          FontSize="13"
+     Height="24"
+                          Background="Transparent"
+  FontWeight="Medium"
+  FontFamily="Montserrat"                            
+  Foreground="{StaticResource plainTextColor3}"
+  BorderBrush="{StaticResource plainTextColor3}"
+  BorderThickness="0,0,0,1"                             
+  VerticalContentAlignment="Center"
+  Margin="5,5,0,0"
+      ItemsSource="{Binding Path=EmployeeShow}"   
+      SelectedItem="{Binding Path=SelectedNewEmployee}"  
+      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+          IsEditable="True"
+        DisplayMemberPath="Name">
+
+                </ComboBox>
+                <CheckBox                        FontSize="13"
+   Height="24"
+       VerticalAlignment="Center"                 
+FontWeight="Medium"
+FontFamily="Montserrat"       
+Margin="20,10,0,0"
+Foreground="#BCBEE0"
+
+BorderThickness="0,0,0,1" Content="Voditelj" IsChecked="{Binding IsManager}" />
+
+
+
             </StackPanel>
-            
-            <Button Grid.Column="1"
+
+            <Button Grid.Column="2"
                 Command="{Binding AddMemberCommand}"                            
                 Content="Dodaj"                            
                 FontSize="12"
@@ -77,8 +116,8 @@
                     </Style>
                 </Button.Style>
             </Button>
-            
-            <Button Grid.Column="2"
+
+            <Button Grid.Column="3"
         Command="{Binding DeleteMemberCommand}"                            
         Content="Obriši"                            
         FontSize="12"
@@ -111,8 +150,8 @@ VerticalAlignment="Top">
                 </Button.Style>
             </Button>
         </Grid>
-        <Border Grid.Row="1"
-    Background="#17345C"
+        <Border Grid.Row="2"
+                Background="#17345C"
     CornerRadius="10" 
     Padding="10">
             <DataGrid ColumnWidth="*"
@@ -152,8 +191,8 @@ VerticalAlignment="Top">
                     <DataGridTextColumn Binding="{Binding Path=Employee.Name}"  Header="Ime"/>
                     <DataGridTextColumn Binding="{Binding Path=Employee.Surname}"  Header="Prezime"/>
                     <DataGridTextColumn Binding="{Binding Path=Manager}"  Header="Voditelj" HeaderStringFormat=""/>
-                    
-                 
+
+
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

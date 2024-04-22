@@ -2,6 +2,7 @@
 using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,13 +16,14 @@ namespace Praksa_projectV1.DataAccess
         Context _context = null;
         public static IEnumerable<Project> GetAll()
         {
-            using (var _context = new Context()) {
+            using (var _context = new Context())
+            {
                 return _context.Projects
                     .Include(e => e.Type)
                     .Include(e => e.Location)
                     .ToList();
             }
-            
+
         }
 
         internal void Add(Project newProject)
@@ -35,18 +37,20 @@ namespace Praksa_projectV1.DataAccess
 
         internal void DeleteById(int id)
         {
-            try { 
-            using(var _context = new Context())
+            try
             {
-                var check =_context.Projects.FirstOrDefault(i => i.Id == id);
-                if(check != null)
+                using (var _context = new Context())
                 {
-                    _context.Projects.Remove(check);
-                    _context.SaveChanges();
-                }
+                    var check = _context.Projects.FirstOrDefault(i => i.Id == id);
+                    if (check != null)
+                    {
+                        _context.Projects.Remove(check);
+                        _context.SaveChanges();
+                    }
 
+                }
             }
-            }catch (Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Nije moguće obrisati projekt");
             }
@@ -54,7 +58,7 @@ namespace Praksa_projectV1.DataAccess
 
         internal IEnumerable<Location> GetAllLocations()
         {
-            using(_context = new Context())
+            using (_context = new Context())
             {
                 return _context.Locations.ToList();
             }
@@ -62,7 +66,7 @@ namespace Praksa_projectV1.DataAccess
 
         internal IEnumerable<Models.Type> GetAllTypes()
         {
-            using( var _context = new Context())
+            using (var _context = new Context())
             {
                 return _context.Types.ToList();
             }
@@ -90,8 +94,8 @@ namespace Praksa_projectV1.DataAccess
                 using (var context = new Context())
                 {
                     return await context.Projects
-                              .Include(p => p.Type)       
-                              .Include(p => p.Location)   
+                              .Include(p => p.Type)
+                              .Include(p => p.Location)
                               .FirstOrDefaultAsync(p => p.Id == projectId);
                 }
             }
@@ -116,13 +120,13 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
             }
         }
 
-        internal async Task<IEnumerable<EmployeeProject>> GetAllTeams(int id)
+        internal async Task<IEnumerable<EmployeeProject>> GetTeam(int id)
         {
             try
             {
@@ -142,20 +146,58 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task DeleteEmployeeFromProjectAsync(EmployeeProject member)
+        internal async Task<bool> DeleteEmployeeFromProjectAsync(EmployeeProject member)
         {
             try
             {
                 using (var context = new Context())
                 {
-                    context.EmployeeProjects.Remove(member);
-                    context.SaveChangesAsync();
+
+                    var recordToDelete = context.EmployeeProjects.FirstOrDefault(i => i.ProjectId == member.ProjectId && i.EmployeeId == member.EmployeeId);
+                    if (recordToDelete != null)
+                    {
+                        context.EmployeeProjects.Remove(recordToDelete);
+                        context.SaveChangesAsync();
+                        return true;
+                    }
+                    return false;
                 }
 
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Greška pri brisanju zaposlenika sa projekta.");
+                return false;
+            }
+        }
+
+        internal async Task<bool> AddMemberToProject(EmployeeProject teamMember)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    var check = context.EmployeeProjects.FirstOrDefault(i => i.ProjectId == teamMember.ProjectId && i.EmployeeId == teamMember.EmployeeId);
+                    if (check == null)
+                    {
+                        await context.EmployeeProjects.AddAsync(teamMember);
+                        context.SaveChangesAsync();
+                        return true;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Zaposlenik već dodan na projekt.");
+                        return false;
+                    }
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Greška pri unosu novog člana u bazu.");
+                return false;
             }
         }
     }
