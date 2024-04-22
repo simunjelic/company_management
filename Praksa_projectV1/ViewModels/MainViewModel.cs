@@ -78,6 +78,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowWorkersViewCommand { get; }
         public ICommand ShowJobsViewCommand { get; }
         public ICommand ShowDepartmentsViewCommand {  get; }
+        public ICommand ShowWorkingCardViewCommand { get; }
 
 
         public MainViewModel()
@@ -89,16 +90,26 @@ namespace Praksa_projectV1.ViewModels
             ShowWorkersViewCommand = new ViewModelCommand(ExecuteShowWorkersViewCommand);
             ShowJobsViewCommand = new ViewModelCommand(ExecuteShowJobsViewCommand);
             ShowDepartmentsViewCommand = new ViewModelCommand(ExecuteShowDepartmentsViewCommand);
+            ShowWorkingCardViewCommand = new ViewModelCommand(ShowWorkingCard);
             //Default view
             //ExecuteShowProjectsViewCommand(null);
 
             LoadCurrentUserData();
         }
 
+      
+
+        private void ShowWorkingCard(object obj)
+        {
+            CurrentChildView = new WorkingCardViewModel();
+            Caption = "Radna karta";
+            Icon = IconChar.ClipboardCheck;
+        }
+
         private void ExecuteShowDepartmentsViewCommand(object obj)
         {
             CurrentChildView = new DepartmentsViewModel();
-            Caption = "Departments";
+            Caption = "Odjel";
             Icon = IconChar.Building;
         }
 
@@ -106,7 +117,7 @@ namespace Praksa_projectV1.ViewModels
         {
             
             CurrentChildView = new JobsViewModel();
-            Caption = "Jobs";
+            Caption = "Radno mjesto";
             Icon = IconChar.Briefcase;
         }
 
@@ -115,14 +126,14 @@ namespace Praksa_projectV1.ViewModels
         private void ExecuteShowWorkersViewCommand(object obj)
         {
             CurrentChildView = new WorkersViewModel();
-            Caption = "Workers";
+            Caption = "Zaposlenici";
             Icon = IconChar.UserGroup;
         }
 
         private void ExecuteShowProjectsViewCommand(object obj)
         {
             CurrentChildView = new ProjectsViewModel();
-            Caption = "Projects";
+            Caption = "Projekti";
             Icon = IconChar.Table;
         }
 

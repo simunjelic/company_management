@@ -30,6 +30,9 @@
         <DataTemplate DataType="{x:Type viewModel:DepartmentsViewModel}">
             <local:DepartmentsView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:WorkingCardViewModel}">
+            <local:WorkingCardView/>
+        </DataTemplate>
 
     </Window.Resources>
 
@@ -81,7 +84,7 @@
                                  Command="{Binding ShowProjectsViewCommand}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="Table" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Projects" Style="{StaticResource menuButtonText}"/>
+                            <TextBlock Text="Projekti" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
                         
                     </RadioButton>
@@ -90,7 +93,7 @@
                                  Command="{Binding ShowWorkersViewCommand}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="UserGroup" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Workers" Style="{StaticResource menuButtonText}"/>
+                            <TextBlock Text="Zaposlenici" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
 
                     </RadioButton>
@@ -99,7 +102,7 @@
                                  Command="{Binding ShowJobsViewCommand}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="Briefcase" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Jobs" Style="{StaticResource menuButtonText}"/>
+                            <TextBlock Text="Radno mjesto" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
 
                     </RadioButton>
@@ -108,7 +111,16 @@
              Command="{Binding ShowDepartmentsViewCommand}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="Building" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Departments" Style="{StaticResource menuButtonText}"/>
+                            <TextBlock Text="Odjel" Style="{StaticResource menuButtonText}"/>
+                        </StackPanel>
+
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource menuButton}"
+                        Tag="{StaticResource color5}"
+                          Command="{Binding ShowWorkingCardViewCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconImage Icon="ClipboardCheck" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Radna karta" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
 
                     </RadioButton>

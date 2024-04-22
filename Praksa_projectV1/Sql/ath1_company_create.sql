@@ -111,6 +111,9 @@ DROP COLUMN start_date,
 ALTER TABLE Employee
 ADD fullname AS (name + ' ' + surname);
 
+ALTER TABLE working_card
+ADD description VARCHAR(MAX);
+
 
 
 
