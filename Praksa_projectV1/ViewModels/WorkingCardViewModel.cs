@@ -15,7 +15,7 @@ using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
 {
-    public class WorkingCardViewModel : ViewModelBase, INotifyDataErrorInfo
+    public class WorkingCardViewModel : ViewModelBase
     {
         WorkingCardRepository cardRespository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
@@ -214,7 +214,7 @@ namespace Praksa_projectV1.ViewModels
         }
         private Project _selectedProject;
 
-        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+        
         [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public Project SelectedProject
         {
@@ -230,8 +230,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
-        Dictionary<string, List<string>> Erorrs = new Dictionary<string, List<string>>();
-        public bool HasErrors => Erorrs.Count > 0;
+        
 
         public async void gettAllDataFromCard()
         {
@@ -255,34 +254,6 @@ namespace Praksa_projectV1.ViewModels
 
         }
 
-        public IEnumerable GetErrors(string? propertyName)
-        {
-            if (Erorrs.ContainsKey(propertyName))
-            {
-                return Erorrs[propertyName];
-            }else
-            {
-                return Enumerable.Empty<string>();
-            }
-        }
-        public void Validate(string propertyName, object propertyValue)
-        {
-            var results = new List<ValidationResult>();
-            Validator.TryValidateProperty(propertyValue, new ValidationContext(this) { MemberName = propertyName}, results);
-
-            if(results.Any())
-            {
-                try { 
-                Erorrs.Add(propertyName, results.Select(r => r.ErrorMessage).ToList());
-                } catch { }
-
-                ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-            }else
-            {
-                Erorrs.Remove(propertyName);
-                ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
-            }
-
-        }
+        
     }
 }
