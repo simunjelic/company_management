@@ -178,8 +178,7 @@ VerticalAlignment="Top">
 
                 <DataGrid.Columns>
                    <DataGridTextColumn Binding="{Binding Path=Project.Name}"  Header="Naziv projekta"/>
-                    <DataGridTextColumn Binding="{Binding Path=Employee.Department}"  Header="Odjel"/>
-                    <DataGridTextColumn Binding="{Binding Path=Date}"  Header="Datum"/>
+                    <DataGridTextColumn Binding="{Binding Path=Date ,StringFormat={}{0:dd.MM.yyyy}}"  Header="Datum" SortDirection="Descending"/>
                     <DataGridTextColumn Binding="{Binding Path=Hours}"  Header="Sati"/>
                     <DataGridTextColumn Binding="{Binding Path=Activity.Name}"  Header="Aktivnost"/>
                     <DataGridTextColumn Binding="{Binding Path=Description}"  Header="Opis"/>

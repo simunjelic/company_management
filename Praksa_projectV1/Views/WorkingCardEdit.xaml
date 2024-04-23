@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Praksa_projectV1.Views" xmlns:helper="clr-namespace:Praksa_projectV1.Enums" xmlns:viewmodels="clr-namespace:Praksa_projectV1.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:WorkingCardViewModel}"
         mc:Ignorable="d"
-        Title="WorkingCardEdit" Height="270" Width="500"
+        Title="WorkingCardEdit" Height="350" Width="500"
         Background="#17345C"
 Foreground="White"
 WindowStartupLocation="CenterScreen">
@@ -36,14 +36,12 @@ WindowStartupLocation="CenterScreen">
                   PreviewTextInput="TextBox_PreviewTextInput" TextChanged="TextBox_TextChanged"
                 >
         </TextBox>
+        <TextBox d:DataContext="{d:DesignInstance Type=viewmodels:WorkingCardViewModel}" Height="30" Text="{Binding Id,Mode=TwoWay}" Width="200" Margin="25,50" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="1" BorderBrush="#E0E0E0" Visibility="Hidden"/>
+
+
         <Label Content="" Margin="25,80,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
 
         <Label Content="Aktivnost" Margin="250,24,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
-        <ComboBox Height="30" Width="200"  Margin="250,55,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
-            ItemsSource="{Binding ActivityRecords}"   
-            SelectedItem="{Binding SelectedActivity,UpdateSourceTrigger=PropertyChanged}"
-                  ToolTip="{Binding RelativeSource={RelativeSource Mode=Self}, Path=(Validation.Errors)[0].ErrorContent}"
-              DisplayMemberPath="Name"/>
 
         <Label Content="Projekt" Margin="25,85,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <ComboBox SelectedIndex="0" Height="30" Width="200"  Margin="25,111,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
@@ -56,9 +54,23 @@ WindowStartupLocation="CenterScreen">
 
         <DatePicker SelectedDate="{Binding SelectedDate, Mode=TwoWay}" Height="30" Width="200" Margin="25,55,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
 
+        <Label Content="Opis" Margin="19,153,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <TextBox  Height="30" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Width="425" Margin="25,179,0,0" 
+        VerticalAlignment="Top" 
+        HorizontalAlignment="Left" 
+        BorderThickness="0,0,0,2"
+        BorderBrush="#E0E0E0"
+        FontWeight="Medium"
+       FontFamily="Montserrat"
+        Background="Transparent"
+        Foreground="White"
+         TextWrapping="Wrap" AcceptsReturn="True" 
+          
+        >
+        </TextBox>
 
 
-        <Button Height="30" Command="{Binding UpdateCommand}" Content="Uredi" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,186,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Height="30" Command="{Binding UpdateCommand}" Content="Uredi" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,219,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
                   FontFamily="Montserrat"
           Cursor="Hand"
         Foreground="White"
@@ -88,7 +100,7 @@ WindowStartupLocation="CenterScreen">
                 </Style>
             </Button.Style>
         </Button>
-        <Button Command="{Binding AddCommand}" Content="Dodaj" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,186,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Command="{Binding AddCommand}" Content="Dodaj" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,219,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
           FontFamily="Montserrat"
   Cursor="Hand"
 Foreground="White" RenderTransformOrigin="0.497,0.085" Height="30" VerticalAlignment="Top"
@@ -120,6 +132,11 @@ Foreground="White" RenderTransformOrigin="0.497,0.085" Height="30" VerticalAlign
                 </Style>
             </Button.Style>
         </Button>
+        <ComboBox SelectedIndex="0" Height="30" Width="200"  Margin="250,55,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
+            ItemsSource="{Binding ActivityRecords}"   
+            SelectedItem="{Binding SelectedActivity, UpdateSourceTrigger=PropertyChanged}"
+            ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
+            DisplayMemberPath="Name"/>
 
 
 

@@ -1,10 +1,12 @@
-﻿using Praksa_projectV1.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Praksa_projectV1.DataAccess
 {
@@ -45,9 +47,36 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        public User getByUsername(string username)
+        public async Task<User> getByUsernameAsync(string username)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using(var dbContext = new Context())
+                {
+                    return await dbContext.Users.FirstOrDefaultAsync(i => i.Username == username);
+                }
+
+            }catch (Exception ex)
+            {
+                return null;
+                MessageBox.Show("User not found");
+            }
+        }
+        public async Task<Employee> getEmployeeByUsernameAsync(string username)
+        {
+            try
+            {
+                using (var dbContext = new Context())
+                {
+                    return await dbContext.Employees.FirstOrDefaultAsync(i => i.User.Username == username);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+                MessageBox.Show("User not found");
+            }
         }
 
         public User getUser(int id)

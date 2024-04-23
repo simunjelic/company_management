@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Praksa_projectV1.DataAccess
 {
@@ -17,16 +18,36 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    
-                        return await context.Activities
-                                  .ToListAsync();
-                    
+
+                    return await context.Activities
+                              .ToListAsync();
+
                 }
 
             }
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        internal async Task<bool> Add(WorkingCard newCard)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    await context.WorkingCards.AddAsync(newCard);
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Greška pri spremanju podataka: " + ex);
+                return false;
             }
         }
 
@@ -55,6 +76,45 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
+        internal bool Edit(WorkingCard card)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    context.WorkingCards.Update(card);
+                    context.SaveChanges();
+
+                    return true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return false;
+            }
+        }
+
+        internal async Task<WorkingCard> FindByIdAsync(int id)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return await  context.WorkingCards.Include(p => p.Project)
+                                  .Include(p => p.Activity)
+                                  .Include(p => p.Employee).FirstOrDefaultAsync(i => i.Id == id);
+                }
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         internal async Task<IEnumerable<WorkingCard>> GetAllData()
         {
             try
@@ -68,12 +128,12 @@ namespace Praksa_projectV1.DataAccess
 
 
 
-                    return await context.WorkingCards
-                              .Include(p => p.Project)
-                              .Include(p => p.Activity)
-                              .Include(p => p.Employee)
-                              .Where(p => p.Employee.User.Username == username)
-                              .ToListAsync();
+                        return await context.WorkingCards
+                                  .Include(p => p.Project)
+                                  .Include(p => p.Activity)
+                                  .Include(p => p.Employee)
+                                  .Where(p => p.Employee.User.Username == username)
+                                  .ToListAsync();
                     }
                     return null;
                 }

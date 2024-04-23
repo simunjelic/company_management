@@ -19,6 +19,8 @@ public partial class WorkingCard
 
     public int? ActivityId { get; set; }
 
+    public string Description { get; set; }
+
     public virtual Activity Activity { get; set; }
 
     public virtual Employee Employee { get; set; }

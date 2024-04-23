@@ -316,6 +316,9 @@ public partial class Context : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ActivityId).HasColumnName("activity_id");
             entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.Description)
+                .IsUnicode(false)
+                .HasColumnName("description");
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.Hours)
                 .HasColumnType("decimal(5, 2)")

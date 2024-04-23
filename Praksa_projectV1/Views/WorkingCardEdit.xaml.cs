@@ -31,13 +31,13 @@ namespace Praksa_projectV1.Views
             TextBox textBox = sender as TextBox;
 
             // Check if the entered character is a digit or a decimal point
-            e.Handled = !IsNumeric(e.Text) || (e.Text == "." && textBox.Text.Contains("."));
+            e.Handled = !IsNumeric(e.Text) || (e.Text == "," && textBox.Text.Contains(","));
         }
 
         private bool IsNumeric(string text)
         {
             // Allow digits and one decimal point
-            return System.Text.RegularExpressions.Regex.IsMatch(text, @"^[0-9.]*$");
+            return System.Text.RegularExpressions.Regex.IsMatch(text, @"^[0-9,]*$");
         }
 
         private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -54,9 +54,9 @@ namespace Praksa_projectV1.Views
             else
             {
                 // Check if the value is greater than or equal to 0.5
-                if (!string.IsNullOrEmpty(textBox.Text) && decimal.TryParse(textBox.Text, out decimal value))
+                if (!string.IsNullOrEmpty(textBox.Text) && decimal.TryParse(textBox.Text.Replace(",", "."), out decimal value))
                 {
-                    if (value <= 0.5m)
+                    if (value < 0.5m)
                     {
                         // Revert to the previous valid text
                         textBox.Text = e.UndoAction == UndoAction.Undo ? e.OriginalSource.ToString() : string.Empty;
@@ -69,7 +69,7 @@ namespace Praksa_projectV1.Views
         private bool IsValidDecimal(string text)
         {
             // Allow empty string or valid decimal format
-            return string.IsNullOrEmpty(text) || decimal.TryParse(text, out _);
+            return string.IsNullOrEmpty(text) || decimal.TryParse(text.Replace(",", "."), out _);
         }
 
 

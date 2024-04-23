@@ -16,7 +16,9 @@ namespace Praksa_projectV1.DataAccess
         void remove(User user);
         void update(User user);
         User getUser(int id);
-        User getByUsername(string username);
+        Task<User> getByUsernameAsync(string username);
         IEnumerable<User> getAllUsers();
+        Task<Employee> getEmployeeByUsernameAsync(string username);
+
     }
 }
