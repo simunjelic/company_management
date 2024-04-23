@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Praksa_projectV1.Views" xmlns:helper="clr-namespace:Praksa_projectV1.Enums" xmlns:viewmodels="clr-namespace:Praksa_projectV1.ViewModels"
+        xmlns:local="clr-namespace:Praksa_projectV1.Views" xmlns:helper="clr-namespace:Praksa_projectV1.Enums" xmlns:viewmodels="clr-namespace:Praksa_projectV1.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:WorkingCardViewModel}"
         mc:Ignorable="d"
-        Title="WorkingCardEdit" Height="250" Width="500"
+        Title="WorkingCardEdit" Height="270" Width="500"
         Background="#17345C"
 Foreground="White"
 WindowStartupLocation="CenterScreen">
@@ -13,9 +13,6 @@ WindowStartupLocation="CenterScreen">
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
     </Window.Resources>
-    <Window.Visibility>
-        <Binding Path="IsViewVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibilityConverter}" />
-    </Window.Visibility>
 
 
 
@@ -26,7 +23,7 @@ WindowStartupLocation="CenterScreen">
 
 
         <Label Content="Efektivni sati" Margin="250,90,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
-        <TextBox  Height="30" Text="{Binding Hours}" Width="200" Margin="250,111,0,0" 
+        <TextBox  Height="30" Text="{Binding Hours, UpdateSourceTrigger=PropertyChanged}" Width="200" Margin="250,111,0,0" 
                 VerticalAlignment="Top" 
                 HorizontalAlignment="Left" 
                 BorderThickness="0,0,0,2"
@@ -35,21 +32,24 @@ WindowStartupLocation="CenterScreen">
                FontFamily="Montserrat"
                 Background="Transparent"
                 Foreground="White"
-                  PreviewTextInput="TextBox_PreviewTextInput"
+                  ToolTip="{Binding RelativeSource={RelativeSource Mode=Self}, Path=(Validation.Errors)[0].ErrorContent}"
+                  PreviewTextInput="TextBox_PreviewTextInput" TextChanged="TextBox_TextChanged"
                 >
         </TextBox>
         <Label Content="" Margin="25,80,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
 
         <Label Content="Aktivnost" Margin="250,24,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <ComboBox Height="30" Width="200"  Margin="250,55,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
-            ItemsSource="{Binding Path=ActivityRecords}"   
-            SelectedItem="{Binding Path=SelectedActivity}"  
+            ItemsSource="{Binding ActivityRecords}"   
+            SelectedItem="{Binding SelectedActivity,UpdateSourceTrigger=PropertyChanged}"
+                  ToolTip="{Binding RelativeSource={RelativeSource Mode=Self}, Path=(Validation.Errors)[0].ErrorContent}"
               DisplayMemberPath="Name"/>
 
         <Label Content="Projekt" Margin="25,85,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <ComboBox SelectedIndex="0" Height="30" Width="200"  Margin="25,111,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
      ItemsSource="{Binding ProjectRecords}"   
-     SelectedItem="{Binding Path=SelectedProject}"
+     SelectedItem="{Binding SelectedProject, UpdateSourceTrigger=PropertyChanged}"
+                  ToolTip="{Binding RelativeSource={RelativeSource Mode=Self}, Path=(Validation.Errors)[0].ErrorContent}"
                   DisplayMemberPath="Name"/>
 
         <Label Content="Datum" Margin="25,24,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
@@ -92,7 +92,7 @@ WindowStartupLocation="CenterScreen">
           FontFamily="Montserrat"
   Cursor="Hand"
 Foreground="White" RenderTransformOrigin="0.497,0.085" Height="30" VerticalAlignment="Top"
-                Visibility="{Binding IsAddButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Click="Button_Click"
+                Visibility="{Binding IsAddButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
         
                 
   >

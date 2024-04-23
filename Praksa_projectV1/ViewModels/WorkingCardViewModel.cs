@@ -2,8 +2,11 @@
 using Praksa_projectV1.Models;
 using Praksa_projectV1.Views;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,12 +15,13 @@ using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
 {
-    public class WorkingCardViewModel : ViewModelBase
+    public class WorkingCardViewModel : ViewModelBase, INotifyDataErrorInfo
     {
         WorkingCardRepository cardRespository { get; set; }
         ProjectRepository ProjectRepository { get; set; }
         public ICommand DeleteCommand { get; }
         public ICommand ShowAddWindowCommand { get; }
+        public ICommand AddCommand { get; }
 
         public WorkingCardViewModel()
         {
@@ -25,8 +29,19 @@ namespace Praksa_projectV1.ViewModels
             gettAllDataFromCard();
             DeleteCommand = new ViewModelCommand(Delete, CanDelete);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
+            AddCommand = new ViewModelCommand(Add, CanAdd);
 
 
+        }
+
+        private bool CanAdd(object obj)
+        {
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
+        }
+
+        private void Add(object obj)
+        {
+            MessageBox.Show(Hours);
         }
 
         private bool CanShowAddWindow(object obj)
@@ -164,19 +179,59 @@ namespace Praksa_projectV1.ViewModels
                 }
             }
         }
-        private string _name;
-        public string Name
+        
+        private string _hours;
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
+        public string Hours
         {
             get
             {
-                return _name;
+                return _hours;
             }
             set
             {
-                _name = value;
-                OnPropertyChanged("Name");
+                _hours = value;
+
+                Validate(nameof(Hours), value);
+                OnPropertyChanged(nameof(Hours));
             }
         }
+        
+        private Activity _selectedActivity;
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
+        public Activity SelectedActivity
+        {
+            get
+            {
+                return _selectedActivity;
+            }
+            set
+            {
+                _selectedActivity = value;
+                Validate(nameof(SelectedActivity), value);
+                OnPropertyChanged(nameof(SelectedActivity));
+            }
+        }
+        private Project _selectedProject;
+
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
+        public Project SelectedProject
+        {
+            get
+            {
+                return _selectedProject;
+            }
+            set
+            {
+                _selectedProject = value;
+                Validate(nameof(SelectedProject), value);
+                OnPropertyChanged(nameof(SelectedProject));
+            }
+        }
+
+        Dictionary<string, List<string>> Erorrs = new Dictionary<string, List<string>>();
+        public bool HasErrors => Erorrs.Count > 0;
 
         public async void gettAllDataFromCard()
         {
@@ -194,8 +249,40 @@ namespace Praksa_projectV1.ViewModels
         {
             SelectedItem = null;
             SelectedDate = DateTime.Today;
+            Hours = null;
+            SelectedActivity = null;
+            SelectedProject = null;
 
         }
 
+        public IEnumerable GetErrors(string? propertyName)
+        {
+            if (Erorrs.ContainsKey(propertyName))
+            {
+                return Erorrs[propertyName];
+            }else
+            {
+                return Enumerable.Empty<string>();
+            }
+        }
+        public void Validate(string propertyName, object propertyValue)
+        {
+            var results = new List<ValidationResult>();
+            Validator.TryValidateProperty(propertyValue, new ValidationContext(this) { MemberName = propertyName}, results);
+
+            if(results.Any())
+            {
+                try { 
+                Erorrs.Add(propertyName, results.Select(r => r.ErrorMessage).ToList());
+                } catch { }
+
+                ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+            }else
+            {
+                Erorrs.Remove(propertyName);
+                ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
+            }
+
+        }
     }
 }

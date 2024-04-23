@@ -66,7 +66,7 @@ namespace Praksa_projectV1.ViewModels
                     TeamRecords.Remove(SelectedEmployee);
                     MessageBox.Show("Zaposlenik ukoljen sa projekta.");
                 }
-                SelectedNewEmployee = null;
+                SelectedEmployee = null;
             }
         }
 
@@ -316,43 +316,17 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(Type));
             }
         }
-        private string _hours;
-        public string Hours
+        private string _name;
+        public string Name
         {
             get
             {
-                return _hours;
+                return _name;
             }
             set
             {
-                _hours = value;
-                OnPropertyChanged(nameof(Hours));
-            }
-        }
-        private Activity _selectedActivity;
-        public Activity SelectedActivity
-        {
-            get
-            {
-                return _selectedActivity;
-            }
-            set
-            {
-                _selectedActivity = value;
-                OnPropertyChanged(nameof(SelectedActivity));
-            }
-        }
-        private Project _selectedProject;
-        public Project SelectedProject
-        {
-            get
-            {
-                return _selectedProject;
-            }
-            set
-            {
-                _selectedProject = value;
-                OnPropertyChanged(nameof(SelectedProject));
+                _name = value;
+                OnPropertyChanged("Name");
             }
         }
         private Enum _status;
@@ -604,7 +578,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
         private Employee _selectedNewEmployee;
-        public Employee? SelectedNewEmployee
+        public Employee SelectedNewEmployee
         {
             get { return _selectedNewEmployee; }
             set
