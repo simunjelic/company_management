@@ -316,17 +316,43 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(Type));
             }
         }
-        private string _name;
-        public string Name
+        private string _hours;
+        public string Hours
         {
             get
             {
-                return _name;
+                return _hours;
             }
             set
             {
-                _name = value;
-                OnPropertyChanged("Name");
+                _hours = value;
+                OnPropertyChanged(nameof(Hours));
+            }
+        }
+        private Activity _selectedActivity;
+        public Activity SelectedActivity
+        {
+            get
+            {
+                return _selectedActivity;
+            }
+            set
+            {
+                _selectedActivity = value;
+                OnPropertyChanged(nameof(SelectedActivity));
+            }
+        }
+        private Project _selectedProject;
+        public Project SelectedProject
+        {
+            get
+            {
+                return _selectedProject;
+            }
+            set
+            {
+                _selectedProject = value;
+                OnPropertyChanged(nameof(SelectedProject));
             }
         }
         private Enum _status;
