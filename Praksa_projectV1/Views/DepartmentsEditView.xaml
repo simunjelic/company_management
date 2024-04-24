@@ -11,48 +11,56 @@
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
     <Window.Visibility>
         <Binding Path="IsViewVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibility}" />
     </Window.Visibility>
     <Grid RenderTransformOrigin="0.52,0.583" Margin="0,0,0,-6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="19*"/>
+        </Grid.ColumnDefinitions>
 
 
-        <TextBox d:DataContext="{d:DesignInstance Type=viewmodels:DepartmentsViewModel}" Height="30" Text="{Binding Id,Mode=TwoWay}" Width="200" Margin="25,50" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="1" BorderBrush="#E0E0E0" Visibility="Hidden"/>
+        <TextBox d:DataContext="{d:DesignInstance Type=viewmodels:DepartmentsViewModel}" Height="30" Text="{Binding Id,Mode=TwoWay}" Width="200" Margin="25,50,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0" Visibility="Hidden" Grid.ColumnSpan="2"/>
 
 
-        <Label Content="Name" Margin="25" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="left"/>
-        <TextBox  Height="30" Text="{Binding Name}" Width="200" Margin="25,50" 
-                  VerticalAlignment="Top" 
-                  HorizontalAlignment="left" 
+        <Label Content="Ime" Margin="25,25,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <TextBox  Height="30" Text="{Binding Name}" Width="200" Margin="25,50,0,0" 
+                  VerticalAlignment="Top"
+                  ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
+                  HorizontalAlignment="Left" 
                   BorderThickness="0,0,0,2"
                   BorderBrush="#E0E0E0"
                   FontWeight="Medium"
                  FontFamily="Montserrat"
                   Background="Transparent"
-                  Foreground="White"
+                  Foreground="White" Grid.ColumnSpan="2"
                   >
-                 
+
 
         </TextBox>
 
-        <Label Content="Parent department" Margin="25,100" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="left"/>
-        <ComboBox Height="30" Width="200"  Margin="25,125" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
+        <Label Content="Nadređeni odjel" Margin="25,100,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left" Grid.ColumnSpan="2"/>
+        <ComboBox Height="30" Width="200"  Margin="25,125,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
               ItemsSource="{Binding Path=DepartmentRecords}"   
               SelectedItem="{Binding Path=SelectedDepartment}"  
-                DisplayMemberPath="Name"/>
+                DisplayMemberPath="Name" Grid.ColumnSpan="2"/>
 
 
 
-        <Button Height="30" Command="{Binding UpdateDepartmentCommand}" Content="Update" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="125,205,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Height="30" Command="{Binding UpdateDepartmentCommand}" Content="Update" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="95,205,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
                     FontFamily="Montserrat"
             Cursor="Hand"
           Foreground="White"
+         Visibility="{Binding IsAddUpdateVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Column="1"
+
             >
 
             <Button.Style>
                 <Style TargetType="Button">
-                    <Setter Property="Background" Value="#773DFF"/>
+                    <Setter Property="Background" Value="orange"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="Button">
@@ -73,10 +81,11 @@
                 </Style>
             </Button.Style>
         </Button>
-        <Button Command="{Binding AddDepartmentCommand}" Content="Add" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="25,205,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Command="{Binding AddDepartmentCommand}" Content="Dodaj" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="95,205,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
             FontFamily="Montserrat"
     Cursor="Hand"
   Foreground="White" RenderTransformOrigin="0.497,0.085" Height="30" VerticalAlignment="Top"
+                Visibility="{Binding IsAddButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Grid.Column="1"
     >
 
             <Button.Style>

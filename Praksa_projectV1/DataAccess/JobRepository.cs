@@ -52,7 +52,7 @@ namespace Praksa_projectV1.DataAccess
 
             }
         }
-        public void RemoveJob(int Id)
+        public bool RemoveJob(int Id)
         {
             try { 
             using (jobContext = new Context())
@@ -62,10 +62,11 @@ namespace Praksa_projectV1.DataAccess
                 if (jobToDelete != null)
                 jobContext.Jobs.Remove(jobToDelete);
                 jobContext.SaveChanges();
+                    return true;
             }
             }catch(Exception ex)
             {
-                MessageBox.Show("Nije moguće izbrisati, posao povezan sa drugim poljima.");
+                return false;
             }
         }
         public Job GetJob(int Id)

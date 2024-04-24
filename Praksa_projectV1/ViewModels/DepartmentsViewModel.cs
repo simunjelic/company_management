@@ -4,6 +4,7 @@ using Praksa_projectV1.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -36,10 +37,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanUpdateDepartmentCommand(object obj)
         {
-            if (string.IsNullOrEmpty(Name))
-            {
-                return false;
-            }else return true;
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
         private void UpdateDepartment(object obj)
@@ -85,7 +83,9 @@ namespace Praksa_projectV1.ViewModels
                 Name = department.Name;
                 this.Id = Id;
                 DepartmentsEditView view = new DepartmentsEditView();
-                view.Title = "Update department";
+                _isUpdateButtonVisible = true;
+                _isAddButtonVisible = false;
+                view.Title = "Uredi odjel.";
                 view.DataContext = this;
                 view.Show();
             }
@@ -93,13 +93,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanAddDepartment(object obj)
         {
-            if(!string.IsNullOrEmpty(Name))
-            {
-                return true;
-            }else
-            {
-                return false;
-            }
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
         private void AddDepartment(object obj)
@@ -133,6 +127,8 @@ namespace Praksa_projectV1.ViewModels
             DepartmentsEditView view = new DepartmentsEditView();
             view.Title = "Add new department";
             ResetData();
+            _isUpdateButtonVisible = false;
+            _isAddButtonVisible = true;
             view.DataContext = this;
             view.Show();
         }
@@ -170,8 +166,10 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(Id));
             }
         }
+        
         private string _name;
-        public string Name
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
+        public string? Name
         {
             get
             {
@@ -180,6 +178,7 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _name = value;
+                Validate(nameof(Name), value);
                 OnPropertyChanged("Name");
             }
         }
@@ -198,7 +197,7 @@ namespace Praksa_projectV1.ViewModels
         }
         private Department _selectedDepartment;
 
-        public Department SelectedDepartment
+        public Department? SelectedDepartment
         {
             get
             {
@@ -251,9 +250,37 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(ErrorMessage));
             }
         }
-   
+        private bool _isUpdateButtonVisible = true; // Initially visible
 
-    public void GetAllDepartments()
+        public bool IsUpdateButtonVisible
+        {
+            get { return _isUpdateButtonVisible; }
+            set
+            {
+                if (_isUpdateButtonVisible != value)
+                {
+                    _isUpdateButtonVisible = value;
+                    OnPropertyChanged(nameof(IsUpdateButtonVisible)); // Notify property changed
+                }
+            }
+        }
+        private bool _isAddButtonVisible = true; // Initially visible
+
+        public bool IsAddButtonVisible
+        {
+            get { return _isAddButtonVisible; }
+            set
+            {
+                if (_isAddButtonVisible != value)
+                {
+                    _isAddButtonVisible = value;
+                    OnPropertyChanged(nameof(IsAddButtonVisible)); // Notify property changed
+                }
+            }
+        }
+
+
+        public void GetAllDepartments()
         {
             var departments = departmentRepository.GetAllDepartments();
             foreach (var department in departments)
@@ -267,7 +294,7 @@ namespace Praksa_projectV1.ViewModels
         }
         public void ResetData()
         {
-            Name = string.Empty;
+            Name = null;
             SelectedDepartment = null;
         }
     }

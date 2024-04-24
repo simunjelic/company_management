@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
@@ -23,7 +24,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand AddjobCommand { get; }
         public ICommand DeleteJobCommand { get; }
         public ICommand UpdateJobCommand { get; }
-        public UpdateJobViewModel updateJobViewModel;
+        public ICommand EditJobCommand { get; }
 
 
 
@@ -34,22 +35,64 @@ namespace Praksa_projectV1.ViewModels
             ShowWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
             AddjobCommand = new ViewModelCommand(AddJob, CanAddJob);
             DeleteJobCommand = new ViewModelCommand(DeleteJob, CanDeleteJob);
-            UpdateJobCommand = new ViewModelCommand(UpdateJob, CanUpdateJob);
+            UpdateJobCommand = new ViewModelCommand(ShowEditJob, CanShowEditJob);
+            EditJobCommand = new ViewModelCommand(EditJob, CanEditJob);
             GetAll();
             GetAllDepartments();
+            ResetData();
+            
         }
 
-        private bool CanUpdateJob(object obj)
+        private bool CanEditJob(object obj)
+        {
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
+        }
+
+        private void EditJob(object obj)
+        {
+            Job updateJob = new Job();
+
+            updateJob.Name = AddName;
+            updateJob.DepartmentId = SelectedDepartment.Id;
+            updateJob.Id = Id;
+            var progress = false;
+
+            MessageBoxResult result = MessageBox.Show("Jeste li sigurni da želite spramiti promjene?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                progress = repository.updateJob(updateJob);
+            }
+
+
+            if (progress == true)
+            {
+                string message = "Success! Name changed to: " + AddName;
+
+                MessageBox.Show(message);
+                _isViewVisible = false;
+                GetAll();
+                ResetData();
+            }
+            updateJob = null;
+        }
+
+        private bool CanShowEditJob(object obj)
         {
             return true;
         }
 
-        private void UpdateJob(object obj)
+        private void ShowEditJob(object obj)
         {
-            if(obj is int Id)
+            if(obj is int id)
             {
-                updateJobViewModel = new UpdateJobViewModel();
-                updateJobViewModel.ShowWindow(Id);
+                Job job = repository.GetJob(id);
+                Id = id;
+                AddName = job.Name;
+                SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == job.DepartmentId).Single();
+                UpdateJobView update = new UpdateJobView();
+                update.DataContext = this;
+                _isViewVisible = true;
+                update.Show();
                 GetAll();
 
             }
@@ -67,8 +110,17 @@ namespace Praksa_projectV1.ViewModels
 
             if (obj is int Id && result == MessageBoxResult.Yes)
             {
-                repository.RemoveJob(Id);
-                JobRecords.Remove(JobRecords.Where(x => x.Id == Id).Single());
+                bool check = repository.RemoveJob(Id);
+                if (check)
+                {
+                    MessageBox.Show("Posao obrisan.");
+                    JobRecords.Remove(JobRecords.Where(x => x.Id == Id).Single());
+                }
+                else
+                {
+                    MessageBox.Show("Nije moguće izbrisati, posao povezan sa drugim poljima.");
+                }
+                
             }
 
             
@@ -77,9 +129,8 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanAddJob(object obj)
         {
-            if(AddName != null && SelectedDepartment != null)
-            return true;
-            else return false;
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
+            
         }
 
         private void AddJob(object obj)
@@ -96,7 +147,9 @@ namespace Praksa_projectV1.ViewModels
             {
 
                 MessageBox.Show("New record successfully saved.");
-                IsViewVisible = false;JobRecords.Add(newJob);
+                ResetData();
+                IsViewVisible = false;
+                GetAll();
             }
             else
             {
@@ -119,6 +172,8 @@ namespace Praksa_projectV1.ViewModels
         {
             AddJobView addJobView = new AddJobView();
             addJobView.DataContext = this;
+            _isViewVisible = true;
+            ResetData();
             addJobView.Show();
         }
 
@@ -148,7 +203,9 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged("Name");
             }
         }
+        
         private string _addName;
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public string AddName
         {
             get
@@ -158,11 +215,12 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _addName = value;
+                Validate(nameof(AddName), value);
                 OnPropertyChanged("AddName");
             }
         }
         private Department _selectedDepartment;
-
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public Department SelectedDepartment
         {
             get
@@ -172,6 +230,7 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _selectedDepartment = value;
+                Validate(nameof(SelectedDepartment), value);
                 OnPropertyChanged("SelectedDepartment");
             }
 
@@ -230,8 +289,13 @@ namespace Praksa_projectV1.ViewModels
             DepartmentRecords = new ObservableCollection<Department>(departmentRepository.GetAllDepartments());
 
         }
+        private void ResetData()
+        {
+            AddName = null;
+            SelectedDepartment = null;
+        }
 
-        
+
 
     }
 

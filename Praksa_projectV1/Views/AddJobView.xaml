@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Praksa_projectV1.Views" xmlns:viewmodels="clr-namespace:Praksa_projectV1.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:JobsViewModel}"
+        xmlns:local="clr-namespace:Praksa_projectV1.Views" 
+        xmlns:viewmodels="clr-namespace:Praksa_projectV1.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:JobsViewModel}"
         mc:Ignorable="d"
-        Title="Add Job" Height="350" Width="300"
+        Title="Dodaj novi posao" Height="350" Width="300"
         Background="#17345C"
         Foreground="White"
         WindowStartupLocation="CenterScreen">
@@ -18,16 +19,19 @@
     </Window.Visibility>
     <Grid>
 
-        <Label Content="Name" Margin="25" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="left"/>
-        <TextBox  Height="30" Text="{Binding AddName}" Width="200" Margin="25,50" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="1" BorderBrush="#E0E0E0" />
+        <Label Content="Ime" Margin="25" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="left"/>
+        <TextBox  Height="30" Text="{Binding AddName}" 
+                  ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
+                  Width="200" Margin="25,50" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="1" BorderBrush="#E0E0E0" />
 
-        <Label Content="Department" Margin="25,100" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="left"/>
+        <Label Content="Odjel" Margin="25,100" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="left"/>
         <ComboBox Height="30" Width="200"  Margin="25,125" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="1" BorderBrush="#E0E0E0"
                   ItemsSource="{Binding Path=DepartmentRecords}"   
                   SelectedItem="{Binding Path=SelectedDepartment}"  
+                  ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
                     DisplayMemberPath="Name"/>
 
-        <Button Height="30" Command="{Binding AddjobCommand}" Content="Add" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="25" VerticalAlignment="Bottom" HorizontalAlignment="Right" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Height="30" Command="{Binding AddjobCommand}" Content="Dodaj" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="25" VerticalAlignment="Bottom" HorizontalAlignment="Right" BorderThickness="1" BorderBrush="#E0E0E0"  
                         FontFamily="Montserrat"
                 Cursor="Hand"
               Foreground="White"

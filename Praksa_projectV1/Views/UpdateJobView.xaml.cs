@@ -23,7 +23,7 @@ namespace Praksa_projectV1.Views
         public UpdateJobView()
         {
             InitializeComponent();
-            UpdateJobViewModel viewModel = new UpdateJobViewModel();
+            JobsViewModel viewModel = new JobsViewModel();
             DataContext = viewModel;
 
         }

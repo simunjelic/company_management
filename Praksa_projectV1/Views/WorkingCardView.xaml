@@ -246,7 +246,7 @@ VerticalAlignment="Top">
         </Grid>
         <Border Grid.Row="1"
     Background="#17345C"
-    CornerRadius="10" 
+    CornerRadius="10 10, 10,0" 
     Padding="10">
             <DataGrid ColumnWidth="*"
               ItemsSource="{Binding CardRecords,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

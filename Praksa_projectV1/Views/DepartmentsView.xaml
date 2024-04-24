@@ -36,7 +36,7 @@
             </StackPanel>
             <Button Grid.Column="1"
                     Command="{Binding ShowWindowCommand}"                            
-                    Content="Add"                            
+                    Content="Dodaj"                            
                     FontSize="12"
                     FontFamily="Montserrat"
                     Cursor="Hand"
@@ -103,14 +103,14 @@
                 </DataGrid.RowStyle>
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Path=Id}"  Header="ID" HeaderStringFormat=""/>
-                    <DataGridTextColumn Binding="{Binding Path=Name}"  Header="Name"/>
-                    <DataGridTextColumn Binding="{Binding Path=ParentDepartment.Name}"  Header="Parent department"/>
+                    <DataGridTextColumn Binding="{Binding Path=Id}"  Header="Šifra" HeaderStringFormat=""/>
+                    <DataGridTextColumn Binding="{Binding Path=Name}"  Header="Naziv"/>
+                    <DataGridTextColumn Binding="{Binding Path=ParentDepartment.Name}"  Header="Nadređeni odjel"/>
                     <!-- Update Button column -->
-                    <DataGridTemplateColumn Header="Update">
+                    <DataGridTemplateColumn Header="Uredi">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Update" Command="{Binding DataContext.ShowUpdateWindowCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Id}" >
+                                <Button Content="Uredi" Command="{Binding DataContext.ShowUpdateWindowCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Id}" >
                                     <Button.Style>
                                         <Style TargetType="Button">
                                             <Setter Property="Background" Value="orange"/>
@@ -134,10 +134,10 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <!-- Delete Button column -->
-                    <DataGridTemplateColumn Header="Delete">
+                    <DataGridTemplateColumn Header="Obriši">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Delete" Command="{Binding DataContext.DeleteDepartmentCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Id}" >
+                                <Button Content="Obriši" Command="{Binding DataContext.DeleteDepartmentCommand, RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding Id}" >
                                     <Button.Style>
                                         <Style TargetType="Button">
                                             <Setter Property="Background" Value="#EF6C96"/>
