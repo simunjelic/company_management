@@ -104,9 +104,9 @@
                 <Button Command="{Binding RefreshDateCommand}" VerticalAlignment="Center" Margin="5">
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Background" Value="White"/>
-                            <Setter Property="Foreground" Value="Black"/>
-                            <Setter Property="BorderBrush" Value="Wheat"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="BorderBrush" Value="White"/>
                             <Setter Property="BorderThickness" Value="1"/>
                             <Setter Property="Padding" Value="5"/>
                             <Setter Property="Template">
@@ -121,13 +121,13 @@
                                                 <!-- Font Awesome icon -->
                                                 <fa:IconImage Icon="ArrowLeftRotate" Foreground="{TemplateBinding Foreground}" Width="15" Margin="0,5,0,0"/>
                                                 <!-- Text -->
-                                                <TextBlock Text="Osvježi" Background="Transparent" Foreground="{TemplateBinding Foreground}" FontSize="8" Margin="2"/>
+                                                <TextBlock Text="Osvježi" Background="Transparent" Foreground="{TemplateBinding Foreground}" FontSize="10" Margin="2"/>
                                             </StackPanel>
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <!-- Trigger to change background color on mouse over -->
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="border" Property="Background" Value="Wheat"/>
+                                                <Setter TargetName="border" Property="Background" Value="Gray"/>
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>

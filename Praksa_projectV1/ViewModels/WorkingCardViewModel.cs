@@ -31,7 +31,28 @@ namespace Praksa_projectV1.ViewModels
 
         public WorkingCardViewModel()
         {
-            cardRespository = new();
+            // Access StartDate and EndDate from Application resources
+            if (Application.Current.Resources["StartDate"] is DateTime startDate)
+            {
+                StartDate = startDate;
+            }
+            else
+            {
+                // Handle case where StartDate resource is not found
+                StartDate = DateTime.Today.AddMonths(-1);
+            }
+
+            if (Application.Current.Resources["EndDate"] is DateTime endDate)
+            {
+                EndDate = endDate;
+            }
+            else
+            {
+                // Handle case where EndDate resource is not found
+                EndDate = DateTime.Today;
+            }
+        
+        cardRespository = new();
             userRepository = new();
             gettAllDataFromCard();
             DeleteCommand = new ViewModelCommand(Delete, CanDelete);
@@ -54,6 +75,8 @@ namespace Praksa_projectV1.ViewModels
 
         private async void RefreshDate(object obj)
         {
+            Application.Current.Resources["StartDate"] = StartDate;
+            Application.Current.Resources["EndDate"] = EndDate;
             var card = await cardRespository.GetByStartAndEndDate(new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day), new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day));
             card = card.OrderByDescending(c => c.Date);
             CardRecords = new ObservableCollection<WorkingCard>(card);
