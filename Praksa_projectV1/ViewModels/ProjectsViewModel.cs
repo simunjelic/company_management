@@ -5,6 +5,7 @@ using Praksa_projectV1.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -117,7 +118,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanUpdateProject(object obj)
         {
-            return true;
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
         private async void UpdateProject(object obj)
@@ -136,7 +137,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanAddProject(object obj)
         {
-            return true;
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
         private void AddProject(object obj)
@@ -208,7 +209,7 @@ namespace Praksa_projectV1.ViewModels
 
         private async void Delete(object obj)
         {
-            var result = MessageBox.Show("Are you sure you want to delete this Project with name: " + SelectedItem.Name + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovaj projekt: " + SelectedItem.Name + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
@@ -317,6 +318,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
         private string _name;
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public string Name
         {
             get
@@ -326,6 +328,7 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _name = value;
+                Validate(nameof(Name), value);
                 OnPropertyChanged("Name");
             }
         }

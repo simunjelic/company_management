@@ -83,12 +83,12 @@ namespace Praksa_projectV1.DataAccess
                 {
                     _context.Projects.Update(project);
                     await _context.SaveChangesAsync();
-                    MessageBox.Show("Project updated successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Projekt je uspješno ažuriran.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error updating project: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Pogreška pri ažuriranju projekta {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         public async Task<Project> GetProjectByIdAsync(int projectId)
@@ -105,7 +105,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error getting project: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Greška pri dohvaćanju projekta: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null; // Or throw the exception if you want to handle it differently
             }
         }

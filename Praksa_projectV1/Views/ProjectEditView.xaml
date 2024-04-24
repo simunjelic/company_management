@@ -40,6 +40,7 @@
                FontFamily="Montserrat"
                 Background="Transparent"
                 Foreground="White"
+                ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
                 >
         </TextBox>
         <Label Content="" Margin="25,80,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Praksa_projectV1.Views" xmlns:viewmodels="clr-namespace:Praksa_projectV1.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:WorkersViewModel}"
         mc:Ignorable="d"
-        Title="Department" Height="450" Width="500"
+        Title="Zaposlenik" Height="450" Width="500"
 Background="#17345C"
 Foreground="White"
 WindowStartupLocation="CenterScreen">
@@ -20,7 +20,7 @@ WindowStartupLocation="CenterScreen">
         <TextBox d:DataContext="{d:DesignInstance Type=viewmodels:WorkersViewModel}" Height="30" Text="{Binding Id,Mode=TwoWay}" Width="200" Margin="25,50" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="1" BorderBrush="#E0E0E0" Visibility="Hidden"/>
 
 
-        <Label Content="Name" Margin="21,24,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Ime" Margin="21,24,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <TextBox  Height="30" Text="{Binding Name}" Width="200" Margin="25,50" 
                 VerticalAlignment="Top" 
                 HorizontalAlignment="left" 
@@ -30,9 +30,10 @@ WindowStartupLocation="CenterScreen">
                FontFamily="Montserrat"
                 Background="Transparent"
                 Foreground="White"
+                ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
                 >
         </TextBox>
-        <Label Content="Surname" Margin="25,80,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Prezime" Margin="25,80,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
 
         <TextBox  Height="30" Text="{Binding Surname}" Width="200" Margin="25,106,0,0" 
         VerticalAlignment="Top" 
@@ -43,30 +44,32 @@ WindowStartupLocation="CenterScreen">
        FontFamily="Montserrat"
         Background="Transparent"
         Foreground="White" 
+        ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
         >
 
 
         </TextBox>
 
-        <Label Content="User" Margin="25,136,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Korisnik" Margin="25,136,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <ComboBox Height="30" Width="200"  Margin="25,162,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
             ItemsSource="{Binding Path=UsersRecords}"   
             SelectedItem="{Binding Path=SelectedUser}"  
+            ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
               DisplayMemberPath="Username"/>
 
-        <Label Content="Department" Margin="21,197,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Odjel" Margin="21,197,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <ComboBox Height="30" Width="200"  Margin="25,226,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
       ItemsSource="{Binding Path=DepartmentRecords}"   
       SelectedItem="{Binding Path=SelectedDepartment}"  
         DisplayMemberPath="Name"/>
 
-        <Label Content="Job" Margin="25,261,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Radno mjesto" Margin="25,261,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <ComboBox Height="30" Width="200"  Margin="25,291,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
 ItemsSource="{Binding Path=JobRecords}"   
 SelectedItem="{Binding Path=SelectedJob}"  
   DisplayMemberPath="Name"/>
 
-        <Label Content="Birthday" Margin="250,261,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Datum rođenja" Margin="250,261,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
 
         <DatePicker SelectedDate="{Binding SelectedDate, Mode=TwoWay}" Height="30" Width="200" Margin="250,292,0,0" VerticalAlignment="Top" HorizontalAlignment="Left"/>
 
@@ -84,7 +87,7 @@ SelectedItem="{Binding Path=SelectedJob}"
         >
         </TextBox>
 
-        <Label Content="Address" Margin="250,80,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Adresa" Margin="250,80,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <TextBox  Height="30" Text="{Binding Address}" Width="200" Margin="250,106,0,0" 
  VerticalAlignment="Top" 
  HorizontalAlignment="Left" 
@@ -107,9 +110,11 @@ FontFamily="Montserrat"
 FontFamily="Montserrat"
  Background="Transparent"
  Foreground="White"
+                   ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
+       
  >
         </TextBox>
-        <Label Content="Phone" Margin="250,200,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Broj mobitela" Margin="250,200,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <TextBox  Height="30" Text="{Binding Phone}" Width="200" Margin="250,226,0,0" 
  VerticalAlignment="Top" 
  HorizontalAlignment="Left" 
@@ -125,7 +130,7 @@ FontFamily="Montserrat"
 
 
 
-        <Button Height="30" Command="{Binding UpdateEmployeeCommand}" Content="Update" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,361,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Height="30" Command="{Binding UpdateEmployeeCommand}" Content="Uredi" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,361,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
                   FontFamily="Montserrat"
           Cursor="Hand"
         Foreground="White"
@@ -155,7 +160,7 @@ FontFamily="Montserrat"
                 </Style>
             </Button.Style>
         </Button>
-        <Button Command="{Binding AddEmployeeCommand}" Content="Add" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,361,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Command="{Binding AddEmployeeCommand}" Content="Dodaj" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="380,361,0,0" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
           FontFamily="Montserrat"
   Cursor="Hand"
 Foreground="White" RenderTransformOrigin="0.497,0.085" Height="30" VerticalAlignment="Top"

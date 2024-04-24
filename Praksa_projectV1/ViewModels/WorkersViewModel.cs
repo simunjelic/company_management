@@ -5,6 +5,7 @@ using Praksa_projectV1.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -46,7 +47,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanUpdateEmployee(object obj)
         {
-            if (SelectedItem != null)
+            if (SelectedItem != null && Validator.TryValidateObject(this, new ValidationContext(this), null))
                 return true;
             return false;
         }
@@ -122,7 +123,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanAddEmployee(object obj)
         {
-            return true;
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
         private void AddEmployee(object obj)
@@ -179,24 +180,24 @@ namespace Praksa_projectV1.ViewModels
         {
             if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Surname))
             {
-                MessageBox.Show("Enter name or surname");
+                MessageBox.Show("Unesi ime i prezime.");
                 return false;
             }
             if(SelectedUser == null) {
-                MessageBox.Show("Enter user");
+                MessageBox.Show("Unesi korisnika.");
                 return false;
             }
             if(Jmbg != null)
             {
                
                 if (Jmbg.ToString().Length != 13) { 
-                MessageBox.Show("JMBG must contain 13 numbers");
+                MessageBox.Show("Nesipravan oblik JMBG-a.");
                 return false;
                 }
             }
             if(!string.IsNullOrEmpty(Email) && !Email.Contains("@"))
             {
-                MessageBox.Show("Email must contain @");
+                MessageBox.Show("Neisparvan oblik emaila.");
                 return false;
             }
             TimeSpan age = DateTime.Today - SelectedDate;
@@ -204,12 +205,12 @@ namespace Praksa_projectV1.ViewModels
             // Check if the age is outside the specified range
             if (age.TotalDays < 3650) // Less than 10 years (3650 days)
             {
-                MessageBox.Show("Selected date should be older than 10 years.");
+                MessageBox.Show("Odabrani datum rođenja mora biti stariji od 10 godina.");
                 return false;
             }
             else if (age.TotalDays > 36500) // More than 100 years (36500 days)
             {
-                MessageBox.Show("Selected date should be younger than 100 years.");
+                MessageBox.Show("Odabrani datum rođenja mora biti mlađi od 100 godina.");
                 return false;
             }
             
@@ -226,7 +227,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void Delete(object obj)
         {
-            var result = MessageBox.Show("Are you sure you want to delete this Employee with name: "+SelectedItem.Name +" "+SelectedItem.Surname+"?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovog zaposlenika s imenom: " + SelectedItem.Name +" "+SelectedItem.Surname+"?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if(result == MessageBoxResult.Yes)
             {
                 EmpolyeeRepository.DeleteById(SelectedItem.Id);
@@ -274,6 +275,7 @@ namespace Praksa_projectV1.ViewModels
         }
 
         private string _name;
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public string Name
         {
             get
@@ -283,10 +285,12 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _name = value;
+                Validate(nameof(Name), value);
                 OnPropertyChanged("Name");
             }
         }
         private string _surname;
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public string Surname
         {
             get
@@ -296,6 +300,7 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _surname = value;
+                Validate(nameof(Surname), value);
                 OnPropertyChanged("Surname");
             }
         }
@@ -326,6 +331,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
         private string _email;
+        [RegularExpression(@"^[a-zA-Z''-'\s]{1,40}$", ErrorMessage = "Neisparvan format email adrese.")]
         public string Email
         {
             get
@@ -335,6 +341,7 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _email = value;
+                Validate(nameof(Email), value);
                 OnPropertyChanged("Email");
             }
         }
@@ -399,6 +406,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
         private User _selectedUser;
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public User? SelectedUser
         {
             get { return _selectedUser; }
@@ -407,6 +415,7 @@ namespace Praksa_projectV1.ViewModels
                 if (_selectedUser != value)
                 {
                     _selectedUser = value;
+                    Validate(nameof(SelectedUser), value);
                     OnPropertyChanged(nameof(SelectedUser));
                 }
             }
