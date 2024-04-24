@@ -42,7 +42,7 @@ WindowStartupLocation="CenterScreen">
         FontWeight="Medium"
        FontFamily="Montserrat"
         Background="Transparent"
-        Foreground="White" TextChanged="TextBox_TextChanged"
+        Foreground="White" 
         >
 
 
