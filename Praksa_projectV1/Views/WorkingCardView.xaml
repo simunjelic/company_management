@@ -9,7 +9,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
-            <RowDefinition/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="150"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -286,6 +287,57 @@ VerticalAlignment="Top">
                     <DataGridTextColumn Binding="{Binding Path=Activity.Name}"  Header="Aktivnost"/>
                     <DataGridTextColumn Binding="{Binding Path=Description}"  Header="Opis"/>
                    
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+        <Border Grid.Row="2"
+           Background="#17345C" 
+            Padding="10"
+                Width="250"
+                HorizontalAlignment="Left">
+            <DataGrid ColumnWidth="*"
+          ItemsSource="{Binding HoursByMonth,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+  Background="#17345C"
+  BorderThickness="0"
+          IsReadOnly="True"
+          AutoGenerateColumns="False"
+              GridLinesVisibility="None"
+                  RowHeaderWidth="0">
+
+
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value="#BCBEE0"/>
+                        <Setter Property="Padding" Value="10,0,0,10"/>
+                        <Setter Property="FontFamily" Value="Montserrat"/>
+                        <Setter Property="FontSize" Value="15"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                    </Style>
+
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.RowStyle>
+                    <!-- Set background color for each row -->
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value="#BCBEE0"/>
+                        <Setter Property="Padding" Value="10,0,0,10"/>
+                        <Setter Property="FontFamily" Value="Montserrat"/>
+                        <Setter Property="FontSize" Value="15"/>
+
+                        <Setter Property="BorderThickness" Value="0 0 0 1"/>
+                        <Setter Property="BorderBrush" Value="#BCBEE0"/>
+
+                    </Style>
+                </DataGrid.RowStyle>
+                
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Path=Month}"  Header="Mjesec" Width="70"/>
+                    <DataGridTextColumn Binding="{Binding Path=Year}"  Header="Godina" Width="70"/>
+                    <DataGridTextColumn Binding="{Binding Path=TotalHoursWorked}"  Header="Sati" Width="70"/>
+                    
+
                 </DataGrid.Columns>
             </DataGrid>
         </Border>

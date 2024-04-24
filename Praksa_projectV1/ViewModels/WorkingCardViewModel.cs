@@ -77,9 +77,7 @@ namespace Praksa_projectV1.ViewModels
         {
             Application.Current.Resources["StartDate"] = StartDate;
             Application.Current.Resources["EndDate"] = EndDate;
-            var card = await cardRespository.GetByStartAndEndDate(new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day), new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day));
-            card = card.OrderByDescending(c => c.Date);
-            CardRecords = new ObservableCollection<WorkingCard>(card);
+            gettAllDataFromCard();
         }
 
         private bool CanUpdateRecord(object obj)
@@ -102,17 +100,7 @@ namespace Praksa_projectV1.ViewModels
             bool check = cardRespository.Edit(updateCard);
             if (check)
             {
-                int index = -1;
-                index = CardRecords.IndexOf(CardRecords.Where(x => x.Id == Id).Single());
-                CardRecords.RemoveAt(index);
-                var newCard = await cardRespository.FindByIdAsync(Id);
-                index = 0;
-                while (index < CardRecords.Count && CardRecords[index].Date >= newCard.Date)
-                {
-                    index++;
-                }
-                // Insert the new card record at the correct position
-                CardRecords.Insert(index, newCard);
+                gettAllDataFromCard();
 
                 ResetData();
                 MessageBox.Show("Podatak uspješno uređen.");
@@ -168,16 +156,7 @@ namespace Praksa_projectV1.ViewModels
             if (check)
             {
                 MessageBox.Show("Sati dodani.");
-                newCard.Activity = SelectedActivity;
-                newCard.Project = SelectedProject;
-                int index = 0;
-                // Find the correct index to insert the new card record
-                while (index < CardRecords.Count && CardRecords[index].Date >= newCard.Date)
-                {
-                    index++;
-                }
-                // Insert the new card record at the correct position
-                CardRecords.Insert(index, newCard);
+                gettAllDataFromCard();
                 ResetData();
             }
             else
@@ -432,12 +411,29 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(SelectedProject));
             }
         }
+        private ObservableCollection<MonthlySummary> _hoursByMonth;
+
+        public ObservableCollection<MonthlySummary>? HoursByMonth
+        {
+            get
+            {
+                return _hoursByMonth;
+            }
+            set
+            {
+                _hoursByMonth = value;
+                
+                OnPropertyChanged(nameof(HoursByMonth));
+            }
+        }
 
 
 
         public async void gettAllDataFromCard()
         {
             var card =  await cardRespository.GetByStartAndEndDate(new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day), new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day));
+            var hours = await cardRespository.GetSummarizedDataByMonth(new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day), new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day));
+            HoursByMonth = new ObservableCollection<MonthlySummary>(hours);
             card = card.OrderByDescending(c => c.Date);
             CardRecords = new ObservableCollection<WorkingCard>(card);
 

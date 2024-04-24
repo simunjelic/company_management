@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Praksa_projectV1.DataAccess
 {
@@ -103,7 +104,7 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    return await  context.WorkingCards.Include(p => p.Project)
+                    return await context.WorkingCards.Include(p => p.Project)
                                   .Include(p => p.Activity)
                                   .Include(p => p.Employee).FirstOrDefaultAsync(i => i.Id == id);
                 }
@@ -181,6 +182,36 @@ namespace Praksa_projectV1.DataAccess
             catch (Exception ex)
             {
                 // Log or handle the exception as needed
+                return null;
+            }
+        }
+        public async Task<IEnumerable<MonthlySummary>> GetSummarizedDataByMonth(DateOnly startDate, DateOnly endDate)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    if (Thread.CurrentPrincipal?.Identity.Name != null)
+                    {
+                        var username = Thread.CurrentPrincipal?.Identity.Name.ToString();
+                        return await context.WorkingCards
+                .Where(p => p.Date >= startDate && p.Date <= endDate && p.Employee.User.Username == username)
+                .GroupBy(p => new { p.Date.Value.Year, p.Date.Value.Month })
+                .Select(g => new MonthlySummary
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    TotalHoursWorked = g.Sum(p => p.Hours ?? 0)
+                })
+                .OrderByDescending(g => g.Year)
+                .ThenByDescending(g => g.Month)
+                .ToListAsync();
+                    }
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
                 return null;
             }
         }
