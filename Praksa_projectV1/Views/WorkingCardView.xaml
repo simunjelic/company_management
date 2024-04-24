@@ -15,7 +15,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="100"/>
 
                 <ColumnDefinition Width="100"/>
 
@@ -24,24 +23,128 @@
             <StackPanel Orientation="Horizontal"
             VerticalAlignment="Top"
             Grid.Column="0">
-                <fa:IconImage Icon="Search" Height="20" Width="20" Foreground="{StaticResource plainTextColor3}"/>
-                <TextBox x:Name="searchBox" 
-                Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-        FontSize="13"
-             Height="24"
-               Width="300"
-               Background="Transparent"
-                 FontWeight="Medium"
-                 FontFamily="Montserrat"                            
-                 Foreground="{StaticResource plainTextColor3}"
-                 CaretBrush="{StaticResource plainTextColor3}"
-                 BorderBrush="{StaticResource plainTextColor3}"
-                 BorderThickness="0,0,0,1"                             
-                 VerticalContentAlignment="Center"
-                 Margin="5,5,0,0"></TextBox>
+                <Label  Content="Datum od: " FontSize="13" VerticalAlignment="Center"
+                        Foreground="{StaticResource plainTextColor3}"></Label>
+                <DatePicker x:Name="datePicker"
+            SelectedDate="{Binding StartDate}"
+                            ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
+            
+            FontSize="13"
+            Height="24"
+            Width="100"
+            Background="Transparent"
+            FontWeight="Medium"
+            FontFamily="Montserrat"
+            Foreground="{StaticResource plainTextColor3}"
+            BorderBrush="{StaticResource plainTextColor3}"
+            BorderThickness="0,0,0,1"
+            VerticalContentAlignment="Center"
+            Margin="0,5,0,0">
+                    <DatePicker.Resources>
+                        <Style TargetType="DatePickerTextBox">
+                            <Setter Property="Control.Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="DatePickerTextBox">
+                                        <TextBox x:Name="PART_TextBox"
+                                 Text="{Binding Path=SelectedDate, RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}, StringFormat='dd.MM.yy', UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="{TemplateBinding FontSize}"
+                                 FontFamily="{TemplateBinding FontFamily}"
+                                 FontWeight="{TemplateBinding FontWeight}"
+                                 Foreground="{TemplateBinding Foreground}"
+                                 Background="{TemplateBinding Background}"
+                                 BorderBrush="{TemplateBinding BorderBrush}"
+                                 BorderThickness="{TemplateBinding BorderThickness}"
+                                 VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                 Margin="{TemplateBinding Margin}"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DatePicker.Resources>
+                </DatePicker>
+
+                <Label  Content="Datum od: " FontSize="13" VerticalAlignment="Center"
+                Foreground="{StaticResource plainTextColor3}"></Label>
+                <DatePicker x:Name="datePicker2"
+            SelectedDate="{Binding EndDate}"
+                            ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
+            FontSize="13"
+            Height="24"
+            Width="100"
+            Background="Transparent"
+            FontWeight="Medium"
+            FontFamily="Montserrat"
+            Foreground="{StaticResource plainTextColor3}"
+            BorderBrush="{StaticResource plainTextColor3}"
+            BorderThickness="0,0,0,1"
+            VerticalContentAlignment="Center"
+            Margin="0,5,0,0">
+                    <DatePicker.Resources>
+                        <Style TargetType="DatePickerTextBox">
+                            <Setter Property="Control.Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="DatePickerTextBox">
+                                        <TextBox x:Name="PART_TextBox"
+                                 Text="{Binding Path=SelectedDate, RelativeSource={RelativeSource AncestorType={x:Type DatePicker}}, StringFormat='dd.MM.yy', UpdateSourceTrigger=PropertyChanged}"
+                                 FontSize="{TemplateBinding FontSize}"
+                                 FontFamily="{TemplateBinding FontFamily}"
+                                 FontWeight="{TemplateBinding FontWeight}"
+                                 Foreground="{TemplateBinding Foreground}"
+                                 Background="{TemplateBinding Background}"
+                                 BorderBrush="{TemplateBinding BorderBrush}"
+                                 BorderThickness="{TemplateBinding BorderThickness}"
+                                 VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                 Margin="{TemplateBinding Margin}"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DatePicker.Resources>
+                </DatePicker>
+                <Button Command="{Binding RefreshDateCommand}" VerticalAlignment="Center" Margin="5">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                            <Setter Property="BorderBrush" Value="Wheat"/>
+                            <Setter Property="BorderThickness" Value="1"/>
+                            <Setter Property="Padding" Value="5"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5">
+                                            <StackPanel Orientation="Vertical">
+                                                <!-- Font Awesome icon -->
+                                                <fa:IconImage Icon="ArrowLeftRotate" Foreground="{TemplateBinding Foreground}" Width="15" Margin="0,5,0,0"/>
+                                                <!-- Text -->
+                                                <TextBlock Text="Osvježi" Background="Transparent" Foreground="{TemplateBinding Foreground}" FontSize="8" Margin="2"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <!-- Trigger to change background color on mouse over -->
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="Background" Value="Wheat"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+
+
+
+
+
+
             </StackPanel>
             
-            <Button Grid.Column="2"
+            <Button Grid.Column="1"
                 Command="{Binding ShowAddWindowCommand}"                            
                 Content="Dodaj"                            
                 FontSize="12"
@@ -74,7 +177,7 @@
                     </Style>
                 </Button.Style>
             </Button>
-            <Button Grid.Column="3"
+            <Button Grid.Column="2"
         Command="{Binding ShowUpdateWindowCommand}"                            
         Content="Uredi"                            
         FontSize="12"
@@ -107,7 +210,7 @@ VerticalAlignment="Top">
                     </Style>
                 </Button.Style>
             </Button>
-            <Button Grid.Column="4"
+            <Button Grid.Column="3"
         Command="{Binding DeleteCommand}"                            
         Content="Obriši"                            
         FontSize="12"

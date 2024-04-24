@@ -144,5 +144,47 @@ namespace Praksa_projectV1.DataAccess
                 return null;
             }
         }
+
+        internal async Task<IEnumerable<WorkingCard>> GetByStartAndEndDate(DateOnly? startDate, DateOnly? endDate)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    if (Thread.CurrentPrincipal?.Identity.Name != null)
+                    {
+                        var username = Thread.CurrentPrincipal?.Identity.Name.ToString();
+
+                        var query = context.WorkingCards
+                                            .Include(p => p.Project)
+                                            .Include(p => p.Activity)
+                                            .Include(p => p.Employee)
+                                            .Where(p => p.Employee.User.Username == username);
+
+                        // Apply filters for startDate and endDate if provided
+                        if (startDate.HasValue)
+                        {
+                            query = query.Where(p => p.Date >= startDate.Value);
+                        }
+
+                        if (endDate.HasValue)
+                        {
+                            query = query.Where(p => p.Date <= endDate.Value);
+                        }
+
+                        return await query.ToListAsync();
+                    }
+                    return null;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                // Log or handle the exception as needed
+                return null;
+            }
+        }
+
+
     }
 }

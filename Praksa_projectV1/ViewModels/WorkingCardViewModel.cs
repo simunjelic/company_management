@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Primitives;
 using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
+using Praksa_projectV1.Validation;
 using Praksa_projectV1.Views;
 using System;
 using System.Collections;
@@ -26,6 +27,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand AddCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
         public ICommand UpdateCommand { get; }
+        public ICommand RefreshDateCommand { get; }
 
         public WorkingCardViewModel()
         {
@@ -37,9 +39,24 @@ namespace Praksa_projectV1.ViewModels
             AddCommand = new ViewModelCommand(Add, CanAdd);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             UpdateCommand = new ViewModelCommand(UpdateRecord, CanUpdateRecord);
+            RefreshDateCommand = new ViewModelCommand(RefreshDate, CanRefreshDate);
             gettAllProjectsAndActivities();
 
 
+        }
+
+        private bool CanRefreshDate(object obj)
+        {
+            if (StartDate <= EndDate) return true;
+            return false;
+
+        }
+
+        private async void RefreshDate(object obj)
+        {
+            var card = await cardRespository.GetByStartAndEndDate(new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day), new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day));
+            card = card.OrderByDescending(c => c.Date);
+            CardRecords = new ObservableCollection<WorkingCard>(card);
         }
 
         private bool CanUpdateRecord(object obj)
@@ -297,6 +314,34 @@ namespace Praksa_projectV1.ViewModels
                 }
             }
         }
+        private DateTime? _startDate = DateTime.Today.AddMonths(-1);
+        [StartDateBeforeEndDate("EndDate", ErrorMessage = "Datum od mora biti prije datuma do.")]
+        public DateTime? StartDate
+        {
+            get { return _startDate; }
+            set
+            {
+                
+                    _startDate = value;
+                Validate(nameof(StartDate), value);
+                OnPropertyChanged(nameof(StartDate));
+                
+            }
+        }
+        private DateTime? _endDate = DateTime.Today;
+        [EndDateAfterStartDate("StartDate", ErrorMessage = "Datum od mora biti prije datuma do.")]
+        public DateTime? EndDate
+        {
+            get { return _endDate; }
+            set
+            {
+
+                _endDate = value;
+                Validate(nameof(EndDate), value);
+                OnPropertyChanged(nameof(EndDate));
+                
+            }
+        }
 
         private string _hours;
         [Required(ErrorMessage = "Polje ne može biti prazno.")]
@@ -369,7 +414,7 @@ namespace Praksa_projectV1.ViewModels
 
         public async void gettAllDataFromCard()
         {
-            var card = await cardRespository.GetAllData();
+            var card =  await cardRespository.GetByStartAndEndDate(new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day), new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day));
             card = card.OrderByDescending(c => c.Date);
             CardRecords = new ObservableCollection<WorkingCard>(card);
 
