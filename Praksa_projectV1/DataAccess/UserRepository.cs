@@ -2,6 +2,7 @@
 using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -92,6 +93,25 @@ namespace Praksa_projectV1.DataAccess
         public void update(User user)
         {
             throw new NotImplementedException();
+        }
+        public List<string> GetUserRoles(string username)
+        {
+            try { 
+            using (var dbContext = new Context())
+            {
+                    var roles = dbContext.Users
+              .Where(u => u.Username == username)
+              .SelectMany(u => u.UserRoles)
+              .Select(ur => ur.Role.RoleName)
+              .ToList();
+
+                    return roles;
+                }
+            } catch(Exception ex)
+            {
+                MessageBox.Show("GREŠKA");
+                return null;
+            }
         }
     }
 

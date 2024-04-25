@@ -6,6 +6,8 @@ using System.Security;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
@@ -91,14 +93,32 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteLoginCommand(object obj)
         {
+            try { 
             var isValidUser = userRepository.AuthenticateUser(new System.Net.NetworkCredential(Username, Password));
             if(isValidUser)
             {
-                Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(Username),null);
+                var list = userRepository.GetUserRoles(Username).ToList();
+                string[] array = new string[list.Count];
+                int index = 0;
+                foreach (string item in list)
+                {
+                    array[index++] = item;
+                   
+                }
+                // Create a new identity with the username and roles
+                var identity = new GenericIdentity(Username);
+                var principal = new GenericPrincipal(identity, array);
+
+                // Set the current principal
+                Thread.CurrentPrincipal = principal;
                 IsViewVisible = false;
             }else
             {
-                ErrorMessage = "*Invalid username or password";
+                ErrorMessage = "*Neispravno korisničko ime ili lozinka";
+            }
+            }catch (Exception e)
+            {
+                
             }
         }
     }
