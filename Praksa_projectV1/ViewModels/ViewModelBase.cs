@@ -6,12 +6,17 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using Praksa_projectV1.DataAccess;
+using System.Security.Principal;
+using Praksa_projectV1.Models;
 
 namespace Praksa_projectV1.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged, INotifyDataErrorInfo
     {
         public event PropertyChangedEventHandler? PropertyChanged;
+        public PermissonRepository PermissonRepository = new PermissonRepository();
+
 
         public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
         Dictionary<string, List<string>> Erorrs = new Dictionary<string, List<string>>();
@@ -53,6 +58,26 @@ namespace Praksa_projectV1.ViewModels
                 ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
             }
 
+        }
+
+        public bool CanRead(string modul)
+        {
+            var principal = Thread.CurrentPrincipal;
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+
+                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul);
+                if (permList != null)
+                {
+                    foreach (Permission permItem in permList)
+                    {
+                        if (principal.IsInRole(permItem.Role.RoleName))
+                            return true;
+                    }
+                }
+                else return false;
+            }
+            return false;
         }
     }
 }

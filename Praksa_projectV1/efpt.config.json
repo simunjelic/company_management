@@ -39,6 +39,14 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Module]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Permissions]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[project]",
          "ObjectType": 0
       },

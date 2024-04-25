@@ -5,13 +5,11 @@ using System.Collections.Generic;
 
 namespace Praksa_projectV1.Models;
 
-public partial class Role
+public partial class Module
 {
     public int Id { get; set; }
 
-    public string RoleName { get; set; }
+    public string Name { get; set; }
 
     public virtual ICollection<Permission> Permissions { get; set; } = new List<Permission>();
-
-    public virtual ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }

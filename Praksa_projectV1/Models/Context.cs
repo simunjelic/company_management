@@ -29,6 +29,10 @@ public partial class Context : DbContext
 
     public virtual DbSet<Location> Locations { get; set; }
 
+    public virtual DbSet<Module> Modules { get; set; }
+
+    public virtual DbSet<Permission> Permissions { get; set; }
+
     public virtual DbSet<Project> Projects { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
@@ -203,6 +207,36 @@ public partial class Context : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<Module>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Module__3213E83FC2546168");
+
+            entity.ToTable("Module");
+
+            entity.HasIndex(e => e.Name, "UQ__Module__72E12F1B9201C8BB").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(255)
+                .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<Permission>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Permissi__3214EC078BBA6080");
+
+            entity.Property(e => e.Action).HasMaxLength(10);
+
+            entity.HasOne(d => d.Module).WithMany(p => p.Permissions)
+                .HasForeignKey(d => d.ModuleId)
+                .HasConstraintName("FK_Module");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Permissions)
+                .HasForeignKey(d => d.RoleId)
+                .HasConstraintName("FK_Role");
         });
 
         modelBuilder.Entity<Project>(entity =>

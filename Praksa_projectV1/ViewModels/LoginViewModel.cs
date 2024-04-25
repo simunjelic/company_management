@@ -98,16 +98,16 @@ namespace Praksa_projectV1.ViewModels
             if(isValidUser)
             {
                 var list = userRepository.GetUserRoles(Username).ToList();
-                string[] array = new string[list.Count];
+                string[] roles = new string[list.Count];
                 int index = 0;
                 foreach (string item in list)
                 {
-                    array[index++] = item;
+                    roles[index++] = item;
                    
                 }
                 // Create a new identity with the username and roles
                 var identity = new GenericIdentity(Username);
-                var principal = new GenericPrincipal(identity, array);
+                var principal = new GenericPrincipal(identity, roles);
 
                 // Set the current principal
                 Thread.CurrentPrincipal = principal;

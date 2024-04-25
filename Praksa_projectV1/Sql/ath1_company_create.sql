@@ -114,6 +114,20 @@ ADD fullname AS (name + ' ' + surname);
 ALTER TABLE working_card
 ADD description VARCHAR(MAX);
 
+CREATE TABLE Module (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(255) NOT NULL UNIQUE
+);
+CREATE TABLE Permissions (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    ModuleId INT,
+    RoleId INT,
+    Action NVARCHAR(10) CHECK (Action IN ('Dodaj', 'Citaj', 'Uredi', 'Obrisi')),
+    CONSTRAINT FK_Module FOREIGN KEY (ModuleId) REFERENCES Module(Id),
+    CONSTRAINT FK_Role FOREIGN KEY (RoleId) REFERENCES roles(Id)
+);
+
+
 
 
 

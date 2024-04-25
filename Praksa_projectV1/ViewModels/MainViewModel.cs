@@ -11,6 +11,7 @@ using FontAwesome.Sharp;
 using System.Windows.Input;
 using System.Security.Principal;
 using System.Windows.Forms;
+using System.Windows.Controls;
 
 namespace Praksa_projectV1.ViewModels
 {
@@ -117,7 +118,7 @@ namespace Praksa_projectV1.ViewModels
                 bool isAdmin = genericPrincipal.IsInRole("Admin");
 
                 // Now isAdmin will be true if the user has the "Admin" role, otherwise false
-                if (isAdmin)
+                if (CanRead("Admin panel"))
                 {
                     CurrentChildView = new AdminPanelViewModel();
                     Caption = "Admin panel";
