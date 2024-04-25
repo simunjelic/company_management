@@ -226,7 +226,7 @@ public partial class Context : DbContext
 
         modelBuilder.Entity<Permission>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Permissi__3214EC078BBA6080");
+            entity.HasKey(e => e.Id).HasName("PK__Permissi__3214EC075132311F");
 
             entity.Property(e => e.Action).HasMaxLength(10);
 

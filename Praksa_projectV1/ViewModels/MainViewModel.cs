@@ -118,7 +118,7 @@ namespace Praksa_projectV1.ViewModels
                 bool isAdmin = genericPrincipal.IsInRole("Admin");
 
                 // Now isAdmin will be true if the user has the "Admin" role, otherwise false
-                if (CanRead("Admin panel"))
+                if (CanReadPermission("Admin panel"))
                 {
                     CurrentChildView = new AdminPanelViewModel();
                     Caption = "Admin panel";

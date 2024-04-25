@@ -60,13 +60,13 @@ namespace Praksa_projectV1.ViewModels
 
         }
 
-        public bool CanRead(string modul)
+        public bool CanReadPermission(string modul)
         {
             var principal = Thread.CurrentPrincipal;
             if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
             {
 
-                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul);
+                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul,"Citaj");
                 if (permList != null)
                 {
                     foreach (Permission permItem in permList)
@@ -78,6 +78,54 @@ namespace Praksa_projectV1.ViewModels
                 else return false;
             }
             return false;
+        }
+        public bool CanDeletePermission(string modul)
+        {
+            var principal = Thread.CurrentPrincipal;
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+
+                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul,"Obrisi");
+                if (permList != null)
+                {
+                    foreach (Permission permItem in permList)
+                    {
+                        if (principal.IsInRole(permItem.Role.RoleName))
+                            return true;
+                    }
+                }
+                else return false;
+            }
+            return false;
+        }
+
+        private bool _isUpdateButtonVisible = true; // Initially visible
+
+        public bool IsUpdateButtonVisible
+        {
+            get { return _isUpdateButtonVisible; }
+            set
+            {
+                if (_isUpdateButtonVisible != value)
+                {
+                    _isUpdateButtonVisible = value;
+                    OnPropertyChanged(nameof(IsUpdateButtonVisible)); // Notify property changed
+                }
+            }
+        }
+        private bool _isAddButtonVisible = true; // Initially visible
+
+        public bool IsAddButtonVisible
+        {
+            get { return _isAddButtonVisible; }
+            set
+            {
+                if (_isAddButtonVisible != value)
+                {
+                    _isAddButtonVisible = value;
+                    OnPropertyChanged(nameof(IsAddButtonVisible)); // Notify property changed
+                }
+            }
         }
     }
 }
