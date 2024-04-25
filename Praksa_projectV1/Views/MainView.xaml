@@ -33,6 +33,9 @@
         <DataTemplate DataType="{x:Type viewModel:WorkingCardViewModel}">
             <local:WorkingCardView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:AdminPanelViewModel}">
+            <local:AdminPanelView/>
+        </DataTemplate>
 
     </Window.Resources>
 
@@ -121,6 +124,15 @@
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="ClipboardCheck" Style="{StaticResource menuButtonIcon}"/>
                             <TextBlock Text="Radna karta" Style="{StaticResource menuButtonText}"/>
+                        </StackPanel>
+
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource menuButton}"
+                        Tag="{StaticResource color6}"
+                      Command="{Binding ShowAdminPanelViewCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconImage Icon="Lock" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Admin panel" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
 
                     </RadioButton>

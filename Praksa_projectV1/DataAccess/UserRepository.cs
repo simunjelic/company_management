@@ -59,24 +59,26 @@ namespace Praksa_projectV1.DataAccess
 
             }catch (Exception ex)
             {
-                return null;
                 MessageBox.Show("User not found");
+                return null;
+                
             }
         }
-        public async Task<Employee> getEmployeeByUsernameAsync(string username)
+        public Employee getEmployeeByUsername(string username)
         {
             try
             {
                 using (var dbContext = new Context())
                 {
-                    return await dbContext.Employees.FirstOrDefaultAsync(i => i.User.Username == username);
+                    return dbContext.Employees.FirstOrDefault(i => i.User.Username == username);
                 }
 
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return null;
-                MessageBox.Show("User not found");
+                
             }
         }
 

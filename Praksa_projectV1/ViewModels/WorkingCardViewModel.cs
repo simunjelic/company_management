@@ -148,21 +148,24 @@ namespace Praksa_projectV1.ViewModels
             newCard.Description = Description;
             newCard.Date = new DateOnly(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day);
             var username = Thread.CurrentPrincipal?.Identity.Name.ToString();
-            var employee = await userRepository.getEmployeeByUsernameAsync(username);
+            var employee = userRepository.getEmployeeByUsername(username);
             if (employee != null)
+            {
                 newCard.EmployeeId = employee.Id;
 
-            var check = await cardRespository.Add(newCard);
-            if (check)
-            {
-                MessageBox.Show("Sati dodani.");
-                gettAllDataFromCard();
-                ResetData();
+                var check = await cardRespository.Add(newCard);
+                if (check)
+                {
+                    MessageBox.Show("Sati dodani.");
+                    gettAllDataFromCard();
+                    ResetData();
+                }
             }
             else
             {
                 MessageBox.Show("Greška pri unosu sati");
             }
+            
         }
 
         

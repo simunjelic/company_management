@@ -9,6 +9,8 @@ using System.Threading;
 using System.Printing;
 using FontAwesome.Sharp;
 using System.Windows.Input;
+using System.Security.Principal;
+using System.Windows.Forms;
 
 namespace Praksa_projectV1.ViewModels
 {
@@ -79,6 +81,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowJobsViewCommand { get; }
         public ICommand ShowDepartmentsViewCommand {  get; }
         public ICommand ShowWorkingCardViewCommand { get; }
+        public ICommand ShowAdminPanelViewCommand { get; }
 
 
         public MainViewModel()
@@ -91,13 +94,48 @@ namespace Praksa_projectV1.ViewModels
             ShowJobsViewCommand = new ViewModelCommand(ExecuteShowJobsViewCommand);
             ShowDepartmentsViewCommand = new ViewModelCommand(ExecuteShowDepartmentsViewCommand);
             ShowWorkingCardViewCommand = new ViewModelCommand(ShowWorkingCard);
+            ShowAdminPanelViewCommand = new ViewModelCommand(ShowAdminPanel, CanShowAdminPanel);
             //Default view
             //ExecuteShowProjectsViewCommand(null);
 
             LoadCurrentUserData();
         }
 
-      
+        private bool CanShowAdminPanel(object obj)
+        {
+            return true;
+        }
+
+        private void ShowAdminPanel(object obj)
+        {
+            var principal = Thread.CurrentPrincipal;
+
+            // Check if the principal is a GenericPrincipal and has an identity
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+                // Check if the user has the "Admin" role
+                bool isAdmin = genericPrincipal.IsInRole("Admin");
+
+                // Now isAdmin will be true if the user has the "Admin" role, otherwise false
+                if (isAdmin)
+                {
+                    CurrentChildView = new AdminPanelViewModel();
+                    Caption = "Admin panel";
+                    Icon = IconChar.Lock;
+                }
+                else
+                {
+
+                    MessageBox.Show("Nemate pravo pristupa", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Niste se pravilno prijavili", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            
+        }
 
         private void ShowWorkingCard(object obj)
         {

@@ -18,7 +18,7 @@ namespace Praksa_projectV1.DataAccess
         User getUser(int id);
         Task<User> getByUsernameAsync(string username);
         IEnumerable<User> getAllUsers();
-        Task<Employee> getEmployeeByUsernameAsync(string username);
+        Employee getEmployeeByUsername(string username);
         List<string> GetUserRoles(string username);
     }
 }
