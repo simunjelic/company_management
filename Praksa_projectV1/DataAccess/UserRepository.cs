@@ -219,6 +219,26 @@ namespace Praksa_projectV1.DataAccess
                 return false;
             }
         }
+
+        internal async Task<IEnumerable<User>> FilterData(string searchQuery)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return await context.Users
+                              .Include(u => u.Employees)
+                              .Include(u => u.UserRoles)
+                              .Where(p => p.Username.Contains(searchQuery) || p.Id.ToString().Contains(searchQuery))
+                              .ToListAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
     }
 

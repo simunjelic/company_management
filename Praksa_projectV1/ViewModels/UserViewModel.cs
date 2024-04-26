@@ -108,6 +108,23 @@ namespace Praksa_projectV1.ViewModels
 
         }
 
+        private string _searchQuery;
+        public string SearchQuery
+        {
+            get { return _searchQuery; }
+            set
+            {
+                _searchQuery = value;
+                OnPropertyChanged(nameof(SearchQuery));
+                FilterData();
+            }
+        }
+
+        private async void FilterData()
+        {
+            UsersRecords = new ObservableCollection<User>(await UserRepository.FilterData(SearchQuery));
+        }
+
         private ObservableCollection<User> _usersRecords;
         public ObservableCollection<User> UsersRecords
         {
