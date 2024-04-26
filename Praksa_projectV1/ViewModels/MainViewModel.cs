@@ -84,6 +84,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowWorkingCardViewCommand { get; }
         public ICommand ShowAdminPanelViewCommand { get; }
         public ICommand ShowRoleViewCommand { get; }
+        public ICommand ShowUserViewCommand { get; }
 
 
         public MainViewModel()
@@ -98,10 +99,37 @@ namespace Praksa_projectV1.ViewModels
             ShowWorkingCardViewCommand = new ViewModelCommand(ShowWorkingCard);
             ShowAdminPanelViewCommand = new ViewModelCommand(ShowAdminPanel, CanShowAdminPanel);
             ShowRoleViewCommand = new ViewModelCommand(ShowRoleView);
+            ShowUserViewCommand = new ViewModelCommand(ExecuteShowUserView);
             //Default view
             //ExecuteShowProjectsViewCommand(null);
 
             LoadCurrentUserData();
+        }
+
+        private void ExecuteShowUserView(object obj)
+        {
+            var principal = Thread.CurrentPrincipal;
+            
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+               
+                if (CanReadPermission("Korisnici"))
+                {
+                    CurrentChildView = new UserViewModel();
+                    Caption = "Korisnici";
+                    Icon = IconChar.User;
+                }
+                else
+                {
+
+                    MessageBox.Show("Nemate pravo pristupa", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Niste se pravilno prijavili", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void ShowRoleView(object obj)

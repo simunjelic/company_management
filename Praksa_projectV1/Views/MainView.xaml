@@ -39,6 +39,9 @@
         <DataTemplate DataType="{x:Type viewModel:RoleViewModel}">
             <local:RoleView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:UserViewModel}">
+            <local:UserView/>
+        </DataTemplate>
 
     </Window.Resources>
 
@@ -145,6 +148,15 @@
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="UniversalAccess" Style="{StaticResource menuButtonIcon}"/>
                             <TextBlock Text="Uloge" Style="{StaticResource menuButtonText}"/>
+                        </StackPanel>
+
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource menuButton}"
+  Tag="{StaticResource color8}"
+Command="{Binding ShowUserViewCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconImage Icon="User" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Korisnici" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
 
                     </RadioButton>
