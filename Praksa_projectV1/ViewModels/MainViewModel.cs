@@ -19,7 +19,7 @@ namespace Praksa_projectV1.ViewModels
     {
         //Fields
         private UserAccountModel _currentUserAccount;
-        private IUserRepository userRepository;
+        private UserRepository userRepository;
         private ViewModelBase _currentChildView;
         private string _caption;
         private IconChar _icon;

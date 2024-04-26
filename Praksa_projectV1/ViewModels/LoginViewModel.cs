@@ -18,7 +18,7 @@ namespace Praksa_projectV1.ViewModels
         private SecureString _password;
         private string _errorMessage;
         private bool _isViewVisible = true;
-        private IUserRepository userRepository;
+        private UserRepository userRepository;
 
         public string Username
         {

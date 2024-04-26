@@ -2,7 +2,6 @@
 using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -11,7 +10,7 @@ using System.Windows;
 
 namespace Praksa_projectV1.DataAccess
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository
     {
         private readonly Context _dbContext;
         public void add(User user)
@@ -32,17 +31,17 @@ namespace Praksa_projectV1.DataAccess
                 // If a user is found, set validUser to true
                 if (user != null)
                 {
-                    validUser = true;     
+                    validUser = true;
                 }
             }
 
             return validUser;
-            
+
         }
 
         public IEnumerable<User> getAllUsers()
         {
-            using(var dbContext = new Context())
+            using (var dbContext = new Context())
             {
                 return dbContext.Users.ToList();
             }
@@ -52,16 +51,17 @@ namespace Praksa_projectV1.DataAccess
         {
             try
             {
-                using(var dbContext = new Context())
+                using (var dbContext = new Context())
                 {
                     return await dbContext.Users.FirstOrDefaultAsync(i => i.Username == username);
                 }
 
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show("User not found");
                 return null;
-                
+
             }
         }
         public Employee getEmployeeByUsername(string username)
@@ -78,7 +78,7 @@ namespace Praksa_projectV1.DataAccess
             {
                 Console.WriteLine(ex.Message);
                 return null;
-                
+
             }
         }
 
@@ -98,9 +98,10 @@ namespace Praksa_projectV1.DataAccess
         }
         public List<string> GetUserRoles(string username)
         {
-            try { 
-            using (var dbContext = new Context())
+            try
             {
+                using (var dbContext = new Context())
+                {
                     var roles = dbContext.Users
               .Where(u => u.Username == username)
               .SelectMany(u => u.UserRoles)
@@ -109,13 +110,117 @@ namespace Praksa_projectV1.DataAccess
 
                     return roles;
                 }
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show("GREŠKA");
                 return null;
             }
         }
+
+        internal async Task<IEnumerable<User>> getAllUsersAsync()
+        {
+            try
+            {
+                using (var dbContext = new Context())
+                {
+                    return await dbContext.Users
+                 .Include(u => u.Employees)
+                .Include(u => u.UserRoles)
+                .ToListAsync();
+                }
+
+            }
+            catch (Exception ex) 
+            {
+                
+                return null;
+            }
+        }
+
+        internal async Task<IEnumerable<UserRole>> GetUserRolesObject(int id)
+        {
+            try
+            {
+                using (var dbContext = new Context())
+                {
+                    return await dbContext.UserRoles
+                 .Include(u => u.User)
+                .Include(u => u.Role)
+                .Where(u => u.User.Id == id)
+                .ToListAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+        }
+
+        internal async Task<IEnumerable<Role>> GetRoles()
+        {
+            try
+            {
+                using (var dbContext = new Context())
+                {
+                    return await dbContext.Roles
+                .ToListAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return null;
+            }
+        }
+
+        internal async Task<bool> RemoveUserRole(UserRole selectedRole)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+
+                    context.UserRoles.Remove(selectedRole);
+                    await context.SaveChangesAsync();
+                    return true;
+
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal async Task<bool> AddUserRole(UserRole newUserRole)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+
+
+                    context.UserRoles.Add(newUserRole);
+
+
+                    int rowsAffected = await context.SaveChangesAsync();
+                    return rowsAffected > 0;
+
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+    }
     }
 
-       
-    }
+
+
