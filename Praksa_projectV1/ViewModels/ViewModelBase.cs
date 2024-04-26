@@ -98,6 +98,44 @@ namespace Praksa_projectV1.ViewModels
             }
             return false;
         }
+        public bool CanUpdatePermission(string modul)
+        {
+            var principal = Thread.CurrentPrincipal;
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+
+                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul, "Uredi");
+                if (permList != null)
+                {
+                    foreach (Permission permItem in permList)
+                    {
+                        if (principal.IsInRole(permItem.Role.RoleName))
+                            return true;
+                    }
+                }
+                else return false;
+            }
+            return false;
+        }
+        public bool CanCreatePermission(string modul)
+        {
+            var principal = Thread.CurrentPrincipal;
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+
+                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul, "Dodaj");
+                if (permList != null)
+                {
+                    foreach (Permission permItem in permList)
+                    {
+                        if (principal.IsInRole(permItem.Role.RoleName))
+                            return true;
+                    }
+                }
+                else return false;
+            }
+            return false;
+        }
 
         private bool _isUpdateButtonVisible = true; // Initially visible
 

@@ -3,10 +3,12 @@ using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using EntityState = Microsoft.EntityFrameworkCore.EntityState;
 
 namespace Praksa_projectV1.DataAccess
 {
@@ -156,6 +158,50 @@ namespace Praksa_projectV1.DataAccess
                         context.SaveChanges();
                         return true;
                    
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal async Task<bool> UpdateRole(Role SelectedItem)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+
+                    context.Roles.Attach(SelectedItem);
+                    context.Entry(SelectedItem).State = EntityState.Modified;
+                    int rowsAffected = await context.SaveChangesAsync();
+                    return rowsAffected > 0;
+
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal async Task<bool> AddRole(Role SelectedItem)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+
+                    
+                    context.Roles.Add(SelectedItem);
+
+                    
+                    int rowsAffected = await context.SaveChangesAsync();
+                    return rowsAffected > 0;
+
                 }
 
             }

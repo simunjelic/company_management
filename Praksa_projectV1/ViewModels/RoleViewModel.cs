@@ -1,4 +1,5 @@
-﻿using Praksa_projectV1.DataAccess;
+﻿using Microsoft.IdentityModel.Tokens;
+using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.ViewModels;
 using System;
@@ -16,16 +17,88 @@ namespace Praksa_projectV1.ViewModels
 
     class RoleViewModel : ViewModelBase
     {
-        public ICommand DeleteCommand { get;}
-       public string ModuleName ="Uloge";
+        public ICommand DeleteCommand { get; }
+        public string ModuleName = "Uloge";
+        public ICommand UpdateCommand { get; }
+        public ICommand AddRoleCommand { get; }
         public RoleViewModel()
         {
-            
+
             PermissonRepository = new PermissonRepository();
             GetAllRoles();
             DeleteCommand = new ViewModelCommand(DeleteRole, CanDeleteRole);
-            
+            UpdateCommand = new ViewModelCommand(UpdateRole, CanUpdateRole);
+            AddRoleCommand = new ViewModelCommand(AddRole, CanAddRole);
 
+
+        }
+
+        private bool CanAddRole(object obj)
+        {
+            if (CanCreatePermission(ModuleName) && !string.IsNullOrWhiteSpace(Role))
+                return true;
+            return false;
+        }
+
+        private async void AddRole(object obj)
+        {
+            if (RoleRecords.FirstOrDefault(i => i.RoleName == Role) == null)
+            {
+                var result = MessageBox.Show("Jeste li sigurni da želite dodati novu ulogu: " + Role, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    Role newRole = new Role();
+                    newRole.RoleName = Role;
+                    bool check = await PermissonRepository.AddRole(newRole);
+                    if (check)
+                    {
+                        GetAllRoles();
+                        MessageBox.Show("Nova uloga dodana");
+                        SelectedItem = null;
+                        Role = null;
+                    }
+                    else MessageBox.Show("Greška pri dodavanu nove uloge.");
+                }
+
+
+
+
+            }
+            else MessageBox.Show("Postoji već dozvola sa imenom " + Role);
+        }
+
+        private bool CanUpdateRole(object obj)
+        {
+            if (SelectedItem != null && CanUpdatePermission(ModuleName) && SelectedItem.RoleName != Role)
+                return true;
+            return false;
+        }
+
+        private async void UpdateRole(object obj)
+        {
+            if (RoleRecords.FirstOrDefault(i => i.RoleName == Role) == null)
+            {
+                var result = MessageBox.Show("Jeste li sigurni da želite promjeniti naziv iz: " + SelectedItem.RoleName + " u " + Role + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    SelectedItem.RoleName = Role;
+                    bool check = await PermissonRepository.UpdateRole(SelectedItem);
+                    if (check)
+                    {
+                        GetAllRoles();
+                        MessageBox.Show("Naziv promjenjen");
+
+                    }
+                    else MessageBox.Show("Greška pri mjenjaju naziva");
+
+
+                    SelectedItem = null;
+                    Role = null;
+                }
+            }
+            else MessageBox.Show("Postoji već dozvola sa imenom " + Role);
         }
 
         private bool CanDeleteRole(object obj)
@@ -41,7 +114,7 @@ namespace Praksa_projectV1.ViewModels
 
             if (result == MessageBoxResult.Yes)
             {
-                bool check = await  PermissonRepository.RemoveRole(SelectedItem);
+                bool check = await PermissonRepository.RemoveRole(SelectedItem);
                 if (check)
                 {
                     RoleRecords.Remove(SelectedItem);
@@ -76,13 +149,29 @@ namespace Praksa_projectV1.ViewModels
                 if (_selectedItem != value)
                 {
                     _selectedItem = value;
+                    if (SelectedItem != null)
+                        Role = SelectedItem.RoleName;
                     OnPropertyChanged(nameof(SelectedItem));
                 }
             }
         }
-        private Role _role;
-        [Required(ErrorMessage = "Polje ne može biti prazno.")]
-        public Role Role
+        private int _id;
+        public int Id
+        {
+            get
+            {
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                OnPropertyChanged(nameof(Id));
+            }
+        }
+
+        private string _role;
+
+        public string? Role
         {
             get { return _role; }
             set
@@ -103,4 +192,4 @@ namespace Praksa_projectV1.ViewModels
 
         }
     }
-    }
+}
