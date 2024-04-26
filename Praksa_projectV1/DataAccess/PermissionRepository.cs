@@ -144,5 +144,25 @@ namespace Praksa_projectV1.DataAccess
                 return null;
             }
         }
+
+        internal async Task<bool> RemoveRole(Role SelectedItem)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    
+                        context.Roles.Remove(SelectedItem);
+                        context.SaveChanges();
+                        return true;
+                   
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
