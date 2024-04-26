@@ -83,6 +83,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowDepartmentsViewCommand {  get; }
         public ICommand ShowWorkingCardViewCommand { get; }
         public ICommand ShowAdminPanelViewCommand { get; }
+        public ICommand ShowRoleViewCommand { get; }
 
 
         public MainViewModel()
@@ -96,10 +97,38 @@ namespace Praksa_projectV1.ViewModels
             ShowDepartmentsViewCommand = new ViewModelCommand(ExecuteShowDepartmentsViewCommand);
             ShowWorkingCardViewCommand = new ViewModelCommand(ShowWorkingCard);
             ShowAdminPanelViewCommand = new ViewModelCommand(ShowAdminPanel, CanShowAdminPanel);
+            ShowRoleViewCommand = new ViewModelCommand(ShowRoleView);
             //Default view
             //ExecuteShowProjectsViewCommand(null);
 
             LoadCurrentUserData();
+        }
+
+        private void ShowRoleView(object obj)
+        {
+            var principal = Thread.CurrentPrincipal;
+
+            // Check if the principal is a GenericPrincipal and has an identity
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            { 
+                // Now isAdmin will be true if the user has the "Admin" role, otherwise false
+                if (CanReadPermission("Uloge"))
+                {
+                    CurrentChildView = new RoleViewModel();
+                    Caption = "Uloge";
+                    Icon = IconChar.UniversalAccess;
+                }
+                else
+                {
+
+                    MessageBox.Show("Nemate pravo pristupa", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Niste se pravilno prijavili", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private bool CanShowAdminPanel(object obj)

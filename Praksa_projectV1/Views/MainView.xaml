@@ -36,6 +36,9 @@
         <DataTemplate DataType="{x:Type viewModel:AdminPanelViewModel}">
             <local:AdminPanelView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:RoleViewModel}">
+            <local:RoleView/>
+        </DataTemplate>
 
     </Window.Resources>
 
@@ -132,7 +135,16 @@
                       Command="{Binding ShowAdminPanelViewCommand}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="Lock" Style="{StaticResource menuButtonIcon}"/>
-                            <TextBlock Text="Admin panel" Style="{StaticResource menuButtonText}"/>
+                            <TextBlock Text="Dozvole" Style="{StaticResource menuButtonText}"/>
+                        </StackPanel>
+
+                    </RadioButton>
+                    <RadioButton Style="{StaticResource menuButton}"
+    Tag="{StaticResource color7}"
+  Command="{Binding ShowRoleViewCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <fa:IconImage Icon="UniversalAccess" Style="{StaticResource menuButtonIcon}"/>
+                            <TextBlock Text="Uloge" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
 
                     </RadioButton>
