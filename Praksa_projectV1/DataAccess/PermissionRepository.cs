@@ -124,5 +124,25 @@ namespace Praksa_projectV1.DataAccess
                 return false;
             }
         }
+
+        internal async Task<IEnumerable<Permission>> FilterData(string searchQuery)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return await context.Permissions
+                              .Include(e => e.Role)
+                             .Include(e => e.Module)
+                              .Where(p => p.Module.Name.Contains(searchQuery) || p.Role.RoleName.Contains(searchQuery) || p.Action.Contains(searchQuery))
+                              .ToListAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }

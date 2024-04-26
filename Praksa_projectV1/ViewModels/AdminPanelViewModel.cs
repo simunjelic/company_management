@@ -229,6 +229,22 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(SelectedPermission));
             }
         }
+        private string _searchQuery;
+        public string SearchQuery
+        {
+            get { return _searchQuery; }
+            set
+            {
+                _searchQuery = value;
+                OnPropertyChanged(nameof(SearchQuery));
+                FilterData(); // Call method to filter data when search query changes
+            }
+        }
+        private async void FilterData()
+        {
+            //if(!string.IsNullOrWhiteSpace(SearchQuery))
+            PermissionRecords = new ObservableCollection<Permission>(await permissonRepository.FilterData(SearchQuery));
+        }
 
 
 
