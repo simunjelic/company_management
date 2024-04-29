@@ -7,7 +7,8 @@
         mc:Ignorable="d"
                 Title="ProjectTeamView" Height="350" Width="480"
         Background="#17345C"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        Closing="Window_Closing">
 
 
 
@@ -18,7 +19,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <TextBlock Text="Naziv projekta: "
+            <TextBlock Text="Uloge odabranog korisnika."
     Height="15"
     FontWeight="Medium"
    FontFamily="Montserrat"
@@ -27,7 +28,7 @@
 
 
             </TextBlock>
-            <TextBlock Text="{Binding SelectedItem.Name}"
+            <TextBlock Text=""
                 Height="16"
                 FontWeight="Medium"
                FontFamily="Montserrat"

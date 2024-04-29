@@ -25,5 +25,11 @@ namespace Praksa_projectV1.Views
             InitializeComponent();
             this.DataContext = new UserViewModel();
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            UserViewModel userViewModel = new();
+            this.DataContext = userViewModel;
+        }
     }
 }

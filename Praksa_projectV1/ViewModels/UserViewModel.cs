@@ -50,11 +50,14 @@ namespace Praksa_projectV1.ViewModels
                     bool check = await UserRepository.AddUserRole(newUserRole);
                     if (check)
                     {
-                        GetUserRoles(SelectedItem.Id);
-                        GetAllUsersAsync();
-                        MessageBox.Show("Nova uloga dodana");
-                        SelectedUserRole = null;
-                        SelectedRole = null;
+                        
+                            GetUserRoles(SelectedItem.Id);
+                            //GetAllUsersAsync();
+                            MessageBox.Show("Nova uloga dodana");
+
+                      
+                        
+                        
                     }
                     else MessageBox.Show("Greška pri dodavanu nove uloge.");
                 }
@@ -72,15 +75,17 @@ namespace Praksa_projectV1.ViewModels
 
         private async void DeleteRole(object obj)
         {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati korisniku "+ SelectedUserRole.User.Username + "ulogu: " + SelectedUserRole.Role.RoleName + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati korisniku "+ SelectedUserRole.User.Username + " ulogu: " + SelectedUserRole.Role.RoleName + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 bool check = await UserRepository.RemoveUserRole(SelectedUserRole);
                 if (check)
                 {
+                    
                     UserRolesRecords.Remove(SelectedUserRole);
                     MessageBox.Show("Uloga uspješno obrisana");
+                    //GetAllUsersAsync();
                 }
                 else MessageBox.Show("Nije moguće obrisati ulogu");
 
