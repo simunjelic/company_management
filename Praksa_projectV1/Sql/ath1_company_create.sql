@@ -129,6 +129,10 @@ CREATE TABLE Permissions (
 ALTER TABLE users
 ADD [roles] VARCHAR(255) NULL;
 
+ALTER TABLE Permissions
+ADD ActionId INT;
+
+
 
 
 

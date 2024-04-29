@@ -1,11 +1,13 @@
 ﻿using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.Views;
+using Praksa_projectV1.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,15 +30,24 @@ namespace Praksa_projectV1.ViewModels
             GetAllPermissionsAsync();
             DeleteCommand = new ViewModelCommand(Delete, CanDelete);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
-            ShowPermissionRecords = new ObservableCollection<string> { "Dodaj", "Uredi", "Obrisi", "Citaj" };
+            ShowPermissionRecords = new ObservableCollection<string>(GetAvailableActions()); 
             AddCommand = new ViewModelCommand(Add, CanAdd);
 
 
         }
 
-        
+        public List<string> GetAvailableActions()
+        {
+            var values = Enum.GetValues(typeof(AvailableActions));
+            var actions = new List<AvailableActions>();
+            foreach (var action in values)
+            {
+                actions.Add((AvailableActions)action);
+            }
+            return actions.Select(x => x.Describe()).ToList();
 
-        
+        }
+
 
         private bool CanAdd(object obj)
         {
@@ -48,18 +59,24 @@ namespace Praksa_projectV1.ViewModels
             Permission permission = new Permission();
             permission.ModuleId = Module.Id;
             permission.RoleId = Role.Id;
-            permission.Action = SelectedPermission;
-            if(PermissionRecords.FirstOrDefault(i => i.ModuleId == permission.ModuleId && i.RoleId == permission.RoleId && i.Action == permission.Action) == null) { 
-            bool check = await PermissonRepository.Add(permission);
-            
-            if (check)
+            //permission.Action = SelectedPermission;
+            permission.ActionId = (int)AvailableAction;
+
+
+            if (PermissionRecords.FirstOrDefault(i => i.ModuleId == permission.ModuleId && i.RoleId == permission.RoleId && i.ActionId == permission.ActionId) == null)
             {
-                GetAllPermissionsAsync();
-                MessageBox.Show("Nova dozvola dodana", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
-            } else MessageBox.Show("Greška pri dodvanu nove dozvole", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
-            } else MessageBox.Show("Dozvola već postoji", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
+                bool check = await PermissonRepository.Add(permission);
+
+                if (check)
+                {
+                    GetAllPermissionsAsync();
+                    MessageBox.Show("Nova dozvola dodana", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else MessageBox.Show("Greška pri dodvanu nove dozvole", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else MessageBox.Show("Dozvola već postoji", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-        
+
 
         private bool CanShowAddWindow(object obj)
         {
@@ -68,7 +85,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowAddWindow(object obj)
         {
-            
+
             AdminPanelEditView adminPanelEditView = new AdminPanelEditView();
             adminPanelEditView.DataContext = this;
             GetAllModulesAndRoles();
@@ -80,7 +97,7 @@ namespace Praksa_projectV1.ViewModels
 
         }
 
-        
+
 
         private bool CanDelete(object obj)
         {
@@ -90,25 +107,25 @@ namespace Praksa_projectV1.ViewModels
 
         private void Delete(object obj)
         {
-            
 
-                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati dozvolu: " + SelectedItem.Module.Name + " " + SelectedItem.Role.RoleName + " " + SelectedItem.Action + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                if (result == MessageBoxResult.Yes)
+            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati dozvolu: " + SelectedItem.Module.Name + " " + SelectedItem.Role.RoleName + " " + SelectedItem.Action + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                bool check = permissonRepository.RemoveById(SelectedItem.Id);
+                if (check)
                 {
-                    bool check = permissonRepository.RemoveById(SelectedItem.Id);
-                    if (check)
-                    {
-                        PermissionRecords.Remove(SelectedItem);
-                        MessageBox.Show("Dozvola uspješno obrisana");
-                    }
-                    else MessageBox.Show("Greška pri brisanju dozvole");
-
-
-                    SelectedItem = null;
+                    PermissionRecords.Remove(SelectedItem);
+                    MessageBox.Show("Dozvola uspješno obrisana");
                 }
+                else MessageBox.Show("Greška pri brisanju dozvole");
 
-           
+
+                SelectedItem = null;
+            }
+
+
         }
         private int _id;
         public int Id
@@ -209,7 +226,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
         private ObservableCollection<string> _showPermissionRecords;
-        
+
 
         public ObservableCollection<string> ShowPermissionRecords
         {
@@ -221,14 +238,13 @@ namespace Praksa_projectV1.ViewModels
             }
         }
         private string _selectedPermission;
-        [Required(ErrorMessage = "Polje ne može biti prazno.")]
+        //
         public string SelectedPermission
         {
             get { return _selectedPermission; }
             set
             {
                 _selectedPermission = value;
-                Validate(nameof(SelectedPermission), value);
                 OnPropertyChanged(nameof(SelectedPermission));
             }
         }
@@ -243,6 +259,22 @@ namespace Praksa_projectV1.ViewModels
                 FilterData(); // Call method to filter data when search query changes
             }
         }
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
+        private AvailableActions _availableAction;
+        public AvailableActions AvailableAction
+        {
+            get
+            {
+                return _availableAction;
+            }
+            set
+            {
+                _availableAction = value;
+                Validate(nameof(AvailableAction), value);
+                OnPropertyChanged("AvailableAction");
+            }
+        }
+
         private async void FilterData()
         {
             //if(!string.IsNullOrWhiteSpace(SearchQuery))
@@ -274,4 +306,9 @@ namespace Praksa_projectV1.ViewModels
 
         }
     }
+
+
+
+
+
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Praksa_projectV1.Enums;
 using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
@@ -16,16 +17,27 @@ namespace Praksa_projectV1.DataAccess
     {
         internal async Task<IEnumerable<Permission>> GetAllPermissions()
         {
-            try { 
-            using (var _context = new Context())
+            try
             {
-                return await  _context.Permissions
-                    .Include(e => e.Module)
-                    .Include(e => e.Role)
-                    .ToListAsync();
+                using (var _context = new Context())
+                {
+                    var permissions = await _context.Permissions
+                        .Include(e => e.Module)
+                        .Include(e => e.Role)
+                        .ToListAsync();
+
+                    // Map enum values to their corresponding names
+                    foreach (var permission in permissions)
+                    {
+                        if (permission.ActionId != null)
+                            permission.Action = ((AvailableActions)permission.ActionId).ToString();
+                    }
+
+                    return permissions;
+                }
             }
-            } 
-            catch {
+            catch
+            {
                 return null;
             }
         }
@@ -63,7 +75,7 @@ namespace Praksa_projectV1.DataAccess
 
         }
 
-        internal List<Permission> getPermissionByModuleRead(string modul, string action)
+        internal List<Permission> getPermissionByModule(string modul,int action)
         {
             try
             {
@@ -72,7 +84,7 @@ namespace Praksa_projectV1.DataAccess
                     return context.Permissions
                         .Include(e => e.Role)
                         .Include(e => e.Module)
-                        .Where(i => i.Module.Name == modul &&  i.Action== action)
+                        .Where(i => i.Module.Name == modul && i.ActionId == action)
                         .ToList();
                 }
 
@@ -91,10 +103,11 @@ namespace Praksa_projectV1.DataAccess
                 {
                     var check = context.Permissions.FirstOrDefault(i => i.Id == id);
 
-                    if(check != null) { 
-                    context.Permissions.Remove(check);
-                    context.SaveChanges();
-                    return true;
+                    if (check != null)
+                    {
+                        context.Permissions.Remove(check);
+                        context.SaveChanges();
+                        return true;
                     }
                     return false;
                 }
@@ -112,11 +125,11 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    
-                        await context.Permissions.AddAsync(permission);
-                        await context.SaveChangesAsync();
-                        return true;
-                    
+
+                    await context.Permissions.AddAsync(permission);
+                    await context.SaveChangesAsync();
+                    return true;
+
 
                 }
 
@@ -153,11 +166,11 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    
-                        context.Roles.Remove(SelectedItem);
-                        context.SaveChanges();
-                        return true;
-                   
+
+                    context.Roles.Remove(SelectedItem);
+                    context.SaveChanges();
+                    return true;
+
                 }
 
             }
@@ -195,10 +208,10 @@ namespace Praksa_projectV1.DataAccess
                 using (var context = new Context())
                 {
 
-                    
+
                     context.Roles.Add(SelectedItem);
 
-                    
+
                     int rowsAffected = await context.SaveChangesAsync();
                     return rowsAffected > 0;
 

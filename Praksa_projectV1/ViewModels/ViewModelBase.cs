@@ -68,7 +68,7 @@ namespace Praksa_projectV1.ViewModels
             if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
             {
 
-                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul,"Citaj");
+                List<Permission> permList = PermissonRepository.getPermissionByModule(modul,3);
                 if (permList != null)
                 {
                     foreach (Permission permItem in permList)
@@ -87,7 +87,7 @@ namespace Praksa_projectV1.ViewModels
             if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
             {
 
-                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul,"Obrisi");
+                List<Permission> permList = PermissonRepository.getPermissionByModule(modul,2);
                 if (permList != null)
                 {
                     foreach (Permission permItem in permList)
@@ -106,7 +106,7 @@ namespace Praksa_projectV1.ViewModels
             if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
             {
 
-                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul, "Uredi");
+                List<Permission> permList = PermissonRepository.getPermissionByModule(modul, 1);
                 if (permList != null)
                 {
                     foreach (Permission permItem in permList)
@@ -124,8 +124,8 @@ namespace Praksa_projectV1.ViewModels
             var principal = Thread.CurrentPrincipal;
             if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
             {
-
-                List<Permission> permList = PermissonRepository.getPermissionByModuleRead(modul, "Dodaj");
+                
+                List<Permission> permList = PermissonRepository.getPermissionByModule(modul, 0);
                 if (permList != null)
                 {
                     foreach (Permission permItem in permList)

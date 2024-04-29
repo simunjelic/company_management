@@ -15,6 +15,8 @@ public partial class Permission
 
     public string Action { get; set; }
 
+    public int? ActionId { get; set; }
+
     public virtual Module Module { get; set; }
 
     public virtual Role Role { get; set; }

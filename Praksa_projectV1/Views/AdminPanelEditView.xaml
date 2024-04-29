@@ -8,7 +8,8 @@
         Title="Admin Panel" Height="310" Width="260"
         Background="#17345C"
         Foreground="White"
-WindowStartupLocation="CenterScreen">
+WindowStartupLocation="CenterScreen"
+        xmlns:helper="clr-namespace:Praksa_projectV1.Enums" d:DataContext="{d:DesignInstance Type=viewmodels:AdminPanelViewModel}">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -104,8 +105,8 @@ Foreground="White" RenderTransformOrigin="0.497,0.085" Height="30" VerticalAlign
         </Button>
         <Label Content="Dozvola" Margin="25,154,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <ComboBox Height="30" Width="200"  Margin="25,185,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
-            ItemsSource="{Binding ShowPermissionRecords}"   
-            SelectedItem="{Binding SelectedPermission}"
+            ItemsSource="{Binding Source={helper:EnumBindingSourceExtention {x:Type helper:AvailableActions}}}"   
+            SelectedItem="{Binding AvailableAction}"
                   ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}" />
 
 
