@@ -52,7 +52,7 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    return await context.Modules.ToListAsync();
+                    return await context.Modules.OrderBy(m => m.Id).ToListAsync();
                 }
 
             }

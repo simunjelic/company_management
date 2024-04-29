@@ -17,6 +17,8 @@ namespace Praksa_projectV1.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
         public PermissonRepository PermissonRepository = new PermissonRepository();
 
+       
+
 
         public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
         Dictionary<string, List<string>> Erorrs = new Dictionary<string, List<string>>();
@@ -165,5 +167,7 @@ namespace Praksa_projectV1.ViewModels
                 }
             }
         }
+       
+       
     }
 }

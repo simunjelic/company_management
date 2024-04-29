@@ -28,6 +28,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowUpdateWindowCommand { get; }
         public ICommand UpdateCommand { get; }
         public ICommand RefreshDateCommand { get; }
+        public string ModuleName = "Radna karta";
 
         public WorkingCardViewModel()
         {
@@ -114,7 +115,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowUpdateWindow(object obj)
         {
-            if (SelectedItem != null) return true;
+            if (SelectedItem != null && CanUpdatePermission(ModuleName)) return true;
             else return false;
         }
 
@@ -172,7 +173,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowAddWindow(object obj)
         {
-            return true;
+            return CanCreatePermission(ModuleName);
         }
 
         private void ShowAddWindow(object obj)
@@ -190,7 +191,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanDelete(object obj)
         {
-            if (SelectedItem != null) return true;
+            if (SelectedItem != null && CanDeletePermission(ModuleName)) return true;
             return false;
         }
 

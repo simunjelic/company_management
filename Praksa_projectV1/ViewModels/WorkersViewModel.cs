@@ -28,6 +28,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand AddEmployeeCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
         public ICommand UpdateEmployeeCommand { get; }
+        public readonly string ModuleName = "Zaposlenici";
 
 
         public WorkersViewModel()
@@ -75,7 +76,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowUpdateWindowCommand(object obj)
         {
-            if (SelectedItem != null)
+            if (SelectedItem != null && CanUpdatePermission(ModuleName))
                 return true;
             return false;
         }
@@ -220,7 +221,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanDelete(object obj)
         {
-            if(SelectedItem!=null)
+            if(SelectedItem!=null && CanDeletePermission(ModuleName))
                 return true;
             return false;
         }
@@ -241,7 +242,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowWindow(object obj)
         {
-            return true;
+            return CanCreatePermission(ModuleName);
         }
 
         private void ShowWindow(object obj)

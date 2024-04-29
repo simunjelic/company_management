@@ -136,10 +136,10 @@ namespace Praksa_projectV1.ViewModels
         {
             var principal = Thread.CurrentPrincipal;
 
-            // Check if the principal is a GenericPrincipal and has an identity
+          
             if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
             { 
-                // Now isAdmin will be true if the user has the "Admin" role, otherwise false
+                
                 if (CanReadPermission("Uloge"))
                 {
                     CurrentChildView = new RoleViewModel();
@@ -171,8 +171,7 @@ namespace Praksa_projectV1.ViewModels
             // Check if the principal is a GenericPrincipal and has an identity
             if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
             {
-                // Check if the user has the "Admin" role
-                bool isAdmin = genericPrincipal.IsInRole("Admin");
+                
 
                 // Now isAdmin will be true if the user has the "Admin" role, otherwise false
                 if (CanReadPermission("Admin panel"))
@@ -197,40 +196,157 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowWorkingCard(object obj)
         {
-            CurrentChildView = new WorkingCardViewModel();
-            Caption = "Radna karta";
-            Icon = IconChar.ClipboardCheck;
+            var principal = Thread.CurrentPrincipal;
+
+            // Check if the principal is a GenericPrincipal and has an identity
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+                
+
+                // Now isAdmin will be true if the user has the "Admin" role, otherwise false
+                if (CanReadPermission("Radna karta"))
+                {
+                    CurrentChildView = new WorkingCardViewModel();
+                    Caption = "Radna karta";
+                    Icon = IconChar.ClipboardCheck;
+                }
+                else
+                {
+
+                    MessageBox.Show("Nemate pravo pristupa", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Niste se pravilno prijavili", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            
         }
 
         private void ExecuteShowDepartmentsViewCommand(object obj)
         {
-            CurrentChildView = new DepartmentsViewModel();
-            Caption = "Odjel";
-            Icon = IconChar.Building;
+            var principal = Thread.CurrentPrincipal;
+
+            // Check if the principal is a GenericPrincipal and has an identity
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+
+
+                // Now isAdmin will be true if the user has the "Admin" role, otherwise false
+                if (CanReadPermission("Odjel"))
+                {
+                    CurrentChildView = new DepartmentsViewModel();
+                    Caption = "Odjel";
+                    Icon = IconChar.Building;
+                }
+                else
+                {
+
+                    MessageBox.Show("Nemate pravo pristupa", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Niste se pravilno prijavili", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            
         }
 
         private void ExecuteShowJobsViewCommand(object obj)
         {
+            var principal = Thread.CurrentPrincipal;
+
+            // Check if the principal is a GenericPrincipal and has an identity
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+
+
+                // Now isAdmin will be true if the user has the "Admin" role, otherwise false
+                if (CanReadPermission("Radno mjesto"))
+                {
+                    CurrentChildView = new JobsViewModel();
+                    Caption = "Radno mjesto";
+                    Icon = IconChar.Briefcase;
+                }
+                else
+                {
+
+                    MessageBox.Show("Nemate pravo pristupa", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Niste se pravilno prijavili", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+
             
-            CurrentChildView = new JobsViewModel();
-            Caption = "Radno mjesto";
-            Icon = IconChar.Briefcase;
         }
 
        
 
         private void ExecuteShowWorkersViewCommand(object obj)
         {
-            CurrentChildView = new WorkersViewModel();
-            Caption = "Zaposlenici";
-            Icon = IconChar.UserGroup;
+            var principal = Thread.CurrentPrincipal;
+
+            // Check if the principal is a GenericPrincipal and has an identity
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+
+
+                // Now isAdmin will be true if the user has the "Admin" role, otherwise false
+                if (CanReadPermission("Zaposlenici"))
+                {
+                    CurrentChildView = new WorkersViewModel();
+                    Caption = "Zaposlenici";
+                    Icon = IconChar.UserGroup;
+                }
+                else
+                {
+
+                    MessageBox.Show("Nemate pravo pristupa", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Niste se pravilno prijavili", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            
         }
 
         private void ExecuteShowProjectsViewCommand(object obj)
         {
-            CurrentChildView = new ProjectsViewModel();
-            Caption = "Projekti";
-            Icon = IconChar.Table;
+            var principal = Thread.CurrentPrincipal;
+
+            // Check if the principal is a GenericPrincipal and has an identity
+            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+            {
+
+
+                // Now isAdmin will be true if the user has the "Admin" role, otherwise false
+                if (CanReadPermission("Projekti"))
+                {
+                    CurrentChildView = new ProjectsViewModel();
+                    Caption = "Projekti";
+                    Icon = IconChar.Table;
+                }
+                else
+                {
+
+                    MessageBox.Show("Nemate pravo pristupa", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Niste se pravilno prijavili", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            
         }
 
         private void LoadCurrentUserData()

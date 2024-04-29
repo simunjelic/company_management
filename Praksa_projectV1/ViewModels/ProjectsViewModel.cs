@@ -28,6 +28,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowProjectTeamWindowCommand { get; }
         public ICommand AddMemberCommand { get; }
         public ICommand DeleteMemberCommand { get; }
+        private readonly string ModuleName = "Projekti";
 
 
 
@@ -50,7 +51,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanDeleteMember(object obj)
         {
-            if (SelectedEmployee != null)
+            if (SelectedEmployee != null && CanDeletePermission(ModuleName))
                 return true;
             return false;
         }
@@ -73,7 +74,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanAddMember(object obj)
         {
-            if (SelectedNewEmployee != null)
+            if (SelectedNewEmployee != null && CanCreatePermission(ModuleName))
                 return true;
             return false;
         }
@@ -137,7 +138,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanAddProject(object obj)
         {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
+            return Validator.TryValidateObject(this, new ValidationContext(this), null) && CanCreatePermission(ModuleName);
         }
 
         private void AddProject(object obj)
@@ -164,7 +165,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowUpdateWindow(object obj)
         {
-            if (SelectedItem != null)
+            if (SelectedItem != null && CanUpdatePermission(ModuleName))
                 return true;
             return false;
         }
@@ -184,7 +185,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowAddWindow(object obj)
         {
-            return true;
+            return CanCreatePermission(ModuleName);
         }
 
         private void ShowAddWindow(object obj)
@@ -202,7 +203,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanDelete(object obj)
         {
-            if (SelectedItem != null)
+            if (SelectedItem != null && CanDeletePermission(ModuleName))
                 return true;
             return false;
         }

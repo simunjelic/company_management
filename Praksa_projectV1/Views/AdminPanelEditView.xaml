@@ -23,7 +23,7 @@ WindowStartupLocation="CenterScreen">
         <TextBox d:DataContext="{d:DesignInstance Type=viewmodels:AdminPanelViewModel}" Height="30" Text="{Binding Id,Mode=TwoWay}" Width="200" Margin="25,50" VerticalAlignment="Top" HorizontalAlignment="left" BorderThickness="1" BorderBrush="#E0E0E0" Visibility="Hidden"/>
         <Label Content="" Margin="25,80,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
 
-        <Label Content="Modul" Margin="25,10,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Uloga" Margin="25,10,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <ComboBox Height="30" Width="200"  Margin="25,49,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
             ItemsSource="{Binding Path=RoleRecords}"   
             SelectedItem="{Binding Path=Role}"  
@@ -31,7 +31,7 @@ WindowStartupLocation="CenterScreen">
               ToolTip="{Binding (Validation.Errors)[0].ErrorContent, RelativeSource={RelativeSource Mode=Self}}"
                  />
 
-        <Label Content="Uloga" Margin="25,88,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
+        <Label Content="Modul" Margin="25,88,0,0" VerticalAlignment="Top" Foreground="White" HorizontalAlignment="Left"/>
         <ComboBox Height="30" Width="200"  Margin="25,119,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="0,0,0,2" BorderBrush="#E0E0E0"
       ItemsSource="{Binding ModuleRecords}"   
       SelectedItem="{Binding Path=Module}" 

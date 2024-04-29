@@ -23,6 +23,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand AddDepartmentCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
         public ICommand UpdateDepartmentCommand {  get; }
+        public string ModuleName = "Odjel";
 
         public DepartmentsViewModel()
         {
@@ -70,7 +71,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowUpdateWindow(object obj)
         {
-            return true;
+            return CanUpdatePermission(ModuleName);
         }
 
         private void ShowUpdateWindow(object obj)
@@ -119,7 +120,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowWindow(object obj)
         {
-            return true;
+            return CanCreatePermission(ModuleName);
         }
 
         private void ShowWindow(object obj)
@@ -135,7 +136,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanDeleteDepartment(object obj)
         {
-            return true;
+            return CanDeletePermission(ModuleName);
         }
 
         private void DeleteDepartment(object obj)

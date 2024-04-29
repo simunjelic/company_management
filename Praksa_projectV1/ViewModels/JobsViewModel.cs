@@ -25,6 +25,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand DeleteJobCommand { get; }
         public ICommand UpdateJobCommand { get; }
         public ICommand EditJobCommand { get; }
+        public readonly string ModuleName = "Radno mjesto";
 
 
 
@@ -78,7 +79,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowEditJob(object obj)
         {
-            return true;
+            return CanUpdatePermission(ModuleName);
         }
 
         private void ShowEditJob(object obj)
@@ -100,7 +101,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanDeleteJob(object obj)
         {
-            return true;
+            return CanDeletePermission(ModuleName);
         }
 
         private void DeleteJob(object obj)
@@ -129,7 +130,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanAddJob(object obj)
         {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
+            return Validator.TryValidateObject(this, new ValidationContext(this), null) && CanCreatePermission(ModuleName);
             
         }
 
@@ -165,7 +166,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowWindow(object obj)
         {
-            return true;
+            return CanCreatePermission(ModuleName);
         }
 
         private void ShowWindow(object obj)

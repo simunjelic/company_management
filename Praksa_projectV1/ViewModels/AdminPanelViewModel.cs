@@ -19,7 +19,9 @@ namespace Praksa_projectV1.ViewModels
         public ICommand DeleteCommand { get; }
         public ICommand ShowAddWindowCommand { get; }
         public ICommand AddCommand { get; }
-       
+        public string ModuleName = "Admin panel";
+
+
         public AdminPanelViewModel()
         {
             permissonRepository = new PermissonRepository();
@@ -61,11 +63,12 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowAddWindow(object obj)
         {
-            return true;
+            return CanCreatePermission(ModuleName);
         }
 
         private void ShowAddWindow(object obj)
         {
+            
             AdminPanelEditView adminPanelEditView = new AdminPanelEditView();
             adminPanelEditView.DataContext = this;
             GetAllModulesAndRoles();
