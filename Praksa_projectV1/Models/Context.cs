@@ -311,6 +311,10 @@ public partial class Context : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("password");
+            entity.Property(e => e.Roles)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("roles");
             entity.Property(e => e.Username)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -322,7 +326,7 @@ public partial class Context : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__user_rol__3213E83FD910FAC4");
 
-            entity.ToTable("user_roles");
+            entity.ToTable("user_roles", tb => tb.HasTrigger("UpdateUserRoles"));
 
             entity.HasIndex(e => new { e.UserId, e.RoleId }, "UQ_UserRoles").IsUnique();
 

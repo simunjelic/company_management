@@ -211,6 +211,7 @@ VerticalAlignment="Top">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Path=Id}"  Header="Šifra" HeaderStringFormat=""/>
                     <DataGridTextColumn Binding="{Binding Path=Username}"  Header="Korisničko ime"/>
+                    <DataGridTextColumn Binding="{Binding Path=Roles}"  Header="Uloge"/>
 
                 </DataGrid.Columns>
             </DataGrid>

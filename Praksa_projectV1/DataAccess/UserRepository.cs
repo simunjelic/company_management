@@ -214,8 +214,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch(Exception ex) 
             {
+                MessageBox.Show(ex.Message);
                 return false;
             }
         }

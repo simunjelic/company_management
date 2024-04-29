@@ -51,6 +51,7 @@ namespace Praksa_projectV1.ViewModels
                     if (check)
                     {
                         GetUserRoles(SelectedItem.Id);
+                        GetAllUsersAsync();
                         MessageBox.Show("Nova uloga dodana");
                         SelectedUserRole = null;
                         SelectedRole = null;

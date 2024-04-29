@@ -126,6 +126,10 @@ CREATE TABLE Permissions (
     CONSTRAINT FK_Module FOREIGN KEY (ModuleId) REFERENCES Module(Id),
     CONSTRAINT FK_Role FOREIGN KEY (RoleId) REFERENCES roles(Id)
 );
+ALTER TABLE users
+ADD [roles] VARCHAR(255) NULL;
+
+
 
 
 
