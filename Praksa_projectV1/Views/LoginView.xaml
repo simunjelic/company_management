@@ -57,7 +57,7 @@
                         <ColumnDefinition Width="25"/>
                         <ColumnDefinition Width="5"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="LOG IN"
+                    <TextBlock Text="PRIJAVA"
                                Foreground="DarkGray"
                                FontSize="10"
                                FontFamily="Montserrat"
@@ -145,7 +145,7 @@
                                TextWrapping="Wrap"
                                TextAlignment="Center"
                                Margin="0,5,0,0"/>
-                    <TextBlock Text="Username"
+                    <TextBlock Text="Korisničko ime"
                                Foreground="DarkGray"
                                FontSize="12"
                                FontWeight="Medium"
@@ -170,7 +170,7 @@
                                         AlignmentX="Left"/>
                         </TextBox.Background>
                     </TextBox>
-                    <TextBlock Text="Password"
+                    <TextBlock Text="Lozinka"
                                Foreground="DarkGray"
                                FontSize="12"
                                FontWeight="Medium"
@@ -190,7 +190,7 @@
                     <Button x:Name="btnLogin" 
                             Command="{Binding LoginCommand}"
                             BorderThickness="0"
-                            Content="LOG IN"
+                            Content="PRIJAVA"
                             Foreground="White"
                             FontSize="12"
                             FontFamily="Montserrat"
@@ -219,20 +219,7 @@
                     </Button>
                     <StackPanel Orientation="Horizontal"
                                 HorizontalAlignment="Center"
-                                Margin="0,15,0,0">
-                        <TextBlock Text="Forgot Password?"
-                               Foreground="DarkGray"
-                               FontSize="12"
-                               FontWeight="Medium"
-                               FontFamily="Montserrat"/>
-                        <TextBlock Text="Reset"
-                               Foreground="White"
-                               FontSize="12"
-                               FontWeight="Medium"
-                               FontFamily="Montserrat"
-                               Cursor="Hand"
-                               Margin="8,0,0,0"/>
-                    </StackPanel>
+                                Margin="0,15,0,0"/>
                 </StackPanel>
             </Grid>
         </Border>
