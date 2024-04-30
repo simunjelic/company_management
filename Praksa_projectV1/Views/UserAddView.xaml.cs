@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Praksa_projectV1.Views
 {
     /// <summary>
-    /// Interaction logic for UserEditView.xaml
+    /// Interaction logic for UserAddView.xaml
     /// </summary>
-    public partial class UserEditView : Window
+    public partial class UserAddView : Window
     {
-        public UserEditView()
+        public UserAddView()
         {
             InitializeComponent();
             this.DataContext = new UserViewModel();

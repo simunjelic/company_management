@@ -28,6 +28,8 @@ namespace Praksa_projectV1.ViewModels
         public ICommand AddUserCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
         public ICommand UpdateUserCommand { get; }
+        public ICommand ShowUpdatePasswordWindowCommand { get; }
+        public ICommand UpdateUserPasswordCommand { get; }
 
 
 
@@ -43,6 +45,53 @@ namespace Praksa_projectV1.ViewModels
             AddUserCommand = new ViewModelCommand(AddUser, CanAddUser);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             UpdateUserCommand = new ViewModelCommand(UpdateUser, CanUpdateUser);
+            ShowUpdatePasswordWindowCommand = new ViewModelCommand(ShowUpdatePasswordWindow, CanShowUpdatePasswordWindow);
+            UpdateUserPasswordCommand = new ViewModelCommand(UpdateUserPassword, CanUpdateUserPassword);
+        }
+
+        private bool CanUpdateUserPassword(object obj)
+        {
+            return Validator.TryValidateObject(this, new ValidationContext(this), null) && IsSecureStringLongerThan6(Password);
+        }
+
+        private async void UpdateUserPassword(object obj)
+        {
+            if (SecureStringEquals(Password, CheckPassword))
+            {
+                if (!UsersRecords.Any(i => i.Username == Username && i.Id != Id))
+                {
+
+                    var check = await UserRepository.EditUser(new System.Net.NetworkCredential(Username, Password), Id);
+                    if (check)
+                    {
+                        MessageBox.Show("Lozinka uređeno.");
+                        GetAllUsersAsync();
+                        ResetData();
+                    }
+                    else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
+                }
+                else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
+            } else MessageBox.Show("Lozinke nisu jednake.");
+        }
+
+        private bool CanShowUpdatePasswordWindow(object obj)
+        {
+            return CanUpdatePermission(ModuleName);
+        }
+
+        private async void ShowUpdatePasswordWindow(object obj)
+        {
+            UserAddView userEditView = new UserAddView();
+            userEditView.DataContext = this;
+            userEditView.Title = "Uredi lozinku";
+            IsAddButtonVisible = false;
+            IsUpdateButtonVisible = true;
+            Password = null;
+            CheckPassword = null;
+            Username = SelectedItem.Username;
+            Id = SelectedItem.Id;
+
+            userEditView.Show();
         }
 
         private bool CanUpdateUser(object obj)
@@ -79,9 +128,6 @@ namespace Praksa_projectV1.ViewModels
             userEditView.Title = "Uredi koriničko ime";
             IsAddButtonVisible = false;
             IsUpdateButtonVisible = true;
-            Password = ConvertToSecureString(SelectedItem.Password);
-            CheckPassword = ConvertToSecureString(SelectedItem.Password);
-            CheckPassword = null;
             Username = SelectedItem.Username;
             Id = SelectedItem.Id;
             
@@ -116,7 +162,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowAddWindow(object obj)
         {
-            UserEditView userEditView = new UserEditView();
+            UserAddView userEditView = new UserAddView();
             userEditView.DataContext = this;
             userEditView.Title = "Dodaj korisnika";
             IsAddButtonVisible = true;

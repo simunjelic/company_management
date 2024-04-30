@@ -20,6 +20,7 @@
                 <ColumnDefinition Width="100"/>
 
                 <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal"
             VerticalAlignment="Top"
@@ -108,7 +109,7 @@ VerticalAlignment="Top">
             </Button>
             <Button Grid.Column="3"
         Command="{Binding ShowUpdateWindowCommand}"                            
-        Content="Uredi"                            
+        Content="Promjeni ime"                            
         FontSize="12"
         FontFamily="Montserrat"
         Cursor="Hand"
@@ -140,6 +141,39 @@ VerticalAlignment="Top">
                 </Button.Style>
             </Button>
             <Button Grid.Column="4"
+        Command="{Binding ShowUpdatePasswordWindowCommand}"                            
+        Content="Promjeni lozinku"                            
+        FontSize="12"
+        FontFamily="Montserrat"
+        Cursor="Hand"
+        BorderThickness="0"
+        Foreground="White"
+                    Margin="0,0,5,0"
+VerticalAlignment="Top">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="orange"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Height="30"
+                                CornerRadius="15"
+                                Background="{TemplateBinding Background}">
+                                        <ContentPresenter VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#836EFB"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Grid.Column="5"
         Command="{Binding DeleteCommand}"                            
         Content="Obriši"                            
         FontSize="12"
