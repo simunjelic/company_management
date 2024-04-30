@@ -150,7 +150,7 @@ namespace Praksa_projectV1.ViewModels
             {
                 newProject = PopulateData(newProject);
                 ProjectRepository.Add(newProject);
-                MessageBox.Show("New project added");
+                MessageBox.Show("Dodan novi projekt");
                 newProject.Location = Location;
                 newProject.Type = Type;
                 ProjectRecords.Add(newProject);
@@ -175,7 +175,7 @@ namespace Praksa_projectV1.ViewModels
 
             ProjectEditView projectEditView = new ProjectEditView();
             projectEditView.DataContext = this;
-            projectEditView.Title = "Edit project";
+            projectEditView.Title = "Uredi projekt";
             _isUpdateButtonVisible = true;
             _isAddButtonVisible = false;
             getLocationsAndTypes();
@@ -193,7 +193,7 @@ namespace Praksa_projectV1.ViewModels
 
             ProjectEditView projectEditView = new ProjectEditView();
             projectEditView.DataContext = this;
-            projectEditView.Title = "Add project";
+            projectEditView.Title = "Dodaj projekt";
             _isUpdateButtonVisible = false;
             _isAddButtonVisible = true;
             getLocationsAndTypes();

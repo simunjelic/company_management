@@ -67,7 +67,7 @@ namespace Praksa_projectV1.ViewModels
 
             if (progress == true)
             {
-                string message = "Success! Name changed to: " + AddName;
+                string message = "Naziv promijenjen u:" + AddName;
 
                 MessageBox.Show(message);
                 _isViewVisible = false;
@@ -106,7 +106,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void DeleteJob(object obj)
         {
-            var result = MessageBox.Show("Are you sure you want to delete this job?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovaj posao?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
             
 
             if (obj is int Id && result == MessageBoxResult.Yes)
@@ -147,14 +147,14 @@ namespace Praksa_projectV1.ViewModels
             if (repository.AddJob(newJob)== true)
             {
 
-                MessageBox.Show("New record successfully saved.");
+                MessageBox.Show("Novi zapis je uspješno spremljen.");
                 ResetData();
                 IsViewVisible = false;
                 GetAll();
             }
             else
             {
-                MessageBox.Show("Job with same name exist.");
+                MessageBox.Show("Posao s istim imenom postoji.");
             }
             
 

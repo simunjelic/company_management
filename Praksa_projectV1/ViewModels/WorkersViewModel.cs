@@ -60,7 +60,7 @@ namespace Praksa_projectV1.ViewModels
                 SelectedItem = populateEmployeeData(SelectedItem);
             if (EmpolyeeRepository.Update(SelectedItem))
             {
-                MessageBox.Show(" Employee updated");
+                MessageBox.Show("Zaposlenik ažuriran.");
                     int index = -1;
                     index = WorkersRecords.IndexOf(WorkersRecords.Where(x => x.Id == Id).Single());
                     
@@ -69,7 +69,7 @@ namespace Praksa_projectV1.ViewModels
             }
             else
             {
-                MessageBox.Show("Error.");
+                MessageBox.Show("Greška.");
             }
             }
         }
@@ -90,7 +90,7 @@ namespace Praksa_projectV1.ViewModels
             populateUpdateWindow();
             WorkersEditView workersEditView = new();
             workersEditView.DataContext = this;
-            workersEditView.Title = "Edit user";
+            workersEditView.Title = "Uredi korisnika";
             _isAddButtonVisible = false;
             _isUpdateButtonVisible = true;
             workersEditView.Show();
@@ -135,13 +135,13 @@ namespace Praksa_projectV1.ViewModels
                 populateEmployeeData(newEmployee);
                 if (EmpolyeeRepository.Add(newEmployee))
                 {
-                    MessageBox.Show("New employee added");
+                    MessageBox.Show("Dodan novi zaposlenik.");
                     WorkersRecords.Add(EmpolyeeRepository.FindByUserId(newEmployee.UserId));
                     ResetData();
                 }
                 else
                 {
-                    MessageBox.Show("User connected with other employee record.");
+                    MessageBox.Show("Korisnik povezan s evidencijom drugog zaposlenika.");
                 }
             }
         }
@@ -253,7 +253,7 @@ namespace Praksa_projectV1.ViewModels
             ResetData();
             WorkersEditView workersEditView = new();
             workersEditView.DataContext = this;
-            workersEditView.Title = "Add user";
+            workersEditView.Title = "Dodaj korisnika";
             _isUpdateButtonVisible = false;
             _isAddButtonVisible = true;
             workersEditView.Show();

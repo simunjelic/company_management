@@ -49,13 +49,13 @@ namespace Praksa_projectV1.ViewModels
             if(SelectedDepartment != null)
                 department.ParentDepartmentId = SelectedDepartment.Id; ;
 
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to update this record?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            MessageBoxResult result = MessageBox.Show("Jeste li sigurni da želite ažurirati ovaj zapis?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
                 bool isSuccessful = departmentRepository.Update(department);
                 if (isSuccessful)
                 {
-                    string message = "Success!";
+                    string message = "Podatak ažuriran!";
                     int index = -1;
                     index = DepartmentRecords.IndexOf(DepartmentRecords.Where(x => x.Id == Id).Single());
                     department.ParentDepartment = SelectedDepartment;
@@ -106,14 +106,14 @@ namespace Praksa_projectV1.ViewModels
             bool flag = departmentRepository.Add(newDepartment);
             if(flag)
             {
-                MessageBox.Show("Department with name "+Name+" added.");
+                MessageBox.Show("Odjel s nazivom " + Name+" dodan.");
                 if(SelectedDepartment != null)
                 newDepartment.ParentDepartment = departmentRepository.GetDepart(newDepartment.ParentDepartmentId);
                 DepartmentRecords.Add(newDepartment);
                 ResetData();
             }
             else {
-                MessageBox.Show("Department with same name exist.");
+                MessageBox.Show("Postoji odjel sa istim imenom.");
             }
 
         }
@@ -126,7 +126,7 @@ namespace Praksa_projectV1.ViewModels
         private void ShowWindow(object obj)
         {
             DepartmentsEditView view = new DepartmentsEditView();
-            view.Title = "Add new department";
+            view.Title = "Dodaj novi odjel.";
             ResetData();
             _isUpdateButtonVisible = false;
             _isAddButtonVisible = true;
@@ -141,7 +141,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void DeleteDepartment(object obj)
         {
-            var result = MessageBox.Show("Are you sure you want to delete this department?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovaj odjel?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
 
             if (obj is int Id && result == MessageBoxResult.Yes)
@@ -150,7 +150,7 @@ namespace Praksa_projectV1.ViewModels
                 if (res)
                     DepartmentRecords.Remove(DepartmentRecords.Where(x => x.Id == Id).Single());
                 else
-                    MessageBox.Show("Delete all jobs associated with the selected department.");
+                    MessageBox.Show("Izbrišite sve poslove povezane s odabranim odjelom.");
             }
         }
 
