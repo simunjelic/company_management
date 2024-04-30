@@ -132,9 +132,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                
+
                 return null;
             }
         }
@@ -215,7 +215,7 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
                 return false;
@@ -259,8 +259,97 @@ namespace Praksa_projectV1.DataAccess
 
             }
         }
+
+        internal async Task<bool> AddUser(NetworkCredential networkCredential)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    var check = context.Users.Any(i => i.Username == networkCredential.UserName);
+                    if (!check)
+                    {
+                        User user = new();
+                        user.Username = networkCredential.UserName;
+                        user.Password = networkCredential.Password;
+                        context.Users.Add(user);
+                        int rowsAffected = await context.SaveChangesAsync();
+                        return rowsAffected > 0;
+                    }
+                    return false;
+
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return false;
+            }
+        }
+
+        internal async Task<bool> EditUser(NetworkCredential networkCredential, int id)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    var check = context.Users.Any(i => i.Username == networkCredential.UserName && i.Id != id);
+                    if (!check)
+                    {
+                        User user = new();
+                        user.Username = networkCredential.UserName;
+                        user.Password = networkCredential.Password;
+                        user.Id = id;
+                        context.Users.Update(user);
+                        int rowsAffected = await context.SaveChangesAsync();
+                        return rowsAffected > 0;
+                    }
+                    return false;
+
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return false;
+            }
+        }
+
+        internal async Task<bool> EditUserUsername(string username, int id)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    var user = context.Users.FirstOrDefault(i => i.Id == id);
+                    if (user != null)
+                    {
+                        user.Username = username;
+                        context.Users.Update(user);
+                        int rowsAffected = await context.SaveChangesAsync();
+                        return rowsAffected > 0;
+                    }
+                    return false;
+
+
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return false;
+            }
+        }
     }
-    }
+}
 
 
 
