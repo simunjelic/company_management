@@ -20,6 +20,7 @@ namespace Praksa_projectV1.ViewModels
        
 
 
+
         public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
         Dictionary<string, List<string>> Erorrs = new Dictionary<string, List<string>>();
         public bool HasErrors => Erorrs.Count > 0;
@@ -64,79 +65,19 @@ namespace Praksa_projectV1.ViewModels
 
         public bool CanReadPermission(string modul)
         {
-            var principal = Thread.CurrentPrincipal;
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
-            {
-
-                List<Permission> permList = PermissonRepository.getPermissionByModule(modul,3);
-                if (permList != null)
-                {
-                    foreach (Permission permItem in permList)
-                    {
-                        if (principal.IsInRole(permItem.Role.RoleName))
-                            return true;
-                    }
-                }
-                else return false;
-            }
-            return false;
+                return PermissonRepository.CheckAcess(modul,3, RoleManager.Roles);
         }
         public bool CanDeletePermission(string modul)
         {
-            var principal = Thread.CurrentPrincipal;
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
-            {
-
-                List<Permission> permList = PermissonRepository.getPermissionByModule(modul,2);
-                if (permList != null)
-                {
-                    foreach (Permission permItem in permList)
-                    {
-                        if (principal.IsInRole(permItem.Role.RoleName))
-                            return true;
-                    }
-                }
-                else return false;
-            }
-            return false;
+            return PermissonRepository.CheckAcess(modul, 2, RoleManager.Roles);
         }
         public bool CanUpdatePermission(string modul)
         {
-            var principal = Thread.CurrentPrincipal;
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
-            {
-
-                List<Permission> permList = PermissonRepository.getPermissionByModule(modul, 1);
-                if (permList != null)
-                {
-                    foreach (Permission permItem in permList)
-                    {
-                        if (principal.IsInRole(permItem.Role.RoleName))
-                            return true;
-                    }
-                }
-                else return false;
-            }
-            return false;
+            return PermissonRepository.CheckAcess(modul, 1, RoleManager.Roles);
         }
         public bool CanCreatePermission(string modul)
         {
-            var principal = Thread.CurrentPrincipal;
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
-            {
-                
-                List<Permission> permList = PermissonRepository.getPermissionByModule(modul, 0);
-                if (permList != null)
-                {
-                    foreach (Permission permItem in permList)
-                    {
-                        if (principal.IsInRole(permItem.Role.RoleName))
-                            return true;
-                    }
-                }
-                else return false;
-            }
-            return false;
+            return PermissonRepository.CheckAcess(modul, 0, RoleManager.Roles);
         }
 
         private bool _isUpdateButtonVisible = true; // Initially visible

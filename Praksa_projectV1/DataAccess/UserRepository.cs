@@ -118,6 +118,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
+
         internal async Task<IEnumerable<User>> getAllUsersAsync()
         {
             try
@@ -238,6 +239,24 @@ namespace Praksa_projectV1.DataAccess
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        internal User GetUserByUsername(string username)
+        {
+            try
+            {
+                using (var dbContext = new Context())
+                {
+                    return dbContext.Users.FirstOrDefault(i => i.Username == username);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("User not found");
+                return null;
+
             }
         }
     }

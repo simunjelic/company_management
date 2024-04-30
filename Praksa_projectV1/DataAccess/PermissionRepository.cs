@@ -94,6 +94,24 @@ namespace Praksa_projectV1.DataAccess
                 return null;
             }
         }
+        internal bool CheckAcess(string modul, int action, List<string>? UserRoles)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return context.Permissions
+                        .Include(e => e.Role)
+                        .Include(e => e.Module)
+                        .Any(i => i.Module.Name == modul && i.ActionId == action && UserRoles.Contains(i.Role.RoleName));    
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         internal bool RemoveById(int id)
         {

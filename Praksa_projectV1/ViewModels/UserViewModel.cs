@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -50,10 +51,12 @@ namespace Praksa_projectV1.ViewModels
                     bool check = await UserRepository.AddUserRole(newUserRole);
                     if (check)
                     {
+                            
+                            //GetUserRoles(SelectedItem.Id);
+                            UserRolesRecords.Remove(newUserRole);
                         
-                            GetUserRoles(SelectedItem.Id);
-                            //GetAllUsersAsync();
-                            MessageBox.Show("Nova uloga dodana");
+                        //GetAllUsersAsync();
+                        MessageBox.Show("Nova uloga dodana");
 
                       
                         

@@ -1,4 +1,5 @@
 ﻿using Praksa_projectV1.DataAccess;
+using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -103,6 +104,7 @@ namespace Praksa_projectV1.ViewModels
                 foreach (string item in list)
                 {
                     roles[index++] = item;
+                        RoleManager.Roles.Add(item);    
                    
                 }
                 // Create a new identity with the username and roles
