@@ -70,14 +70,14 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanUpdateRole(object obj)
         {
-            if (SelectedItem != null && CanUpdatePermission(ModuleName) && SelectedItem.RoleName != Role)
+            if (SelectedItem != null && CanUpdatePermission(ModuleName))
                 return true;
             return false;
         }
 
         private async void UpdateRole(object obj)
         {
-            if (RoleRecords.FirstOrDefault(i => i.RoleName == Role) == null)
+            if (!RoleRecords.Any(i => i.RoleName == Role))
             {
                 var result = MessageBox.Show("Jeste li sigurni da želite promjeniti naziv iz: " + SelectedItem.RoleName + " u " + Role + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 

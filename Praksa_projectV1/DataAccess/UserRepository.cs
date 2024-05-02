@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,7 +27,7 @@ namespace Praksa_projectV1.DataAccess
             using (var dbContext = new Context())
             {
                 // Check if there is a user with the provided username and password
-                var user = dbContext.Users.FirstOrDefault(u => u.Username == credential.UserName && u.Password == credential.Password);
+                var user = dbContext.Users.FirstOrDefault(u => u.Username == credential.UserName && u.Password == HashPassword(credential.Password));
 
                 // If a user is found, set validUser to true
                 if (user != null)
@@ -82,10 +83,10 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-       
-        
 
-        
+
+
+
         public List<string> GetUserRoles(string username)
         {
             try
@@ -261,7 +262,7 @@ namespace Praksa_projectV1.DataAccess
                     {
                         User user = new();
                         user.Username = networkCredential.UserName;
-                        user.Password = networkCredential.Password;
+                        user.Password = HashPassword(networkCredential.Password);
                         context.Users.Add(user);
                         int rowsAffected = await context.SaveChangesAsync();
                         return rowsAffected > 0;
@@ -286,21 +287,18 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    var check = context.Users.Any(i => i.Username == networkCredential.UserName && i.Id != id);
-                    if (!check)
+
+                    User user = await context.Users.FirstOrDefaultAsync(i => i.Username == networkCredential.UserName && i.Id == id);
+                    if (user != null)
                     {
-                        User user = new();
                         user.Username = networkCredential.UserName;
-                        user.Password = networkCredential.Password;
+                        user.Password = HashPassword(networkCredential.Password);
                         user.Id = id;
                         context.Users.Update(user);
                         int rowsAffected = await context.SaveChangesAsync();
                         return rowsAffected > 0;
                     }
                     return false;
-
-
-
                 }
 
             }
@@ -346,10 +344,11 @@ namespace Praksa_projectV1.DataAccess
                 using (var context = new Context())
                 {
                     var user = await context.Users.FirstOrDefaultAsync(i => i.Id == id);
-                    if(user != null) { 
-                    context.Users.Remove(user);
-                    await context.SaveChangesAsync();
-                    return true;
+                    if (user != null)
+                    {
+                        context.Users.Remove(user);
+                        await context.SaveChangesAsync();
+                        return true;
                     }
                     return false;
 
@@ -361,6 +360,17 @@ namespace Praksa_projectV1.DataAccess
                 return false;
             }
         }
+        private string HashPassword(string password)
+        {
+            // Use a secure hashing algorithm (e.g., SHA-256) to hash the password
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(hashedBytes);
+            }
+        }
+
+
     }
 }
 
