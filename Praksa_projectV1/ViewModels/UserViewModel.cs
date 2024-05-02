@@ -219,9 +219,9 @@ namespace Praksa_projectV1.ViewModels
         }
         private async void AddRole(object obj)
         {
-            if (UserRolesRecords.FirstOrDefault(i => i.Role.RoleName == SelectedRole.RoleName) == null)
+            if (!UserRolesRecords.Any(i => i.Role.RoleName == SelectedRole.RoleName))
             {
-                var result = MessageBox.Show("Jeste li sigurni da želite dodati novu ulogu: " + SelectedRole.RoleName, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var result = MessageBox.Show("Jeste li sigurni da želite dodati korisniku novu ulogu: " + SelectedRole.RoleName, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
                 if (result == MessageBoxResult.Yes)
                 {
@@ -231,18 +231,21 @@ namespace Praksa_projectV1.ViewModels
                     bool check = await UserRepository.AddUserRole(newUserRole);
                     if (check)
                     {
-
+                        newUserRole.Role = SelectedRole;
+                        newUserRole.User = SelectedItem;
                         //GetUserRoles(SelectedItem.Id);
-                        UserRolesRecords.Remove(newUserRole);
+                        UserRolesRecords.Add(newUserRole);
+                        SelectedRole = null;
+                        
 
                         //GetAllUsersAsync();
-                        MessageBox.Show("Nova uloga dodana");
+                        MessageBox.Show("Nova uloga dodana korisniku");
 
 
 
 
                     }
-                    else MessageBox.Show("Greška pri dodavanu nove uloge.");
+                    else MessageBox.Show("Greška pri dodavanu nove uloge korisniku.");
                 }
 
             }
