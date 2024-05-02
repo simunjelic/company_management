@@ -63,7 +63,7 @@ namespace Praksa_projectV1.ViewModels
             permission.ActionId = (int)AvailableAction;
 
 
-            if (PermissionRecords.FirstOrDefault(i => i.ModuleId == permission.ModuleId && i.RoleId == permission.RoleId && i.ActionId == permission.ActionId) == null)
+            if (PermissionRecords.Any(i => i.ModuleId == permission.ModuleId && i.RoleId == permission.RoleId && i.ActionId == permission.ActionId))
             {
                 bool check = await PermissonRepository.Add(permission);
 
