@@ -1,7 +1,9 @@
-﻿using Praksa_projectV1.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,17 +28,19 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        public bool Remove(int id)
+        public async Task<bool> RemoveAsync(int id)
         {
-            using(var dContext = new Context())
+            using (var dContext = new Context())
             {
-                try { 
-                var depToDelete = dContext.Departments.FirstOrDefault(i => i.Id == id);
-                dContext.Remove(depToDelete);
-                dContext.SaveChanges();
-                    return true;
+                try
+                {
+                    var depToDelete = await dContext.Departments.FirstOrDefaultAsync(i => i.Id == id);
+                    dContext.Remove(depToDelete);
+                    int rowsAffected = await dContext.SaveChangesAsync();
+                    return rowsAffected > 0;
                 }
-                catch(Exception ex) {
+                catch (Exception ex)
+                {
                     return false;
 
                 }
@@ -44,31 +48,42 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal bool Add(Department newDepartment)
+        internal async Task<bool> AddAsync(Department newDepartment)
         {
-            using (var dContext = new Context())
+            try
             {
-                var checkDepartment = dContext.Departments.FirstOrDefault(i => i.Name == newDepartment.Name);
-
-                if (checkDepartment == null)
+                using (var dContext = new Context())
                 {
-                    dContext.Add(newDepartment);
-                    dContext.SaveChanges();
-                    return true;
-                }
-                else return false;
+                    
+                        await dContext.AddAsync(newDepartment);
+                        int rowsAffected = await dContext.SaveChangesAsync();
+                        return rowsAffected > 0;
+                    
 
+                }
+            }
+            catch
+            {
+                return false;
             }
         }
 
-        internal bool Update(Department department)
+        internal async Task<bool> UpdateAsync(Department department)
         {
-            using (var dContext = new Context())
+            try
             {
-                dContext.Departments.Update(department);
-                dContext.SaveChanges();
-                return true;
+                using (var dContext = new Context())
+                {
+                    dContext.Departments.Update(department);
+                    int rowsAffected = await dContext.SaveChangesAsync();
+                    return rowsAffected > 0;
+                }
+
             }
+            catch
+            {
+                return false;
             }
+        }
     }
 }

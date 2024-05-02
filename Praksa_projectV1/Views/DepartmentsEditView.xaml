@@ -50,7 +50,7 @@
 
 
 
-        <Button Height="30" Command="{Binding UpdateDepartmentCommand}" Content="Update" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="95,205,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
+        <Button Height="30" Command="{Binding UpdateDepartmentCommand}" Content="Uredi" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="95,205,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" BorderThickness="1" BorderBrush="#E0E0E0"  
                     FontFamily="Montserrat"
             Cursor="Hand"
           Foreground="White"

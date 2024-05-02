@@ -13,6 +13,10 @@
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        
+
     </Window.Resources>
     <Window.Visibility>
         <Binding Path="IsViewVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibility}"/>
@@ -33,6 +37,8 @@
 
         <Button Height="30" Command="{Binding AddjobCommand}" Content="Dodaj" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="25" VerticalAlignment="Bottom" HorizontalAlignment="Right" BorderThickness="1" BorderBrush="#E0E0E0"  
                         FontFamily="Montserrat"
+                Visibility="{Binding IsAddButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+        
                 Cursor="Hand"
               Foreground="White"
                 >
@@ -60,6 +66,37 @@
                 </Style>
             </Button.Style>
         </Button>
+        <Button Height="30" Command="{Binding EditJobCommand}" Content="Uredi" Width="70"  VerticalContentAlignment="Center" Padding="5" Margin="25" VerticalAlignment="Bottom" HorizontalAlignment="Right" BorderThickness="1" BorderBrush="#E0E0E0"  
+                 FontFamily="Montserrat"
+         Cursor="Hand"
+       Foreground="White"
+                Visibility="{Binding IsUpdateButtonVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
         
+         >
+
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="orange"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Border Height="30"
+                         CornerRadius="15"
+                         Background="{TemplateBinding Background}">
+                                    <ContentPresenter VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="#836EFB"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+
     </Grid>
 </Window>

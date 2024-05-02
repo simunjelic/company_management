@@ -14,23 +14,23 @@ using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
 {
-    public class DepartmentsViewModel: ViewModelBase
+    public class DepartmentsViewModel : ViewModelBase
     {
 
         private DepartmentRepository departmentRepository;
         public ICommand DeleteDepartmentCommand { get; }
-        public ICommand ShowWindowCommand { get; }
+        public ICommand ShowAddWindowCommand { get; }
         public ICommand AddDepartmentCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
-        public ICommand UpdateDepartmentCommand {  get; }
+        public ICommand UpdateDepartmentCommand { get; }
         public string ModuleName = "Odjel";
 
         public DepartmentsViewModel()
         {
-           departmentRepository = new DepartmentRepository();
+            departmentRepository = new DepartmentRepository();
             GetAllDepartments();
             DeleteDepartmentCommand = new ViewModelCommand(DeleteDepartment, CanDeleteDepartment);
-            ShowWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
+            ShowAddWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
             AddDepartmentCommand = new ViewModelCommand(AddDepartment, CanAddDepartment);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             UpdateDepartmentCommand = new ViewModelCommand(UpdateDepartment, CanUpdateDepartmentCommand);
@@ -41,55 +41,58 @@ namespace Praksa_projectV1.ViewModels
             return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
-        private void UpdateDepartment(object obj)
+        private async void UpdateDepartment(object obj)
         {
-            Department department = new Department();
-            department.Id = this.Id;
-            department.Name = Name; 
-            if(SelectedDepartment != null)
-                department.ParentDepartmentId = SelectedDepartment.Id; ;
 
-            MessageBoxResult result = MessageBox.Show("Jeste li sigurni da želite ažurirati ovaj zapis?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
+            if (!DepartmentRecords.Any(i => i.Id != Id && i.Name == Name))
             {
-                bool isSuccessful = departmentRepository.Update(department);
-                if (isSuccessful)
+                Department department = new Department();
+                department.Id = this.Id;
+                department.Name = Name;
+                if (SelectedDepartment != null)
+                    department.ParentDepartmentId = SelectedDepartment.Id;
+                MessageBoxResult result = MessageBox.Show("Jeste li sigurni da želite ažurirati ovaj zapis?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
                 {
-                    string message = "Podatak ažuriran!";
-                    int index = -1;
-                    index = DepartmentRecords.IndexOf(DepartmentRecords.Where(x => x.Id == Id).Single());
-                    department.ParentDepartment = SelectedDepartment;
-                    DepartmentRecords[index] = department;
+                    bool isSuccessful = await departmentRepository.UpdateAsync(department);
+                    if (isSuccessful)
+                    {
+                        string message = "Podatak ažuriran!";
+                        int index = -1;
+                        index = DepartmentRecords.IndexOf(DepartmentRecords.Where(x => x.Id == Id).Single());
+                        department.ParentDepartment = SelectedDepartment;
+                        DepartmentRecords[index] = department;
 
+                        MessageBox.Show(message);
+                        ResetData();
 
-
-                    MessageBox.Show(message);
-
+                    }
+                    else MessageBox.Show("Greška prilikom ažuriranja.");
                 }
+
             }
+            else MessageBox.Show("Odabrano ime već postoji.");
         }
 
         private bool CanShowUpdateWindow(object obj)
         {
-            return CanUpdatePermission(ModuleName);
+            return CanUpdatePermission(ModuleName) && SelectedItem != null;
         }
 
         private void ShowUpdateWindow(object obj)
         {
-            if (obj is int Id)
-            {
-                var department = departmentRepository.GetDepart(Id);
-                if(department.ParentDepartmentId != null)
-                  SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == department.ParentDepartmentId).Single();
-                Name = department.Name;
-                this.Id = Id;
-                DepartmentsEditView view = new DepartmentsEditView();
-                _isUpdateButtonVisible = true;
-                _isAddButtonVisible = false;
-                view.Title = "Uredi odjel.";
-                view.DataContext = this;
-                view.Show();
-            }
+
+            if (SelectedItem.ParentDepartmentId != null)
+                SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == SelectedItem.ParentDepartmentId).Single();
+            Name = SelectedItem.Name;
+            Id = SelectedItem.Id;
+            DepartmentsEditView view = new DepartmentsEditView();
+            _isUpdateButtonVisible = true;
+            _isAddButtonVisible = false;
+            view.Title = "Uredi odjel.";
+            view.DataContext = this;
+            view.Show();
+
         }
 
         private bool CanAddDepartment(object obj)
@@ -97,24 +100,29 @@ namespace Praksa_projectV1.ViewModels
             return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
-        private void AddDepartment(object obj)
+        private async void AddDepartment(object obj)
         {
-            Department newDepartment = new();
-            newDepartment.Name = Name;
-            if (SelectedDepartment != null)
-                newDepartment.ParentDepartmentId = SelectedDepartment.Id;
-            bool flag = departmentRepository.Add(newDepartment);
-            if(flag)
+            if (!DepartmentRecords.Any(i => i.Name == Name))
             {
-                MessageBox.Show("Odjel s nazivom " + Name+" dodan.");
-                if(SelectedDepartment != null)
-                newDepartment.ParentDepartment = departmentRepository.GetDepart(newDepartment.ParentDepartmentId);
-                DepartmentRecords.Add(newDepartment);
-                ResetData();
+                Department newDepartment = new();
+                newDepartment.Name = Name;
+                if (SelectedDepartment != null)
+                    newDepartment.ParentDepartmentId = SelectedDepartment.Id;
+                bool flag = await departmentRepository.AddAsync(newDepartment);
+                if (flag)
+                {
+                    MessageBox.Show("Odjel s nazivom " + Name + " dodan.");
+                    if (SelectedDepartment != null)
+                        newDepartment.ParentDepartment = departmentRepository.GetDepart(newDepartment.ParentDepartmentId);
+                    DepartmentRecords.Add(newDepartment);
+                    ResetData();
+                }
+                else
+                {
+                    MessageBox.Show("Greška prilikom dodavanja novog odjela.");
+                }
             }
-            else {
-                MessageBox.Show("Postoji odjel sa istim imenom.");
-            }
+            else MessageBox.Show("Postoji odjel sa istim imenom.");
 
         }
 
@@ -136,22 +144,27 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanDeleteDepartment(object obj)
         {
-            return CanDeletePermission(ModuleName);
+            return CanDeletePermission(ModuleName) && SelectedItem != null;
         }
 
-        private void DeleteDepartment(object obj)
+        private async void DeleteDepartment(object obj)
         {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovaj odjel?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati odjel " + SelectedItem.Name + " ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
 
-            if (obj is int Id && result == MessageBoxResult.Yes)
+            if(result  == MessageBoxResult.Yes) { 
+            bool res = await departmentRepository.RemoveAsync(SelectedItem.Id);
+            if (res)
             {
-                bool res = departmentRepository.Remove(Id);
-                if (res)
-                    DepartmentRecords.Remove(DepartmentRecords.Where(x => x.Id == Id).Single());
-                else
-                    MessageBox.Show("Izbrišite sve poslove povezane s odabranim odjelom.");
+                DepartmentRecords.Remove(SelectedItem);
+                MessageBox.Show("Odjel obrisan.");
             }
+
+
+            else
+                MessageBox.Show("Nije moguće izbrisati odjel.");
+            }
+
         }
 
         private int _id;
@@ -167,7 +180,7 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(Id));
             }
         }
-        
+
         private string _name;
         [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public string? Name
@@ -196,6 +209,22 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged("ParentDepartment");
             }
         }
+        private Department _selectedItem;
+
+        public Department? SelectedItem
+        {
+            get
+            {
+                return _selectedItem;
+            }
+            set
+            {
+                _selectedItem = value;
+                OnPropertyChanged("SelectedItem");
+            }
+
+        }
+
         private Department _selectedDepartment;
 
         public Department? SelectedDepartment
@@ -286,7 +315,8 @@ namespace Praksa_projectV1.ViewModels
             var departments = departmentRepository.GetAllDepartments();
             foreach (var department in departments)
             {
-                if (department.ParentDepartmentId != null) { 
+                if (department.ParentDepartmentId != null)
+                {
                     department.ParentDepartment = departments.Where(i => i.Id == department.ParentDepartmentId).FirstOrDefault();
                 }
             }

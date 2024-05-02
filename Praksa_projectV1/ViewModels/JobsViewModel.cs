@@ -16,11 +16,11 @@ using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
 {
-    public class JobsViewModel: ViewModelBase
+    public class JobsViewModel : ViewModelBase
     {
         private JobRepository repository;
         private DepartmentRepository departmentRepository;
-        public ICommand ShowWindowCommand { get;}
+        public ICommand ShowAddWindowCommand { get; }
         public ICommand AddjobCommand { get; }
         public ICommand DeleteJobCommand { get; }
         public ICommand UpdateJobCommand { get; }
@@ -31,9 +31,9 @@ namespace Praksa_projectV1.ViewModels
 
         public JobsViewModel()
         {
-            repository = new JobRepository();   
+            repository = new JobRepository();
             departmentRepository = new DepartmentRepository();
-            ShowWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
+            ShowAddWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
             AddjobCommand = new ViewModelCommand(AddJob, CanAddJob);
             DeleteJobCommand = new ViewModelCommand(DeleteJob, CanDeleteJob);
             UpdateJobCommand = new ViewModelCommand(ShowEditJob, CanShowEditJob);
@@ -41,7 +41,7 @@ namespace Praksa_projectV1.ViewModels
             GetAll();
             GetAllDepartments();
             ResetData();
-            
+
         }
 
         private bool CanEditJob(object obj)
@@ -49,7 +49,7 @@ namespace Praksa_projectV1.ViewModels
             return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
-        private void EditJob(object obj)
+        private async void EditJob(object obj)
         {
             Job updateJob = new Job();
 
@@ -57,94 +57,102 @@ namespace Praksa_projectV1.ViewModels
             updateJob.DepartmentId = SelectedDepartment.Id;
             updateJob.Id = Id;
             var progress = false;
-
-            MessageBoxResult result = MessageBox.Show("Jeste li sigurni da želite spramiti promjene?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
+            if (!JobRecords.Any(i => i.Id != updateJob.Id && i.Name == updateJob.Name))
             {
-                progress = repository.updateJob(updateJob);
+                MessageBoxResult result = MessageBox.Show("Jeste li sigurni da želite spremiti promjene?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    progress = await repository.updateJobAsync(updateJob);
+                    if (progress == true)
+                    {
+                        string message = "Naziv promijenjen " + AddName;
+
+                        MessageBox.Show(message);
+                        _isViewVisible = false;
+                        GetAll();
+                        ResetData();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Greška pri uređivanju.");
+                    }
+                    updateJob = null;
+                }
             }
+            else MessageBox.Show("Posao sa istim imenom već postoji");
 
 
-            if (progress == true)
-            {
-                string message = "Naziv promijenjen u:" + AddName;
 
-                MessageBox.Show(message);
-                _isViewVisible = false;
-                GetAll();
-                ResetData();
-            }
-            updateJob = null;
         }
 
         private bool CanShowEditJob(object obj)
         {
-            return CanUpdatePermission(ModuleName);
+            return CanUpdatePermission(ModuleName) && SelectedJob != null;
         }
 
         private void ShowEditJob(object obj)
         {
-            if(obj is int id)
-            {
-                Job job = repository.GetJob(id);
-                Id = id;
-                AddName = job.Name;
-                SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == job.DepartmentId).Single();
-                UpdateJobView update = new UpdateJobView();
-                update.DataContext = this;
-                _isViewVisible = true;
-                update.Show();
-                GetAll();
 
-            }
+            Job job = SelectedJob;
+            Id = SelectedJob.Id;
+            AddName = job.Name;
+            SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == job.DepartmentId).Single();
+            UpdateJobView update = new UpdateJobView();
+            update.DataContext = this;
+            _isViewVisible = true;
+            IsUpdateButtonVisible = true;
+            IsAddButtonVisible = false;
+            update.Show();
+
         }
 
         private bool CanDeleteJob(object obj)
         {
-            return CanDeletePermission(ModuleName);
+            return CanDeletePermission(ModuleName) && SelectedJob != null;
         }
 
-        private void DeleteJob(object obj)
+        private async void DeleteJob(object obj)
         {
             var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovaj posao?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            
 
-            if (obj is int Id && result == MessageBoxResult.Yes)
+
+            if (result == MessageBoxResult.Yes)
             {
-                bool check = repository.RemoveJob(Id);
+                bool check = await repository.RemoveJob(SelectedJob.Id);
                 if (check)
                 {
                     MessageBox.Show("Posao obrisan.");
-                    JobRecords.Remove(JobRecords.Where(x => x.Id == Id).Single());
+                    JobRecords.Remove(SelectedJob);
+                    ResetData();
                 }
                 else
                 {
                     MessageBox.Show("Nije moguće izbrisati, posao povezan sa drugim poljima.");
                 }
-                
+
             }
 
-            
+
         }
 
 
         private bool CanAddJob(object obj)
         {
             return Validator.TryValidateObject(this, new ValidationContext(this), null) && CanCreatePermission(ModuleName);
-            
+
         }
 
         private void AddJob(object obj)
         {
-            
-                Job newJob = new Job();
-              { 
+
+            Job newJob = new Job();
+            {
                 newJob.Name = AddName;
                 newJob.DepartmentId = SelectedDepartment.Id;
-                    
-              };
 
-            if (repository.AddJob(newJob)== true)
+            };
+
+            if (repository.AddJob(newJob) == true)
             {
 
                 MessageBox.Show("Novi zapis je uspješno spremljen.");
@@ -156,13 +164,13 @@ namespace Praksa_projectV1.ViewModels
             {
                 MessageBox.Show("Posao s istim imenom postoji.");
             }
-            
+
 
 
 
         }
-       
-       
+
+
 
         private bool CanShowWindow(object obj)
         {
@@ -173,7 +181,10 @@ namespace Praksa_projectV1.ViewModels
         {
             AddJobView addJobView = new AddJobView();
             addJobView.DataContext = this;
+            addJobView.Title = "Dodaj novi posao";
             _isViewVisible = true;
+            IsAddButtonVisible = true;
+            IsUpdateButtonVisible = false;
             ResetData();
             addJobView.Show();
         }
@@ -191,6 +202,19 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged("Id");
             }
         }
+        private Job _selectedJob;
+        public Job? SelectedJob
+        {
+            get
+            {
+                return _selectedJob;
+            }
+            set
+            {
+                _selectedJob = value;
+                OnPropertyChanged("SelectedJob");
+            }
+        }
         private string _name;
         public string Name
         {
@@ -204,10 +228,10 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged("Name");
             }
         }
-        
+
         private string _addName;
         [Required(ErrorMessage = "Polje ne može biti prazno.")]
-        public string AddName
+        public string? AddName
         {
             get
             {
@@ -222,7 +246,7 @@ namespace Praksa_projectV1.ViewModels
         }
         private Department _selectedDepartment;
         [Required(ErrorMessage = "Polje ne može biti prazno.")]
-        public Department SelectedDepartment
+        public Department? SelectedDepartment
         {
             get
             {
@@ -262,7 +286,7 @@ namespace Praksa_projectV1.ViewModels
             set
             {
                 _jobRecords = value;
-               
+
                 OnPropertyChanged(nameof(JobRecords));
             }
         }
@@ -294,6 +318,7 @@ namespace Praksa_projectV1.ViewModels
         {
             AddName = null;
             SelectedDepartment = null;
+            SelectedJob = null;
         }
 
 

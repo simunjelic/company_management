@@ -145,8 +145,8 @@ namespace Praksa_projectV1.DataAccess
                 {
 
                     await context.Permissions.AddAsync(permission);
-                    await context.SaveChangesAsync();
-                    return true;
+                    int rowsAffected = await context.SaveChangesAsync();
+                    return rowsAffected > 0;
 
 
                 }

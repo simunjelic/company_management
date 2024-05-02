@@ -112,7 +112,7 @@ VerticalAlignment="Top">
     CornerRadius="10" 
     Padding="10">
             <DataGrid ColumnWidth="*"
-              ItemsSource="{Binding PermissionRecords,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+              ItemsSource="{Binding PermissionFilterRecords,  Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
               SelectedItem="{Binding SelectedItem}"        
       Background="#17345C"
       BorderThickness="0"

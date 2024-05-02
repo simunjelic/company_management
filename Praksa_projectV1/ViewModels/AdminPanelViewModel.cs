@@ -28,9 +28,10 @@ namespace Praksa_projectV1.ViewModels
         {
             permissonRepository = new PermissonRepository();
             GetAllPermissionsAsync();
+            GetAllModulesAndRoles();
             DeleteCommand = new ViewModelCommand(Delete, CanDelete);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
-            ShowPermissionRecords = new ObservableCollection<string>(GetAvailableActions()); 
+            ShowPermissionRecords = new ObservableCollection<string>(GetAvailableActions());
             AddCommand = new ViewModelCommand(Add, CanAdd);
 
 
@@ -63,13 +64,17 @@ namespace Praksa_projectV1.ViewModels
             permission.ActionId = (int)AvailableAction;
 
 
-            if (PermissionRecords.Any(i => i.ModuleId == permission.ModuleId && i.RoleId == permission.RoleId && i.ActionId == permission.ActionId))
+            if (!PermissionRecords.Any(i => i.ModuleId == permission.ModuleId && i.RoleId == permission.RoleId && i.ActionId == permission.ActionId))
             {
                 bool check = await PermissonRepository.Add(permission);
 
                 if (check)
                 {
-                    GetAllPermissionsAsync();
+                    permission.Action = AvailableAction.ToString();
+                    permission.Module = Module;
+                    permission.Role = Role;
+                    PermissionRecords.Add(permission);
+                    PermissionFilterRecords.Add(permission);
                     MessageBox.Show("Nova dozvola dodana", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else MessageBox.Show("Greška pri dodvanu nove dozvole", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -88,7 +93,6 @@ namespace Praksa_projectV1.ViewModels
 
             AdminPanelEditView adminPanelEditView = new AdminPanelEditView();
             adminPanelEditView.DataContext = this;
-            GetAllModulesAndRoles();
             adminPanelEditView.Title = "Dodaj novu dozvolu";
             ResetData();
             IsAddButtonVisible = true;
@@ -117,6 +121,7 @@ namespace Praksa_projectV1.ViewModels
                 if (check)
                 {
                     PermissionRecords.Remove(SelectedItem);
+                    PermissionFilterRecords.Remove(SelectedItem);
                     MessageBox.Show("Dozvola uspješno obrisana");
                 }
                 else MessageBox.Show("Greška pri brisanju dozvole");
@@ -152,6 +157,19 @@ namespace Praksa_projectV1.ViewModels
             {
                 _permissionRecords = value;
                 OnPropertyChanged(nameof(PermissionRecords));
+            }
+        }
+        private ObservableCollection<Permission> _permissionFilterRecords;
+        public ObservableCollection<Permission> PermissionFilterRecords
+        {
+            get
+            {
+                return _permissionFilterRecords;
+            }
+            set
+            {
+                _permissionFilterRecords = value;
+                OnPropertyChanged(nameof(PermissionFilterRecords));
             }
         }
         private ObservableCollection<Role> _roleRecords;
@@ -278,18 +296,25 @@ namespace Praksa_projectV1.ViewModels
         private async void FilterData()
         {
             //if(!string.IsNullOrWhiteSpace(SearchQuery))
-            PermissionRecords = new ObservableCollection<Permission>(await permissonRepository.FilterData(SearchQuery));
+            PermissionFilterRecords = new ObservableCollection<Permission>(PermissionRecords.Where(i =>
+                                                                i.Module.Name.IndexOf(SearchQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                                                i.Action.IndexOf(SearchQuery, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                                               i.Role.RoleName.IndexOf(SearchQuery, StringComparison.OrdinalIgnoreCase) >= 0));
+
+
+
         }
 
 
 
-        public async Task GetAllPermissionsAsync()
+        public async void GetAllPermissionsAsync()
         {
             var permissions = await permissonRepository.GetAllPermissions();
             PermissionRecords = new ObservableCollection<Permission>(permissions);
+            PermissionFilterRecords = new ObservableCollection<Permission>(permissions);
 
         }
-        public async Task GetAllModulesAndRoles()
+        public async void GetAllModulesAndRoles()
         {
             var roles = await permissonRepository.GetAllRoles();
             RoleRecords = new ObservableCollection<Role>(roles);

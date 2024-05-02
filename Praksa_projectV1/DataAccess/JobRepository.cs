@@ -1,4 +1,5 @@
-﻿using Praksa_projectV1.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,16 +53,16 @@ namespace Praksa_projectV1.DataAccess
 
             }
         }
-        public bool RemoveJob(int Id)
+        public async Task<bool> RemoveJob(int Id)
         {
             try { 
             using (jobContext = new Context())
             {
-                Job jobToDelete = jobContext.Jobs.FirstOrDefault(i => i.Id == Id);
+                Job jobToDelete = await  jobContext.Jobs.FirstOrDefaultAsync(i => i.Id == Id);
 
                 if (jobToDelete != null)
                 jobContext.Jobs.Remove(jobToDelete);
-                jobContext.SaveChanges();
+                await jobContext.SaveChangesAsync();
                     return true;
             }
             }catch(Exception ex)
@@ -77,18 +78,20 @@ namespace Praksa_projectV1.DataAccess
                 return job;
             }
         }
-        public  bool updateJob(Job job)
+        public async Task<bool> updateJobAsync(Job job)
         {
+            try { 
             using (jobContext = new Context())
             {
                 
                     jobContext.Update(job);
-                    jobContext.SaveChanges();
-                    return true;
-                
-                
-
-                
+                    await jobContext.SaveChangesAsync();
+                    return true;   
+            }
+            }
+            catch
+            {
+                return false;
             }
         }
         
