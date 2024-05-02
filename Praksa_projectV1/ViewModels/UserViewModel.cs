@@ -30,6 +30,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand UpdateUserCommand { get; }
         public ICommand ShowUpdatePasswordWindowCommand { get; }
         public ICommand UpdateUserPasswordCommand { get; }
+        public ICommand DeleteCommand { get; }
 
 
 
@@ -47,6 +48,35 @@ namespace Praksa_projectV1.ViewModels
             UpdateUserCommand = new ViewModelCommand(UpdateUser, CanUpdateUser);
             ShowUpdatePasswordWindowCommand = new ViewModelCommand(ShowUpdatePasswordWindow, CanShowUpdatePasswordWindow);
             UpdateUserPasswordCommand = new ViewModelCommand(UpdateUserPassword, CanUpdateUserPassword);
+            DeleteCommand = new ViewModelCommand(ExecuteDelete, CanDelete);
+        }
+
+        private bool CanDelete(object obj)
+        {
+            if (SelectedItem != null && CanDeletePermission(ModuleName)) 
+                return true;
+            return false;
+        }
+
+        private async void ExecuteDelete(object obj)
+        {
+            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati korsnika: " + SelectedItem.Username + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if(result == MessageBoxResult.Yes)
+            {
+                bool check = await UserRepository.RemoveByIdAsync(SelectedItem.Id);
+                if (check)
+                {
+                    UsersRecords.Remove(SelectedItem);
+                    MessageBox.Show("Korisnik uspješno obrisan.");
+                    ResetData();
+                }
+                else MessageBox.Show("Greška pri brisanju korisnika.");
+
+
+                SelectedItem = null;
+            }
+
         }
 
         private bool CanUpdateUserPassword(object obj)
@@ -71,7 +101,8 @@ namespace Praksa_projectV1.ViewModels
                     else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
                 }
                 else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
-            } else MessageBox.Show("Lozinke nisu jednake.");
+            }
+            else MessageBox.Show("Lozinke nisu jednake.");
         }
 
         private bool CanShowUpdatePasswordWindow(object obj)
@@ -104,7 +135,7 @@ namespace Praksa_projectV1.ViewModels
             if (!UsersRecords.Any(i => i.Username == Username && i.Id != Id))
             {
 
-                var check = await UserRepository.EditUserUsername(Username,Id);
+                var check = await UserRepository.EditUserUsername(Username, Id);
                 if (check)
                 {
                     MessageBox.Show("Korisničko ime uređeno.");
@@ -130,7 +161,7 @@ namespace Praksa_projectV1.ViewModels
             IsUpdateButtonVisible = true;
             Username = SelectedItem.Username;
             Id = SelectedItem.Id;
-            
+
             userEditView.Show();
         }
 
@@ -139,20 +170,22 @@ namespace Praksa_projectV1.ViewModels
             return Validator.TryValidateObject(this, new ValidationContext(this), null) && IsSecureStringLongerThan6(Password);
         }
 
-        
+
 
         private async void AddUser(object obj)
         {
             if (SecureStringEquals(Password, CheckPassword))
-                {
+            {
 
                 var check = await UserRepository.AddUser(new System.Net.NetworkCredential(Username, Password));
-                if(check)
+                if (check)
                 {
                     MessageBox.Show("Korisnik dodan");
                     GetAllUsersAsync();
-                }else  MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
-            } else MessageBox.Show("Lozinke nisu jednake.");
+                }
+                else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
+            }
+            else MessageBox.Show("Lozinke nisu jednake.");
         }
 
         private bool CanShowAddWindow(object obj)

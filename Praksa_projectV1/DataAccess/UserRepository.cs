@@ -82,20 +82,10 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        public User getUser(int id)
-        {
-            throw new NotImplementedException();
-        }
+       
+        
 
-        public void remove(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void update(User user)
-        {
-            throw new NotImplementedException();
-        }
+        
         public List<string> GetUserRoles(string username)
         {
             try
@@ -345,6 +335,29 @@ namespace Praksa_projectV1.DataAccess
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+                return false;
+            }
+        }
+
+        internal async Task<bool> RemoveByIdAsync(int id)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    var user = await context.Users.FirstOrDefaultAsync(i => i.Id == id);
+                    if(user != null) { 
+                    context.Users.Remove(user);
+                    await context.SaveChangesAsync();
+                    return true;
+                    }
+                    return false;
+
+                }
+
+            }
+            catch
+            {
                 return false;
             }
         }
