@@ -1,4 +1,5 @@
-﻿using Praksa_projectV1.DataAccess;
+﻿using Praksa_projectV1.Commands;
+using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.Views;
 using System;
@@ -24,7 +25,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand AddjobCommand { get; }
         public ICommand DeleteJobCommand { get; }
         public ICommand UpdateJobCommand { get; }
-        public ICommand EditJobCommand { get; }
+        public IAsyncCommand EditJobCommand { get; private set; }
         public readonly string ModuleName = "Radno mjesto";
 
 
@@ -37,19 +38,14 @@ namespace Praksa_projectV1.ViewModels
             AddjobCommand = new ViewModelCommand(AddJob, CanAddJob);
             DeleteJobCommand = new ViewModelCommand(DeleteJob, CanDeleteJob);
             UpdateJobCommand = new ViewModelCommand(ShowEditJob, CanShowEditJob);
-            EditJobCommand = new ViewModelCommand(EditJob, CanEditJob);
+            EditJobCommand = new AsyncCommand(EditJob, CanEditJob);
             GetAll();
             GetAllDepartments();
             ResetData();
 
         }
 
-        private bool CanEditJob(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
-        }
-
-        private async void EditJob(object obj)
+        private async Task EditJob()
         {
             Job updateJob = new Job();
 
@@ -81,9 +77,14 @@ namespace Praksa_projectV1.ViewModels
             }
             else MessageBox.Show("Posao sa istim imenom već postoji");
 
-
-
         }
+
+        private bool CanEditJob()
+        {
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
+        }
+
+        
 
         private bool CanShowEditJob(object obj)
         {
