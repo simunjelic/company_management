@@ -98,7 +98,9 @@ namespace Praksa_projectV1.ViewModels
             var isValidUser = userRepository.AuthenticateUser(new System.Net.NetworkCredential(Username, Password));
             if(isValidUser)
             {
+                    
                 var list = userRepository.GetUserRoles(Username).ToList();
+                RoleManager.Username = Username;
                 string[] roles = new string[list.Count];
                 int index = 0;
                 foreach (string item in list)

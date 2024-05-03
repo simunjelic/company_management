@@ -42,7 +42,7 @@
             </StackPanel>
             <Button Grid.Column="1"
                 Command="{Binding ShowWindowCommand}"                            
-                Content="Add"                            
+                Content="Dodaj"                            
                 FontSize="12"
                 FontFamily="Montserrat"
                 Cursor="Hand"
@@ -74,7 +74,7 @@
             </Button>
             <Button Grid.Column="2"
         Command="{Binding ShowUpdateWindowCommand}"                            
-        Content="Edit"                            
+        Content="Uredi"                            
         FontSize="12"
         FontFamily="Montserrat"
         Cursor="Hand"
@@ -106,7 +106,7 @@ VerticalAlignment="Top">
             </Button>
             <Button Grid.Column="3"
         Command="{Binding DeleteCommand}"                            
-        Content="Delete"                            
+        Content="Obriši"                            
         FontSize="12"
         FontFamily="Montserrat"
         Cursor="Hand"
@@ -174,14 +174,14 @@ VerticalAlignment="Top">
                 </DataGrid.RowStyle>
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Path=Id}"  Header="ID"/>
-                    <DataGridTextColumn Binding="{Binding Path=Name}"  Header="Name"/>
-                    <DataGridTextColumn Binding="{Binding Path=Surname}"  Header="Surname"/>
-                    <DataGridTextColumn Binding="{Binding Path=Phone}"  Header="Phone"/>
+                    <DataGridTextColumn Binding="{Binding Path=Id}"  Header="Šifra"/>
+                    <DataGridTextColumn Binding="{Binding Path=Name}"  Header="Ime"/>
+                    <DataGridTextColumn Binding="{Binding Path=Surname}"  Header="Prezime"/>
+                    <DataGridTextColumn Binding="{Binding Path=Phone}"  Header="Broj telefona"/>
                     <DataGridTextColumn Binding="{Binding Path=Email}"  Header="Email"/>
-                    <DataGridTextColumn Binding="{Binding Path=Job.Name}"  Header="Job"/>
-                    <DataGridTextColumn Binding="{Binding Path=Department.Name}"  Header="Department"/>
-                    <DataGridTextColumn Binding="{Binding Path=Birthday}"  Header="BirthDay"/>
+                    <DataGridTextColumn Binding="{Binding Path=Job.Name}"  Header="Radno mjesto"/>
+                    <DataGridTextColumn Binding="{Binding Path=Department.Name}"  Header="Odjel"/>
+                    <DataGridTextColumn Binding="{Binding Path=Birthday}"  Header="Datum rođenja"/>
                     <DataGridTextColumn Binding="{Binding Path=Jmbg}"  Header="Jmbg"/>
 
                 </DataGrid.Columns>

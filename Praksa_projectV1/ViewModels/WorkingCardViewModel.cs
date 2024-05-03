@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Praksa_projectV1.ViewModels
 {
@@ -76,9 +77,13 @@ namespace Praksa_projectV1.ViewModels
 
         private async void RefreshDate(object obj)
         {
-            Application.Current.Resources["StartDate"] = StartDate;
-            Application.Current.Resources["EndDate"] = EndDate;
-            gettAllDataFromCard();
+            if (IsValidDateWithinLast100Years((DateTime)StartDate) && IsValidDateWithinLast100Years((DateTime)EndDate))
+            {
+                Application.Current.Resources["StartDate"] = StartDate;
+                Application.Current.Resources["EndDate"] = EndDate;
+                gettAllDataFromCard();
+            }
+            else MessageBox.Show("Datumi nisu ispravni.");
         }
 
         private bool CanUpdateRecord(object obj)
@@ -457,6 +462,36 @@ namespace Praksa_projectV1.ViewModels
             SelectedProject = null;
             Description = null;
 
+        }
+        public static bool IsValidDateWithinLast100Years(DateTime date)
+        {
+            // Get the current date
+            DateTime currentDate = DateTime.Now;
+
+            // Calculate the earliest valid date (100 years ago from now)
+            DateTime earliestValidDate = currentDate.AddYears(-100);
+
+            // Check if the year, month, and day values are within valid ranges
+            if (date < earliestValidDate || date > currentDate)
+            {
+                // Date falls outside the last 100 years
+                return false;
+            }
+            // Check if the month value is within valid range (1-12)
+            else if (date.Month < 1 || date.Month > 12)
+            {
+                // Month is invalid
+                return false;
+            }
+            // Check if the day value is within valid range for the given month
+            else if (date.Day < 1 || date.Day > DateTime.DaysInMonth(date.Year, date.Month))
+            {
+                // Day is invalid
+                return false;
+            }
+
+            // Date is valid
+            return true;
         }
 
 

@@ -15,5 +15,13 @@ namespace Praksa_projectV1.Models
             get { return _roles; }
             set { _roles = value; }
         }
+
+        private static string? _username;
+
+        public static string Username
+        {
+            get { return _username; }
+            set { _username = value; }
+        }
     }
 }
