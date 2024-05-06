@@ -68,6 +68,23 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
+        internal async Task<IEnumerable<Department>> GetAllDepartmentsAsync()
+        {
+            try
+            {
+                using (var dContext = new Context())
+                {
+                    return await dContext.Departments.ToListAsync();
+                }
+                
+
+            }
+            catch (Exception ex)
+            {
+                return Enumerable.Empty<Department>();
+            }
+        }
+
         internal async Task<bool> UpdateAsync(Department department)
         {
             try

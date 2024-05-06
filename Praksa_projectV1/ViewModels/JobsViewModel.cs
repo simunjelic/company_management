@@ -21,10 +21,10 @@ namespace Praksa_projectV1.ViewModels
     {
         private JobRepository repository;
         private DepartmentRepository departmentRepository;
-        public ICommand ShowAddWindowCommand { get; }
-        public ICommand AddjobCommand { get; }
-        public ICommand DeleteJobCommand { get; }
-        public ICommand UpdateJobCommand { get; }
+        public IAsyncCommand ShowAddWindowCommand { get; }
+        public IAsyncCommand AddjobCommand { get; }
+        public IAsyncCommand DeleteJobCommand { get; }
+        public IAsyncCommand UpdateJobCommand { get; }
         public IAsyncCommand EditJobCommand { get; private set; }
         public readonly string ModuleName = "Radno mjesto";
 
@@ -34,15 +34,123 @@ namespace Praksa_projectV1.ViewModels
         {
             repository = new JobRepository();
             departmentRepository = new DepartmentRepository();
-            ShowAddWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
-            AddjobCommand = new ViewModelCommand(AddJob, CanAddJob);
-            DeleteJobCommand = new ViewModelCommand(DeleteJob, CanDeleteJob);
-            UpdateJobCommand = new ViewModelCommand(ShowEditJob, CanShowEditJob);
+            ShowAddWindowCommand = new AsyncCommand(ShowWindowAsync, CanShowWindowAsync);
+            AddjobCommand = new AsyncCommand(AddJobAsync, CanAddJobAsync);
+            DeleteJobCommand = new AsyncCommand(DeleteJobAsync, CanDeleteJobAsync);
+            UpdateJobCommand = new AsyncCommand(ShowEditJobAsync, CanShowEditJobAsync);
             EditJobCommand = new AsyncCommand(EditJob, CanEditJob);
             GetAll();
-            GetAllDepartments();
+            GetAllDepartmentsAsync();
             ResetData();
 
+        }
+
+        private bool CanShowWindowAsync()
+        {
+            return CanCreatePermission(ModuleName);
+        }
+
+        private async Task ShowWindowAsync()
+        {
+            AddJobView addJobView = new AddJobView();
+            addJobView.DataContext = this;
+            addJobView.Title = "Dodaj novi posao";
+            _isViewVisible = true;
+            IsAddButtonVisible = true;
+            IsUpdateButtonVisible = false;
+            await ResetData();
+            addJobView.Show();
+        }
+
+       
+
+       
+
+        private bool CanAddJobAsync()
+        {
+            return true;
+        }
+
+        private async Task AddJobAsync()
+        {
+            if (Validator.TryValidateObject(this, new ValidationContext(this), null))
+            {
+                Job newJob = new Job();
+                {
+                    newJob.Name = AddName;
+                    if(SelectedDepartment != null)
+                    newJob.DepartmentId = SelectedDepartment.Id;
+
+                };
+
+                if (await repository.AddJobAsync(newJob))
+                {
+
+                    newJob.Department = SelectedDepartment;
+                    JobRecords.Add(newJob);
+                    ResetData();
+                    IsViewVisible = false;
+                    MessageBox.Show("Novi zapis je uspješno spremljen.");
+
+                }
+                else
+                {
+                    MessageBox.Show("Posao s istim imenom postoji.");
+                }
+            }
+            else MessageBox.Show("Popunite sva polja označena crveno.", "Upozorenje");
+        }
+
+        private bool CanDeleteJobAsync()
+        {
+            return CanDeletePermission(ModuleName);
+        }
+
+        private async Task DeleteJobAsync()
+        {
+            if (SelectedJob != null)
+            {
+                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovaj posao?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    bool check = await repository.RemoveJob(SelectedJob.Id);
+                    if (check)
+                    {
+                        MessageBox.Show("Posao obrisan.");
+                        JobRecords.Remove(SelectedJob);
+                        ResetData();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nije moguće izbrisati, posao povezan sa drugim poljima.");
+                    }
+
+                }
+            }
+            else MessageBox.Show("Odaberite podatak koji želite obrisati.");
+        }
+
+        private bool CanShowEditJobAsync()
+        {
+            return CanUpdatePermission(ModuleName);
+        }
+
+        private async Task ShowEditJobAsync()
+        {
+            if(SelectedJob != null) { 
+            Job job = SelectedJob;
+            Id = SelectedJob.Id;
+            AddName = job.Name;
+            SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == job.DepartmentId).Single();
+            UpdateJobView update = new UpdateJobView();
+            update.DataContext = this;
+            _isViewVisible = true;
+            IsUpdateButtonVisible = true;
+            IsAddButtonVisible = false;
+            update.Show();
+            }
         }
 
         private async Task EditJob()
@@ -65,8 +173,8 @@ namespace Praksa_projectV1.ViewModels
 
                         MessageBox.Show(message);
                         _isViewVisible = false;
-                        GetAll();
-                        ResetData();
+                        await GetAll();
+                        await ResetData();
                     }
                     else
                     {
@@ -86,109 +194,6 @@ namespace Praksa_projectV1.ViewModels
 
         
 
-        private bool CanShowEditJob(object obj)
-        {
-            return CanUpdatePermission(ModuleName) && SelectedJob != null;
-        }
-
-        private void ShowEditJob(object obj)
-        {
-
-            Job job = SelectedJob;
-            Id = SelectedJob.Id;
-            AddName = job.Name;
-            SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == job.DepartmentId).Single();
-            UpdateJobView update = new UpdateJobView();
-            update.DataContext = this;
-            _isViewVisible = true;
-            IsUpdateButtonVisible = true;
-            IsAddButtonVisible = false;
-            update.Show();
-
-        }
-
-        private bool CanDeleteJob(object obj)
-        {
-            return CanDeletePermission(ModuleName) && SelectedJob != null;
-        }
-
-        private async void DeleteJob(object obj)
-        {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovaj posao?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-
-            if (result == MessageBoxResult.Yes)
-            {
-                bool check = await repository.RemoveJob(SelectedJob.Id);
-                if (check)
-                {
-                    MessageBox.Show("Posao obrisan.");
-                    JobRecords.Remove(SelectedJob);
-                    ResetData();
-                }
-                else
-                {
-                    MessageBox.Show("Nije moguće izbrisati, posao povezan sa drugim poljima.");
-                }
-
-            }
-
-
-        }
-
-
-        private bool CanAddJob(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null) && CanCreatePermission(ModuleName);
-
-        }
-
-        private void AddJob(object obj)
-        {
-
-            Job newJob = new Job();
-            {
-                newJob.Name = AddName;
-                newJob.DepartmentId = SelectedDepartment.Id;
-
-            };
-
-            if (repository.AddJob(newJob) == true)
-            {
-
-                MessageBox.Show("Novi zapis je uspješno spremljen.");
-                ResetData();
-                IsViewVisible = false;
-                GetAll();
-            }
-            else
-            {
-                MessageBox.Show("Posao s istim imenom postoji.");
-            }
-
-
-
-
-        }
-
-
-
-        private bool CanShowWindow(object obj)
-        {
-            return CanCreatePermission(ModuleName);
-        }
-
-        private void ShowWindow(object obj)
-        {
-            AddJobView addJobView = new AddJobView();
-            addJobView.DataContext = this;
-            addJobView.Title = "Dodaj novi posao";
-            _isViewVisible = true;
-            IsAddButtonVisible = true;
-            IsUpdateButtonVisible = false;
-            ResetData();
-            addJobView.Show();
-        }
 
         private int _id;
         public int Id
@@ -305,25 +310,23 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
-        public void GetAll()
+        public async Task GetAll()
         {
-            JobRecords = new ObservableCollection<Job>(repository.GetAllJobs());
+            JobRecords =new ObservableCollection<Job>(await repository.GetAllJobsAsync());
 
         }
-        public void GetAllDepartments()
+        public async Task GetAllDepartmentsAsync()
         {
-            DepartmentRecords = new ObservableCollection<Department>(departmentRepository.GetAllDepartments());
+            DepartmentRecords = new ObservableCollection<Department>(await departmentRepository.GetAllDepartmentsAsync());
 
         }
-        private void ResetData()
+        private Task ResetData()
         {
             AddName = null;
             SelectedDepartment = null;
             SelectedJob = null;
+            return Task.CompletedTask;
         }
-
-
-
     }
 
 

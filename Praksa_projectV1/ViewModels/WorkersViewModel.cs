@@ -86,7 +86,7 @@ namespace Praksa_projectV1.ViewModels
             
             GetAllUsers();
             GetAllDepartments();
-            GetAllJobs();
+            GetAllJobsAsync();
             populateUpdateWindow();
             WorkersEditView workersEditView = new();
             workersEditView.DataContext = this;
@@ -249,7 +249,7 @@ namespace Praksa_projectV1.ViewModels
         {
             GetAllUsers();
             GetAllDepartments();
-            GetAllJobs();
+            GetAllJobsAsync();
             ResetData();
             WorkersEditView workersEditView = new();
             workersEditView.DataContext = this;
@@ -547,10 +547,10 @@ namespace Praksa_projectV1.ViewModels
             DepartmentRecords = new ObservableCollection<Department>(departments);
 
         }
-        public void GetAllJobs()
+        public async Task GetAllJobsAsync()
         {
             
-            JobRecords = new ObservableCollection<Job>(jobRepository.GetAllJobs());
+            JobRecords = new ObservableCollection<Job>(await jobRepository.GetAllJobsAsync());
 
         }
         public void ResetData()

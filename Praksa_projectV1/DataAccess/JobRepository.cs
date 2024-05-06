@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Praksa_projectV1.Enums;
 using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
@@ -16,27 +17,21 @@ namespace Praksa_projectV1.DataAccess
         {
             jobContext = new Context();
         }
-        public List<Job> GetAllJobs()
+        public async Task<List<Job>> GetAllJobsAsync()
         {
-            using (jobContext = new Context())
-            { 
-
-                var deps = jobContext.Departments.ToList();
-            var jobList = new List<Job>();
-            jobList = jobContext.Jobs.ToList();
-            foreach(var job in jobList)
+            try
             {
-                foreach(var dep in deps)
+                using (var _context = new Context())
                 {
-                    if(dep.Id == job.DepartmentId)
-                    {
-                        job.Department = dep;
-                        break;
-                    }
+                    var permissions = await _context.Jobs
+                        .Include(e => e.Department)
+                        .ToListAsync();
+                    return permissions;
                 }
             }
-
-            return jobList;
+            catch
+            {
+                return null;
             }
         }
         public bool AddJob(Job job)
@@ -85,8 +80,8 @@ namespace Praksa_projectV1.DataAccess
             {
                 
                     jobContext.Update(job);
-                    await jobContext.SaveChangesAsync();
-                    return true;   
+                    var isChanged = await jobContext.SaveChangesAsync();
+                    return isChanged > 0;   
             }
             }
             catch
@@ -94,6 +89,29 @@ namespace Praksa_projectV1.DataAccess
                 return false;
             }
         }
-        
+
+        internal async Task<bool> AddJobAsync(Job newJob)
+        {
+            try
+            {
+                using (jobContext = new Context())
+                {
+                    var checkJob = await jobContext.Jobs.AnyAsync(i => i.Name == newJob.Name);
+                    if (!checkJob)
+                    {
+                        await jobContext.Jobs.AddAsync(newJob);
+                        var isTrue = await jobContext.SaveChangesAsync();
+                        return isTrue > 0;
+                    }
+                    else return false;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
