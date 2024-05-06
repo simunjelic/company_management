@@ -1,4 +1,5 @@
-﻿using Praksa_projectV1.DataAccess;
+﻿using Praksa_projectV1.Commands;
+using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.Views;
 using System;
@@ -18,32 +19,68 @@ namespace Praksa_projectV1.ViewModels
     {
 
         private DepartmentRepository departmentRepository;
-        public ICommand DeleteDepartmentCommand { get; }
-        public ICommand ShowAddWindowCommand { get; }
-        public ICommand AddDepartmentCommand { get; }
-        public ICommand ShowUpdateWindowCommand { get; }
-        public ICommand UpdateDepartmentCommand { get; }
+        public IAsyncCommand DeleteDepartmentCommand { get; }
+        public IAsyncCommand ShowAddWindowCommand { get; }
+        public IAsyncCommand AddDepartmentCommand { get; }
+        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public IAsyncCommand UpdateDepartmentCommand { get; }
         public string ModuleName = "Odjel";
 
         public DepartmentsViewModel()
         {
             departmentRepository = new DepartmentRepository();
-            GetAllDepartments();
-            DeleteDepartmentCommand = new ViewModelCommand(DeleteDepartment, CanDeleteDepartment);
-            ShowAddWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
-            AddDepartmentCommand = new ViewModelCommand(AddDepartment, CanAddDepartment);
-            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
-            UpdateDepartmentCommand = new ViewModelCommand(UpdateDepartment, CanUpdateDepartmentCommand);
+            GetAllDepartmentsAsync();
+            DeleteDepartmentCommand = new AsyncCommand(DeleteDepartmentAsync, CanDeleteDepartmentAsync);
+            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            AddDepartmentCommand = new AsyncCommand(AddDepartmentAsync, CanAddDepartmentAsync);
+            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowAsync);
+            UpdateDepartmentCommand = new AsyncCommand(UpdateDepartmentAsync, CanUpdateDepartmentCommandAsync);
         }
 
-        private bool CanUpdateDepartmentCommand(object obj)
+
+
+
+        private bool CanAddDepartmentAsync()
+        {
+            return true;
+        }
+
+        private async Task AddDepartmentAsync()
+        {
+            if (Validator.TryValidateObject(this, new ValidationContext(this), null))
+            {
+                if (!DepartmentRecords.Any(i => i.Name == Name))
+                {
+                    Department newDepartment = new();
+                    newDepartment.Name = Name;
+                    if (SelectedDepartment != null)
+                        newDepartment.ParentDepartmentId = SelectedDepartment.Id;
+                    bool flag = await departmentRepository.AddAsync(newDepartment);
+                    if (flag)
+                    {
+                        MessageBox.Show("Odjel s nazivom " + Name + " dodan.");
+                        if (SelectedDepartment != null)
+                            newDepartment.ParentDepartment = SelectedDepartment;
+                        DepartmentRecords.Add(newDepartment);
+                        ResetData();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Greška prilikom dodavanja novog odjela.");
+                    }
+                }
+                else MessageBox.Show("Postoji odjel sa istim imenom.");
+            }
+            else MessageBox.Show("Unesite naziv novog odjela.");
+        }
+
+        private bool CanUpdateDepartmentCommandAsync()
         {
             return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
-        private async void UpdateDepartment(object obj)
+        private async Task UpdateDepartmentAsync()
         {
-
             if (!DepartmentRecords.Any(i => i.Id != Id && i.Name == Name))
             {
                 Department department = new Department();
@@ -74,64 +111,64 @@ namespace Praksa_projectV1.ViewModels
             else MessageBox.Show("Odabrano ime već postoji.");
         }
 
-        private bool CanShowUpdateWindow(object obj)
+        private bool CanDeleteDepartmentAsync()
         {
-            return CanUpdatePermission(ModuleName) && SelectedItem != null;
+            return CanDeletePermission(ModuleName);
         }
 
-        private void ShowUpdateWindow(object obj)
+        private async Task DeleteDepartmentAsync()
         {
-
-            if (SelectedItem.ParentDepartmentId != null)
-                SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == SelectedItem.ParentDepartmentId).Single();
-            Name = SelectedItem.Name;
-            Id = SelectedItem.Id;
-            DepartmentsEditView view = new DepartmentsEditView();
-            _isUpdateButtonVisible = true;
-            _isAddButtonVisible = false;
-            view.Title = "Uredi odjel.";
-            view.DataContext = this;
-            view.Show();
-
-        }
-
-        private bool CanAddDepartment(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
-        }
-
-        private async void AddDepartment(object obj)
-        {
-            if (!DepartmentRecords.Any(i => i.Name == Name))
+            if (SelectedItem != null)
             {
-                Department newDepartment = new();
-                newDepartment.Name = Name;
-                if (SelectedDepartment != null)
-                    newDepartment.ParentDepartmentId = SelectedDepartment.Id;
-                bool flag = await departmentRepository.AddAsync(newDepartment);
-                if (flag)
+                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati odjel " + SelectedItem.Name + " ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+
+                if (result == MessageBoxResult.Yes)
                 {
-                    MessageBox.Show("Odjel s nazivom " + Name + " dodan.");
-                    if (SelectedDepartment != null)
-                        newDepartment.ParentDepartment = departmentRepository.GetDepart(newDepartment.ParentDepartmentId);
-                    DepartmentRecords.Add(newDepartment);
-                    ResetData();
-                }
-                else
-                {
-                    MessageBox.Show("Greška prilikom dodavanja novog odjela.");
+                    bool res = await departmentRepository.RemoveAsync(SelectedItem);
+                    if (res)
+                    {
+                        DepartmentRecords.Remove(SelectedItem);
+                        MessageBox.Show("Odjel obrisan.");
+                    }
+
+
+                    else
+                        MessageBox.Show("Nije moguće izbrisati odjel.");
                 }
             }
-            else MessageBox.Show("Postoji odjel sa istim imenom.");
-
+            else MessageBox.Show("Odaberite redak koji želite obrisati.");
         }
 
-        private bool CanShowWindow(object obj)
+        private bool CanShowUpdateWindowAsync()
+        {
+            return CanUpdatePermission(ModuleName);
+        }
+
+        private async Task ShowUpdateWindowAsync()
+        {
+            if (SelectedItem != null)
+            {
+                if (SelectedItem.ParentDepartmentId != null)
+                    SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == SelectedItem.ParentDepartmentId).Single();
+                Name = SelectedItem.Name;
+                Id = SelectedItem.Id;
+                DepartmentsEditView view = new DepartmentsEditView();
+                _isUpdateButtonVisible = true;
+                _isAddButtonVisible = false;
+                view.Title = "Uredi odjel.";
+                view.DataContext = this;
+                view.Show();
+            }
+            else MessageBox.Show("Odaberite redak koji želite urediti.");
+        }
+
+        private bool CanShowAddWindowAsync()
         {
             return CanCreatePermission(ModuleName);
         }
 
-        private void ShowWindow(object obj)
+        private async Task ShowAddWindowAsync()
         {
             DepartmentsEditView view = new DepartmentsEditView();
             view.Title = "Dodaj novi odjel.";
@@ -142,30 +179,6 @@ namespace Praksa_projectV1.ViewModels
             view.Show();
         }
 
-        private bool CanDeleteDepartment(object obj)
-        {
-            return CanDeletePermission(ModuleName) && SelectedItem != null;
-        }
-
-        private async void DeleteDepartment(object obj)
-        {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati odjel " + SelectedItem.Name + " ?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-
-            if(result  == MessageBoxResult.Yes) { 
-            bool res = await departmentRepository.RemoveAsync(SelectedItem.Id);
-            if (res)
-            {
-                DepartmentRecords.Remove(SelectedItem);
-                MessageBox.Show("Odjel obrisan.");
-            }
-
-
-            else
-                MessageBox.Show("Nije moguće izbrisati odjel.");
-            }
-
-        }
 
         private int _id;
         public int Id
@@ -310,16 +323,10 @@ namespace Praksa_projectV1.ViewModels
         }
 
 
-        public void GetAllDepartments()
+        public async Task GetAllDepartmentsAsync()
         {
-            var departments = departmentRepository.GetAllDepartments();
-            foreach (var department in departments)
-            {
-                if (department.ParentDepartmentId != null)
-                {
-                    department.ParentDepartment = departments.Where(i => i.Id == department.ParentDepartmentId).FirstOrDefault();
-                }
-            }
+            var departments = await departmentRepository.GetAllDepartmentsAsync();
+
             DepartmentRecords = new ObservableCollection<Department>(departments);
 
         }

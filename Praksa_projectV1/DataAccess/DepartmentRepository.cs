@@ -28,14 +28,13 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        public async Task<bool> RemoveAsync(int id)
+        public async Task<bool> RemoveAsync(Department department)
         {
             using (var dContext = new Context())
             {
                 try
                 {
-                    var depToDelete = await dContext.Departments.FirstOrDefaultAsync(i => i.Id == id);
-                    dContext.Remove(depToDelete);
+                    dContext.Remove(department);
                     int rowsAffected = await dContext.SaveChangesAsync();
                     return rowsAffected > 0;
                 }
@@ -74,7 +73,7 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var dContext = new Context())
                 {
-                    return await dContext.Departments.ToListAsync();
+                    return await dContext.Departments.Include(e => e.ParentDepartment).ToListAsync();
                 }
                 
 
