@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Praksa_projectV1.Commands;
 using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.Views;
@@ -13,21 +14,22 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Navigation;
 
 namespace Praksa_projectV1.ViewModels
 {
-   
-    public class WorkersViewModel: ViewModelBase
+
+    public class WorkersViewModel : ViewModelBase
     {
         EmployeeRepository EmpolyeeRepository { get; }
         UserRepository UserRepository { get; }
         DepartmentRepository departmentRepository { get; }
         JobRepository jobRepository { get; }
-        public ICommand ShowWindowCommand { get; }
-        public ICommand DeleteCommand { get; }
-        public ICommand AddEmployeeCommand { get; }
-        public ICommand ShowUpdateWindowCommand { get; }
-        public ICommand UpdateEmployeeCommand { get; }
+        public IAsyncCommand ShowWindowCommand { get; }
+        public IAsyncCommand DeleteCommand { get; }
+        public IAsyncCommand AddEmployeeCommand { get; }
+        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public IAsyncCommand UpdateEmployeeCommand { get; }
         public readonly string ModuleName = "Zaposlenici";
 
 
@@ -37,103 +39,31 @@ namespace Praksa_projectV1.ViewModels
             UserRepository = new UserRepository();
             departmentRepository = new DepartmentRepository();
             jobRepository = new JobRepository();
-            GetAllWorkers();
-            ShowWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
-            DeleteCommand = new ViewModelCommand(Delete, CanDelete);
-            AddEmployeeCommand = new ViewModelCommand(AddEmployee, CanAddEmployee);
-            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindowCommand);
-            UpdateEmployeeCommand = new ViewModelCommand(UpdateEmployee, CanUpdateEmployee);
+            GetAllWorkersAsync();
+            GetAllUsersAsync();
+            GetAllDepartmentsAsync();
+            GetAllJobsAsync();
+            ShowWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            DeleteCommand = new AsyncCommand(DeleteEmployeeAsync, CanDeleteEmployeeAsync);
+            AddEmployeeCommand = new AsyncCommand(AddEmployeeAsync, CanAddEmployeeAsync);
+            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowCommandAsync);
+            UpdateEmployeeCommand = new AsyncCommand(UpdateEmployeeAsync, CanUpdateEmployeeAsync);
             SelectedDate = DateTime.Today;
         }
 
-        private bool CanUpdateEmployee(object obj)
+        private bool CanAddEmployeeAsync()
         {
-            if (SelectedItem != null && Validator.TryValidateObject(this, new ValidationContext(this), null))
-                return true;
-            return false;
+            return true;
         }
 
-        private void UpdateEmployee(object obj)
-        {
-            if (validationInput()) {
-
-                SelectedItem = populateEmployeeData(SelectedItem);
-            if (EmpolyeeRepository.Update(SelectedItem))
-            {
-                MessageBox.Show("Zaposlenik ažuriran.");
-                    int index = -1;
-                    index = WorkersRecords.IndexOf(WorkersRecords.Where(x => x.Id == Id).Single());
-                    
-                    WorkersRecords[index] = EmpolyeeRepository.GetById(Id);
-                    ResetData();
-            }
-            else
-            {
-                MessageBox.Show("Greška.");
-            }
-            }
-        }
-
-        private bool CanShowUpdateWindowCommand(object obj)
-        {
-            if (SelectedItem != null && CanUpdatePermission(ModuleName))
-                return true;
-            return false;
-        }
-
-        private void ShowUpdateWindow(object obj)
-        {
-            
-            GetAllUsers();
-            GetAllDepartments();
-            GetAllJobsAsync();
-            populateUpdateWindow();
-            WorkersEditView workersEditView = new();
-            workersEditView.DataContext = this;
-            workersEditView.Title = "Uredi korisnika";
-            _isAddButtonVisible = false;
-            _isUpdateButtonVisible = true;
-            workersEditView.Show();
-            
-        }
-
-       
-
-        private void populateUpdateWindow()
-        {
-            
-            Id = SelectedItem.Id;
-            SelectedUser = UsersRecords.Where(i => i.Id == SelectedItem.UserId).Single();
-            if(SelectedItem.DepartmentId != null)
-            SelectedDepartment = DepartmentRecords.Where(i => i.Id == SelectedItem.DepartmentId).Single();
-            if (SelectedItem.JobId != null)
-                SelectedJob = JobRecords.Where(i => i.Id == SelectedItem.JobId).Single();
-            Name = SelectedItem.Name;
-            Surname = SelectedItem.Surname;
-            DateOnly dateOnly = (DateOnly)SelectedItem.Birthday;
-            SelectedDate = dateOnly.ToDateTime(TimeOnly.Parse("10:00 PM"));
-            if (SelectedItem.Jmbg != null)
-                Jmbg = SelectedItem.Jmbg;
-            Address = SelectedItem.Address;
-            Email = SelectedItem.Email;
-            Phone = SelectedItem.Phone;
-            
-
-
-        }
-
-        private bool CanAddEmployee(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
-        }
-
-        private void AddEmployee(object obj)
+        private async Task AddEmployeeAsync()
         {
             Employee newEmployee = new();
-            if (validationInput())
+            if (ValidationInput())
             {
                 populateEmployeeData(newEmployee);
-                if (EmpolyeeRepository.Add(newEmployee))
+                bool IsTrue = await EmpolyeeRepository.AddAsync(newEmployee);
+                if (IsTrue)
                 {
                     MessageBox.Show("Dodan novi zaposlenik.");
                     WorkersRecords.Add(EmpolyeeRepository.FindByUserId(newEmployee.UserId));
@@ -146,6 +76,130 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
+        private bool CanUpdateEmployeeAsync()
+        {
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
+        }
+
+        private async Task UpdateEmployeeAsync()
+        {
+            if (ValidationInput())
+            {
+
+                SelectedItem = populateEmployeeData(SelectedItem);
+                bool IsTrue = await EmpolyeeRepository.UpdateAsync(SelectedItem);
+                if (IsTrue)
+                {
+                    MessageBox.Show("Zaposlenik ažuriran.");
+                    int index = -1;
+                    index = WorkersRecords.IndexOf(WorkersRecords.Where(x => x.Id == Id).Single());
+
+                    WorkersRecords[index] = EmpolyeeRepository.GetById(Id);
+                    ResetData();
+                }
+                else
+                {
+                    MessageBox.Show("Greška.");
+                }
+            }
+        }
+
+        private bool CanDeleteEmployeeAsync()
+        {
+            return CanDeletePermission(ModuleName);
+
+        }
+
+        private async Task DeleteEmployeeAsync()
+        {
+            if (SelectedItem != null)
+            {
+                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovog zaposlenika s imenom: " + SelectedItem.Name + " " + SelectedItem.Surname + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    bool isTrue = await EmpolyeeRepository.DeleteAsync(SelectedItem);
+                    if (isTrue)
+                    {
+                        WorkersRecords.Remove(SelectedItem);
+                        MessageBox.Show("Zaposlenik uspješno obrisan.");
+                    }
+                    else MessageBox.Show("Greška prilikom brisanja zaposlenika.");
+
+
+
+
+                }
+                SelectedItem = null;
+            }
+            else MessageBox.Show("Odaberite redak koji želite obrisati.");
+        }
+
+        private bool CanShowUpdateWindowCommandAsync()
+        {
+
+            return CanUpdatePermission(ModuleName);
+        }
+
+        private async Task ShowUpdateWindowAsync()
+        {
+            if (SelectedItem != null)
+            {
+                PopulateUpdateWindow();
+                WorkersEditView workersEditView = new();
+                workersEditView.DataContext = this;
+                workersEditView.Title = "Uredi korisnika";
+                _isAddButtonVisible = false;
+                _isUpdateButtonVisible = true;
+                workersEditView.Show();
+            }
+            else MessageBox.Show("Odaberite redak koji želite urediti");
+        }
+
+        private bool CanShowAddWindowAsync()
+        {
+            return CanCreatePermission(ModuleName);
+        }
+
+        private async Task ShowAddWindowAsync()
+        {
+
+            ResetData();
+            WorkersEditView workersEditView = new();
+            workersEditView.DataContext = this;
+            workersEditView.Title = "Dodaj korisnika";
+            _isUpdateButtonVisible = false;
+            _isAddButtonVisible = true;
+            workersEditView.Show();
+        }
+
+
+
+
+        private void PopulateUpdateWindow()
+        {
+
+            Id = SelectedItem.Id;
+            SelectedUser = UsersRecords.Where(i => i.Id == SelectedItem.UserId).Single();
+            if (SelectedItem.DepartmentId != null)
+                SelectedDepartment = DepartmentRecords.Where(i => i.Id == SelectedItem.DepartmentId).Single();
+            if (SelectedItem.JobId != null)
+                SelectedJob = JobRecords.Where(i => i.Id == SelectedItem.JobId).Single();
+            Name = SelectedItem.Name;
+            Surname = SelectedItem.Surname;
+            DateOnly dateOnly = (DateOnly)SelectedItem.Birthday;
+            SelectedDate = dateOnly.ToDateTime(TimeOnly.Parse("10:00 PM"));
+            if (SelectedItem.Jmbg != null)
+                Jmbg = SelectedItem.Jmbg;
+            Address = SelectedItem.Address;
+            Email = SelectedItem.Email;
+            Phone = SelectedItem.Phone;
+
+
+
+        }
+
+
+
         private Employee populateEmployeeData(Employee newEmployee)
         {
             newEmployee.UserId = SelectedUser.Id;
@@ -154,17 +208,17 @@ namespace Praksa_projectV1.ViewModels
                 newEmployee.JobId = SelectedJob.Id;
                 newEmployee.Job = null;
             }
-                
+
             if (SelectedDepartment != null)
             {
                 newEmployee.DepartmentId = SelectedDepartment.Id;
                 newEmployee.Department = null;
             }
-                
+
             newEmployee.Name = Name;
             newEmployee.Surname = Surname;
             newEmployee.Birthday = new DateOnly(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day);
-            if (Jmbg!= null)
+            if (Jmbg != null)
                 newEmployee.Jmbg = Jmbg;
             if (Address != null)
                 newEmployee.Address = Address;
@@ -173,30 +227,51 @@ namespace Praksa_projectV1.ViewModels
             if (Phone != null)
                 newEmployee.Phone = Phone;
 
-            
+
             return newEmployee;
         }
 
-        private bool validationInput()
+        private bool ValidationInput()
         {
-            if (string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Surname))
+            if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Surname))
             {
                 MessageBox.Show("Unesi ime i prezime.");
                 return false;
             }
-            if(SelectedUser == null) {
+            if (SelectedUser == null)
+            {
                 MessageBox.Show("Unesi korisnika.");
                 return false;
             }
-            if(Jmbg != null)
+            if (SelectedItem == null)
             {
-               
-                if (Jmbg.ToString().Length != 13) { 
-                MessageBox.Show("Nesipravan oblik JMBG-a.");
-                return false;
+                if (WorkersRecords.Any(i => i.UserId == SelectedUser.Id))
+                {
+                    MessageBox.Show("Odabrani korisnik povezan sa drugim zaposlenikom.");
+
+                    return false;
                 }
             }
-            if(!string.IsNullOrEmpty(Email) && !Email.Contains("@"))
+            else
+            {
+                if (WorkersRecords.Any(i => i.UserId == SelectedUser.Id && i.Id != SelectedItem.Id))
+                {
+                    MessageBox.Show("Odabrani korisnik povezan sa drugim zaposlenikom.");
+
+                    return false;
+                }
+
+            }
+            if (Jmbg != null)
+            {
+
+                if (Jmbg.ToString().Length != 13)
+                {
+                    MessageBox.Show("Nesipravan oblik JMBG-a.");
+                    return false;
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(Email) && !Email.Contains("@"))
             {
                 MessageBox.Show("Neisparvan oblik emaila.");
                 return false;
@@ -214,52 +289,12 @@ namespace Praksa_projectV1.ViewModels
                 MessageBox.Show("Odabrani datum rođenja mora biti mlađi od 100 godina.");
                 return false;
             }
-            
+
             return true;
-           
-        }
-
-        private bool CanDelete(object obj)
-        {
-            if(SelectedItem!=null && CanDeletePermission(ModuleName))
-                return true;
-            return false;
-        }
-
-        private void Delete(object obj)
-        {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovog zaposlenika s imenom: " + SelectedItem.Name +" "+SelectedItem.Surname+"?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if(result == MessageBoxResult.Yes)
-            {
-                EmpolyeeRepository.DeleteById(SelectedItem.Id);
-                WorkersRecords.Remove(SelectedItem);
-                
-
-
-            }
-            SelectedItem = null;
-        }
-
-        private bool CanShowWindow(object obj)
-        {
-            return CanCreatePermission(ModuleName);
-        }
-
-        private void ShowWindow(object obj)
-        {
-            GetAllUsers();
-            GetAllDepartments();
-            GetAllJobsAsync();
-            ResetData();
-            WorkersEditView workersEditView = new();
-            workersEditView.DataContext = this;
-            workersEditView.Title = "Dodaj korisnika";
-            _isUpdateButtonVisible = false;
-            _isAddButtonVisible = true;
-            workersEditView.Show();
-
 
         }
+
+
 
         private int _id;
         public int Id
@@ -318,7 +353,7 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged("Jmbg");
             }
         }
-            private string _address;
+        private string _address;
         public string Address
         {
             get
@@ -394,7 +429,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
         private Employee _selectedItem;
-    public Employee? SelectedItem
+        public Employee? SelectedItem
         {
             get { return _selectedItem; }
             set
@@ -421,7 +456,7 @@ namespace Praksa_projectV1.ViewModels
                 }
             }
         }
-       
+
         private Department _selectedDepartment;
 
         public Department SelectedDepartment
@@ -521,35 +556,29 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
-        public void GetAllWorkers()
+        public async Task GetAllWorkersAsync()
         {
-            var employes = EmpolyeeRepository.GetAll();
+            var employes = await EmpolyeeRepository.GetAllAsync();
 
-         
+
 
             WorkersRecords = new ObservableCollection<Employee>(employes);
 
         }
-        public void GetAllUsers()
+        public async Task GetAllUsersAsync()
         {
-            UsersRecords = new ObservableCollection<User>(UserRepository.getAllUsers());
+            UsersRecords = new ObservableCollection<User>(await UserRepository.getAllUsersAsync());
         }
-        public void GetAllDepartments()
+        public async Task GetAllDepartmentsAsync()
         {
-            var departments = departmentRepository.GetAllDepartments();
-            foreach (var department in departments)
-            {
-                if (department.ParentDepartmentId != null)
-                {
-                    department.ParentDepartment = departments.Where(i => i.Id == department.ParentDepartmentId).FirstOrDefault();
-                }
-            }
+            var departments = await departmentRepository.GetAllDepartmentsAsync();
+
             DepartmentRecords = new ObservableCollection<Department>(departments);
 
         }
         public async Task GetAllJobsAsync()
         {
-            
+
             JobRecords = new ObservableCollection<Job>(await jobRepository.GetAllJobsAsync());
 
         }
@@ -566,7 +595,7 @@ namespace Praksa_projectV1.ViewModels
             SelectedDepartment = null;
             SelectedJob = null;
             SelectedUser = null;
-            SelectedItem = null;    
+            SelectedItem = null;
 
         }
     }

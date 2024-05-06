@@ -83,12 +83,12 @@ namespace Praksa_projectV1.DataAccess
         {
             using (dContext = new Context())
             {
-                
-                
-                    dContext.Employees.Update(employee);
-                    dContext.SaveChanges();
-                    return true;
-                
+
+
+                dContext.Employees.Update(employee);
+                dContext.SaveChanges();
+                return true;
+
 
 
             }
@@ -98,13 +98,13 @@ namespace Praksa_projectV1.DataAccess
         {
             using (dContext = new Context())
             {
-               return dContext.Employees
-                    .Include(e => e.Job)
-                    .Include(e => e.Department)
-                    .FirstOrDefault(i => i.Id == id);
+                return dContext.Employees
+                     .Include(e => e.Job)
+                     .Include(e => e.Department)
+                     .FirstOrDefault(i => i.Id == id);
             }
 
-          }
+        }
 
         internal async Task<Employee> GetProjectByIdAsync(int id)
         {
@@ -114,6 +114,85 @@ namespace Praksa_projectV1.DataAccess
         internal IEnumerable<Employee> FilterByNameSurnameProjectId(string searchText, int id)
         {
             throw new NotImplementedException();
+        }
+
+        internal async Task<IEnumerable<Employee>> GetAllAsync()
+        {
+            try
+            {
+                using (dContext = new Context())
+                {
+
+                    return await dContext.Employees
+                                       .Include(e => e.Job)
+                                       .Include(e => e.Department)
+                                       .ToListAsync();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Enumerable.Empty<Employee>();
+            }
+        }
+
+        internal async Task<bool> DeleteAsync(Employee selectedItem)
+        {
+            try
+            {
+                using (dContext = new Context())
+                {
+
+                    dContext.Employees.Remove(selectedItem);
+                    var RowsAffected = await dContext.SaveChangesAsync();
+                    return RowsAffected > 0;
+
+                }
+
+
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+
+        internal async Task<bool> UpdateAsync(Employee selectedItem)
+        {
+            try
+            {
+                using (dContext = new Context())
+                {
+                    dContext.Employees.Update(selectedItem);
+                    var RowsAffected = await dContext.SaveChangesAsync();
+                    return RowsAffected > 0;
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal async Task<bool> AddAsync(Employee newEmployee)
+        {
+            try
+            {
+                using (dContext = new Context())
+                {
+                    await dContext.Employees.AddAsync(newEmployee);
+                    var RowsAffected = await dContext.SaveChangesAsync();
+                    return RowsAffected > 0;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
     }
 }

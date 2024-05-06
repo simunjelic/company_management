@@ -126,7 +126,7 @@ namespace Praksa_projectV1.DataAccess
             catch (Exception ex)
             {
 
-                return null;
+                return  Enumerable.Empty<User>();
             }
         }
 
