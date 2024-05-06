@@ -1,4 +1,5 @@
-﻿using Praksa_projectV1.DataAccess;
+﻿using Praksa_projectV1.Commands;
+using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Enums;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.Views;
@@ -20,14 +21,14 @@ namespace Praksa_projectV1.ViewModels
     {
         ProjectRepository ProjectRepository;
         EmployeeRepository EmployeeRepository { get; }
-        public ICommand DeleteCommand { get; }
-        public ICommand ShowAddWindowCommand { get; }
-        public ICommand AddCommand { get; }
-        public ICommand UpdateCommand { get; }
-        public ICommand ShowUpdateWindowCommand { get; }
-        public ICommand ShowProjectTeamWindowCommand { get; }
-        public ICommand AddMemberCommand { get; }
-        public ICommand DeleteMemberCommand { get; }
+        public IAsyncCommand DeleteCommand { get; }
+        public IAsyncCommand ShowAddWindowCommand { get; }
+        public IAsyncCommand AddCommand { get; }
+        public IAsyncCommand UpdateCommand { get; }
+        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public IAsyncCommand ShowProjectTeamWindowCommand { get; }
+        public IAsyncCommand AddMemberCommand { get; }
+        public IAsyncCommand DeleteMemberCommand { get; }
         private readonly string ModuleName = "Projekti";
 
 
@@ -36,194 +37,231 @@ namespace Praksa_projectV1.ViewModels
         {
             ProjectRepository = new ProjectRepository();
             EmployeeRepository = new EmployeeRepository();
-            gatAllProjects();
-            DeleteCommand = new ViewModelCommand(Delete, CanDelete);
-            ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
-            AddCommand = new ViewModelCommand(AddProject, CanAddProject);
-            UpdateCommand = new ViewModelCommand(UpdateProject, CanUpdateProject);
-            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
-            ShowProjectTeamWindowCommand = new ViewModelCommand(ShowProjectTeamWindow, CanShowProjectTeamWindow);
-            AddMemberCommand = new ViewModelCommand(AddMemberAsync, CanAddMember);
-            DeleteMemberCommand = new ViewModelCommand(DeleteMember, CanDeleteMember);
+            gatAllProjectsAsync();
+            getLocationsAndTypesAsync();
+            GetAllEmployeesAsync();
+            DeleteCommand = new AsyncCommand(DeleteProjectAsync, CanDeleteProjectAsync);
+            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            AddCommand = new AsyncCommand(AddProjectAsync, CanAddProjectAsync);
+            UpdateCommand = new AsyncCommand(UpdateProjectAsync, CanUpdateProjectAsync);
+            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowAsync);
+            ShowProjectTeamWindowCommand = new AsyncCommand(ShowProjectTeamWindowAsync, CanShowProjectTeamWindowAsync);
+            AddMemberCommand = new AsyncCommand(AddMemberAsync, CanAddMemberAsync);
+            DeleteMemberCommand = new AsyncCommand(DeleteMemberAsync, CanDeleteMemberAsync);
 
 
         }
 
-        private bool CanDeleteMember(object obj)
+        private bool CanAddMemberAsync()
         {
-            if (SelectedEmployee != null && CanDeletePermission(ModuleName))
-                return true;
-            return false;
+            return CanCreatePermission(ModuleName);
         }
 
-        private async void DeleteMember(object obj)
+        private async Task AddMemberAsync()
         {
-            var result = MessageBox.Show("Jeste li sigurni da želite ukoloniti: " + SelectedEmployee.Employee.Name + " " + SelectedEmployee.Employee.Name + " sa projekta " + SelectedEmployee.Project.Name, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            if(SelectedNewEmployee!= null) { 
+            if (!TeamRecords.Any(i => i.ProjectId == SelectedItem.Id && i.EmployeeId == SelectedNewEmployee.Id))
             {
-                var check = await ProjectRepository.DeleteEmployeeFromProjectAsync(SelectedEmployee);
+                EmployeeProject teamMember = new EmployeeProject();
+                teamMember.ProjectId = SelectedItem.Id;
+                teamMember.EmployeeId = SelectedNewEmployee.Id;
+                if (IsManager) teamMember.Manager = "Da";
+                else teamMember.Manager = "Ne";
+                var check = await ProjectRepository.AddMemberToProject(teamMember);
+
                 if (check)
                 {
-                    TeamRecords.Remove(SelectedEmployee);
-                    MessageBox.Show("Zaposlenik ukoljen sa projekta.");
+                    teamMember.Project = ProjectRecords.Where(i => i.Id == SelectedItem.Id).FirstOrDefault();
+                    teamMember.Employee = SelectedNewEmployee;
+                    TeamRecords.Add(teamMember);
+                    IsManager = false;
+                    SelectedNewEmployee = null;
                 }
-                SelectedEmployee = null;
             }
+            else MessageBox.Show("Zaposlenik već dodan na projekt.");
+            } else MessageBox.Show("Odaberite zaposlenika.");
         }
 
-        private bool CanAddMember(object obj)
+        private bool CanDeleteMemberAsync()
         {
-            if (SelectedNewEmployee != null && CanCreatePermission(ModuleName))
-                return true;
-            return false;
+            return CanDeletePermission(ModuleName);
         }
 
-        private async void AddMemberAsync(object obj)
+        private async Task DeleteMemberAsync()
         {
-            EmployeeProject teamMember = new EmployeeProject();
-            teamMember.ProjectId = SelectedItem.Id;
-            teamMember.EmployeeId = SelectedNewEmployee.Id;
-            if (IsManager) teamMember.Manager = "Da";
-            else teamMember.Manager = "Ne";
-            var check = await ProjectRepository.AddMemberToProject(teamMember);
-
-            if (check)
+            if (SelectedEmployee != null)
             {
-                teamMember.Project = ProjectRecords.Where(i => i.Id == SelectedItem.Id).FirstOrDefault();
-                teamMember.Employee = SelectedNewEmployee;
-                TeamRecords.Add(teamMember);
-                IsManager = false;
-                SelectedNewEmployee = null;
+                var result = MessageBox.Show("Jeste li sigurni da želite ukoloniti: " + SelectedEmployee.Employee.Name + " " + SelectedEmployee.Employee.Name + " sa projekta " + SelectedEmployee.Project.Name, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    var check = await ProjectRepository.DeleteEmployeeFromProjectAsync(SelectedEmployee);
+                    if (check)
+                    {
+                        TeamRecords.Remove(SelectedEmployee);
+                        MessageBox.Show("Zaposlenik ukoljen sa projekta.");
+                    }
+                    else MessageBox.Show("Greška pri brisanju zaposlenika sa projekta.");
+                    SelectedEmployee = null;
+                }
+
             }
+            else MessageBox.Show("Odaberite redak koji želite obrisati");
         }
 
-        private bool CanShowProjectTeamWindow(object obj)
+        private bool CanAddProjectAsync()
         {
-            if (SelectedItem != null)
-                return true;
-            return false;
+            return true;
         }
 
-        private void ShowProjectTeamWindow(object obj)
+        private async Task AddProjectAsync()
         {
-
-            ProjectTeamView projectTeamView = new ProjectTeamView();
-            projectTeamView.DataContext = this;
-            projectTeamView.Title = SelectedItem.Name;
-            GetTeamAsync();
-            GetAllEmployees();
-            projectTeamView.Show();
-
-        }
-
-        private bool CanUpdateProject(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
-        }
-
-        private async void UpdateProject(object obj)
-        {
-            if (ValidationData())
-            {
-                SelectedItem = PopulateData(SelectedItem);
-                _ = ProjectRepository.UpdateProjectAsync(SelectedItem);
-                int index = -1;
-                index = ProjectRecords.IndexOf(ProjectRecords.Where(x => x.Id == Id).Single());
-                ProjectRecords[index] = await ProjectRepository.GetProjectByIdAsync(Id);
-                ResetData();
-            }
-
-        }
-
-        private bool CanAddProject(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null) && CanCreatePermission(ModuleName);
-        }
-
-        private void AddProject(object obj)
-        {
-
             Project newProject = new Project();
 
             if (ValidationData())
             {
                 newProject = PopulateData(newProject);
-                ProjectRepository.Add(newProject);
-                MessageBox.Show("Dodan novi projekt");
-                newProject.Location = Location;
-                newProject.Type = Type;
-                ProjectRecords.Add(newProject);
-                ResetData();
+                bool IsTrue = await ProjectRepository.AddAsync(newProject);
+                if (IsTrue)
+                {
+                    MessageBox.Show("Dodan novi projekt");
+                    newProject.Location = Location;
+                    newProject.Type = Type;
+                    ProjectRecords.Add(newProject);
+                    ResetData();
+                }
+                else MessageBox.Show("Greška prilikom dodavanja projekta.");
+
+            }
+        }
+
+        private bool CanUpdateProjectAsync()
+        {
+            return Validator.TryValidateObject(this, new ValidationContext(this), null);
+        }
+
+        private async Task UpdateProjectAsync()
+        {
+            if (ValidationData())
+            {
+                Project NewProject = new();
+                NewProject = PopulateData(NewProject);
+                NewProject.Id = Id;
+                var IsTrue = await ProjectRepository.UpdateProjectAsync(NewProject);
+                if (IsTrue)
+                {
+                    int index = -1;
+                    index = ProjectRecords.IndexOf(ProjectRecords.Where(x => x.Id == Id).Single());
+                    NewProject.Location = Location;
+                    NewProject.Type = Type;
+                    ProjectRecords[index] = NewProject;
+                    ResetData();
+
+                    MessageBox.Show("Projekt je uspješno ažuriran.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    MessageBox.Show($"Pogreška pri ažuriranju projekta");
+                }
 
 
             }
-
-
-
         }
 
-        private bool CanShowUpdateWindow(object obj)
+        private bool CanDeleteProjectAsync()
         {
-            if (SelectedItem != null && CanUpdatePermission(ModuleName))
-                return true;
-            return false;
+            return true;
         }
 
-        private void ShowUpdateWindow(object obj)
+        private async Task DeleteProjectAsync()
         {
+            if (SelectedItem != null)
+            {
+                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovaj projekt: " + SelectedItem.Name + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-            ProjectEditView projectEditView = new ProjectEditView();
-            projectEditView.DataContext = this;
-            projectEditView.Title = "Uredi projekt";
-            _isUpdateButtonVisible = true;
-            _isAddButtonVisible = false;
-            getLocationsAndTypes();
-            FillUpdateForm();
-            projectEditView.Show();
+                if (result == MessageBoxResult.Yes)
+                {
+                    var check = await ProjectRepository.DeleteAsync(SelectedItem);
+                    if (check)
+                        ProjectRecords.Remove(SelectedItem);
+                    else MessageBox.Show("Nije moguće obrisati projekt.");
+
+
+
+                }
+                SelectedItem = null;
+
+            }
+            else MessageBox.Show("Odaberite redak koji želite obrisati.");
         }
 
-        private bool CanShowAddWindow(object obj)
+        private bool CanShowProjectTeamWindowAsync()
+        {
+            return true;
+        }
+
+        private async Task ShowProjectTeamWindowAsync()
+        {
+            if (SelectedItem != null)
+            {
+                ProjectTeamView projectTeamView = new ProjectTeamView();
+                projectTeamView.DataContext = this;
+                projectTeamView.Title = SelectedItem.Name;
+                await GetTeamAsync();
+                projectTeamView.Show();
+
+            }
+            else MessageBox.Show("Odaberite projekt prvo da bi vidjeli članove tima.");
+        }
+
+        private bool CanShowUpdateWindowAsync()
+        {
+            return CanUpdatePermission(ModuleName);
+        }
+
+        private async Task ShowUpdateWindowAsync()
+        {
+            if (SelectedItem != null)
+            {
+                ProjectEditView projectEditView = new ProjectEditView();
+                projectEditView.DataContext = this;
+                projectEditView.Title = "Uredi projekt";
+                _isUpdateButtonVisible = true;
+                _isAddButtonVisible = false;
+                this.Location = null;
+                this.Type = null;
+                this.Status = null;
+                FillUpdateForm();
+
+                projectEditView.Show();
+
+            }
+            else MessageBox.Show("Odaberite redak koji želite urediti.");
+        }
+
+        private bool CanShowAddWindowAsync()
         {
             return CanCreatePermission(ModuleName);
         }
 
-        private void ShowAddWindow(object obj)
+        private async Task ShowAddWindowAsync()
         {
-
             ProjectEditView projectEditView = new ProjectEditView();
             projectEditView.DataContext = this;
             projectEditView.Title = "Dodaj projekt";
             _isUpdateButtonVisible = false;
             _isAddButtonVisible = true;
-            getLocationsAndTypes();
             ResetData();
             projectEditView.Show();
         }
 
-        private bool CanDelete(object obj)
-        {
-            if (SelectedItem != null && CanDeletePermission(ModuleName))
-                return true;
-            return false;
-        }
-
-        private async void Delete(object obj)
-        {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovaj projekt: " + SelectedItem.Name + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                var check = await ProjectRepository.DeleteByIdAsync(SelectedItem.Id);
-                if(check)
-                 ProjectRecords.Remove(SelectedItem);
-                else MessageBox.Show("Nije moguće obrisati projekt.");
 
 
 
-            }
-            SelectedItem = null;
-        }
+
+
+
+
         private int _id;
         public int Id
         {
@@ -430,15 +468,15 @@ namespace Praksa_projectV1.ViewModels
             ProjectRecords = new ObservableCollection<Project>(await ProjectRepository.FilterData(SearchQuery));
         }
 
-        public void gatAllProjects()
+        public async Task gatAllProjectsAsync()
         {
-            ProjectRecords = new ObservableCollection<Project>(ProjectRepository.GetAll());
+            ProjectRecords = new ObservableCollection<Project>(await ProjectRepository.GetAllAsync());
 
         }
-        public void getLocationsAndTypes()
+        public async Task getLocationsAndTypesAsync()
         {
-            LocationRecords = new ObservableCollection<Location>(ProjectRepository.GetAllLocations());
-            TypeRecords = new ObservableCollection<Type>(ProjectRepository.GetAllTypes());
+            LocationRecords = new ObservableCollection<Location>(await ProjectRepository.GetAllLocationsAsync());
+            TypeRecords = new ObservableCollection<Type>(await ProjectRepository.GetAllTypesAsync());
 
         }
         public void ResetData()
@@ -514,7 +552,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool ValidationData()
         {
-            if (string.IsNullOrEmpty(Name))
+            if (string.IsNullOrWhiteSpace(Name))
             {
                 MessageBox.Show("Unesi ime projekta");
                 return false;
@@ -651,9 +689,9 @@ namespace Praksa_projectV1.ViewModels
             var team = await ProjectRepository.GetTeam(SelectedItem.Id);
             TeamRecords = new ObservableCollection<EmployeeProject>(team);
         }
-        public void GetAllEmployees()
+        public async Task GetAllEmployeesAsync()
         {
-            var employes = EmployeeRepository.GetAll();
+            var employes = await EmployeeRepository.GetAllAsync();
             EmployeeRecords = new ObservableCollection<Employee>(employes);
             EmployeeShow = new ObservableCollection<Employee>(employes);
         }
