@@ -181,6 +181,7 @@ VerticalAlignment="Top">
                     <DataGridTextColumn Binding="{Binding Path=Email}"  Header="Email"/>
                     <DataGridTextColumn Binding="{Binding Path=Job.Name}"  Header="Radno mjesto"/>
                     <DataGridTextColumn Binding="{Binding Path=Department.Name}"  Header="Odjel"/>
+                    <DataGridTextColumn Binding="{Binding Path=Address}"  Header="Adresa"/>
                     <DataGridTextColumn Binding="{Binding Path=Birthday}"  Header="Datum rođenja"/>
                     <DataGridTextColumn Binding="{Binding Path=Jmbg}"  Header="Jmbg"/>
 
