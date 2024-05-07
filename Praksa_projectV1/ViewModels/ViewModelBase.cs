@@ -17,7 +17,7 @@ namespace Praksa_projectV1.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
         public PermissonRepository PermissonRepository = new PermissonRepository();
 
-       
+
 
 
 
@@ -65,7 +65,8 @@ namespace Praksa_projectV1.ViewModels
 
         public bool CanReadPermission(string modul)
         {
-                return PermissonRepository.CheckAcess(modul,3, RoleManager.Roles);
+
+            return PermissonRepository.CheckAcess(modul, 3, RoleManager.Roles);
         }
         public bool CanDeletePermission(string modul)
         {
@@ -75,12 +76,20 @@ namespace Praksa_projectV1.ViewModels
         {
             return PermissonRepository.CheckAcess(modul, 1, RoleManager.Roles);
         }
-        public bool CanCreatePermission(string modul)
+        public bool CanCreatePermissionAsync(string modul)
         {
-            return PermissonRepository.CheckAcess(modul, 0, RoleManager.Roles);
+            if (PermissionAccess.CreatePermission.Count == 0)
+            {
+                PermissionAccess.CreatePermission = PermissonRepository.GetUserRoles(0, RoleManager.RolesId);
+                return PermissionAccess.CreatePermission.Any(i => i.Module.Name == modul);
+            }
+            else
+            {
+                return PermissionAccess.CreatePermission.Any(i => i.Module.Name == modul);
+            }
         }
 
-        private bool _isUpdateButtonVisible = true; // Initially visible
+        private bool _isUpdateButtonVisible = true;
 
         public bool IsUpdateButtonVisible
         {
@@ -109,7 +118,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
-       
-       
+
+
     }
 }

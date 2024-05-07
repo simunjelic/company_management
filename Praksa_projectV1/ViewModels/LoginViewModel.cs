@@ -95,17 +95,18 @@ namespace Praksa_projectV1.ViewModels
                 Password == null || Password.Length < 1))
                 {
                     var isValidUser = await userRepository.AuthenticateUserAsync(new System.Net.NetworkCredential(Username, Password));
-                    if (isValidUser)
+                    if (isValidUser != null)
                     {
-
-                        var list = await userRepository.GetUserRolesAsync(Username);
                         RoleManager.Username = Username;
+                        RoleManager.Id = isValidUser.Id;
+                        var list = await userRepository.GetUserRolesAsync(isValidUser.Id);
                         string[] roles = new string[list.Count()];
                         int index = 0;
-                        foreach (string item in list)
+                        foreach (UserRole item in list)
                         {
-                            roles[index++] = item;
-                            RoleManager.Roles.Add(item);
+                            roles[index++] = item.RoleId.ToString();
+                            RoleManager.Roles.Add(item.Role.RoleName);
+                            RoleManager.RolesId.Add(item.RoleId);
 
                         }
                         // Create a new identity with the username and roles

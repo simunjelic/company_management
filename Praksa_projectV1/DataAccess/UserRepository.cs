@@ -19,7 +19,7 @@ namespace Praksa_projectV1.DataAccess
             throw new NotImplementedException();
         }
 
-        public async Task<bool> AuthenticateUserAsync(NetworkCredential credential)
+        public async Task<User> AuthenticateUserAsync(NetworkCredential credential)
         {
             bool validUser = false;
 
@@ -29,14 +29,10 @@ namespace Praksa_projectV1.DataAccess
                 // Check if there is a user with the provided username and password
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == credential.UserName && u.Password == HashPassword(credential.Password));
 
-                // If a user is found, set validUser to true
-                if (user != null)
-                {
-                    validUser = true;
-                }
+                return user;
             }
 
-            return validUser;
+            return null;
 
         }
 
@@ -370,16 +366,15 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<IEnumerable<string>> GetUserRolesAsync(string username)
+        internal async Task<IEnumerable<UserRole>> GetUserRolesAsync(int id)
         {
             try
             {
                 using (var dbContext = new Context())
                 {
-                    var roles = await dbContext.Users
-              .Where(u => u.Username == username)
-              .SelectMany(u => u.UserRoles)
-              .Select(ur => ur.Role.RoleName)
+                    var roles = await dbContext.UserRoles
+                        .Include(e => e.Role)
+              .Where(u => u.UserId == id)
               .ToListAsync();
 
                     return roles;

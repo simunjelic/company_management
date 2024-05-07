@@ -15,6 +15,13 @@ namespace Praksa_projectV1.Models
             get { return _roles; }
             set { _roles = value; }
         }
+        private static List<int> _rolesId = new List<int>();
+
+        public static List<int> RolesId
+        {
+            get { return _rolesId; }
+            set { _rolesId = value; }
+        }
 
         private static string? _username;
 
@@ -22,6 +29,13 @@ namespace Praksa_projectV1.Models
         {
             get { return _username; }
             set { _username = value; }
+        }
+        private static int _id;
+
+        public static int Id
+        {
+            get { return _id; }
+            set { _id = value; }
         }
     }
 }

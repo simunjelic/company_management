@@ -261,5 +261,24 @@ namespace Praksa_projectV1.DataAccess
                 return false;
             }
         }
+
+        internal List<Permission> GetUserRoles(int action, List<int> roles)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return context.Permissions
+                        .Include(e => e.Role)
+                        .Include(e => e.Module)
+                        .Where(i => i.ActionId == action && roles.Contains((int)i.RoleId)).ToList();
+                }
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }
