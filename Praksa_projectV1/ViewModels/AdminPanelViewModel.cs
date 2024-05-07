@@ -12,15 +12,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Praksa_projectV1.Commands;
+using Microsoft.Identity.Client.NativeInterop;
 
 namespace Praksa_projectV1.ViewModels
 {
     class AdminPanelViewModel : ViewModelBase
     {
         public PermissonRepository permissonRepository;
-        public ICommand DeleteCommand { get; }
-        public ICommand ShowAddWindowCommand { get; }
-        public ICommand AddCommand { get; }
+        public IAsyncCommand DeleteCommand { get; }
+        public IAsyncCommand ShowAddWindowCommand { get; }
+        public IAsyncCommand AddCommand { get; }
         public string ModuleName = "Admin panel";
 
 
@@ -29,12 +31,94 @@ namespace Praksa_projectV1.ViewModels
             permissonRepository = new PermissonRepository();
             GetAllPermissionsAsync();
             GetAllModulesAndRoles();
-            DeleteCommand = new ViewModelCommand(Delete, CanDelete);
-            ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
+            DeleteCommand = new AsyncCommand(DeleteAsync, CanDeleteAsync);
+            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
             ShowPermissionRecords = new ObservableCollection<string>(GetAvailableActions());
-            AddCommand = new ViewModelCommand(Add, CanAdd);
+            AddCommand = new AsyncCommand(AddAsync, CanAddAsync);
 
 
+        }
+
+        private bool CanAddAsync()
+        {
+            return true;
+        }
+
+        private async Task AddAsync()
+        {
+            if (Validator.TryValidateObject(this, new ValidationContext(this), null))
+            {
+                Permission permission = new Permission();
+                permission.ModuleId = Module.Id;
+                permission.RoleId = Role.Id;
+                permission.ActionId = (int)AvailableAction;
+
+
+                if (!PermissionRecords.Any(i => i.ModuleId == permission.ModuleId && i.RoleId == permission.RoleId && i.ActionId == permission.ActionId))
+                {
+                    bool check = await PermissonRepository.AddAsync(permission);
+
+                    if (check)
+                    {
+                        permission.Action = AvailableAction.ToString();
+                        permission.Module = Module;
+                        permission.Role = Role;
+                        PermissionRecords.Add(permission);
+                        PermissionFilterRecords.Add(permission);
+                        MessageBox.Show("Nova dozvola dodana", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else MessageBox.Show("Greška pri dodvanu nove dozvole", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else MessageBox.Show("Dozvola već postoji", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            }
+            else MessageBox.Show("Popunite sva bolja označena crveno.");
+        }
+
+        private bool CanDeleteAsync()
+        {
+            return CanDeletePermission("Admin panel");
+        }
+
+        private async Task DeleteAsync()
+        {
+            if (SelectedItem != null)
+            {
+                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati dozvolu: " + SelectedItem.Module.Name + " " + SelectedItem.Role.RoleName + " " + SelectedItem.Action + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    bool check = await permissonRepository.RemoveAsync(SelectedItem);
+                    if (check)
+                    {
+                        PermissionRecords.Remove(SelectedItem);
+                        PermissionFilterRecords.Remove(SelectedItem);
+                        MessageBox.Show("Dozvola uspješno obrisana");
+                    }
+                    else MessageBox.Show("Greška pri brisanju dozvole");
+
+
+                    SelectedItem = null;
+                }
+
+            }
+            else MessageBox.Show("Odaberite redak koji želite urediti");
+        }
+
+        private bool CanShowAddWindowAsync()
+        {
+            return CanCreatePermission(ModuleName);
+        }
+
+        private async Task ShowAddWindowAsync()
+        {
+            AdminPanelEditView adminPanelEditView = new AdminPanelEditView();
+            adminPanelEditView.DataContext = this;
+            adminPanelEditView.Title = "Dodaj novu dozvolu";
+            ResetData();
+            IsAddButtonVisible = true;
+            IsUpdateButtonVisible = false;
+            adminPanelEditView.Show();
         }
 
         public List<string> GetAvailableActions()
@@ -50,88 +134,9 @@ namespace Praksa_projectV1.ViewModels
         }
 
 
-        private bool CanAdd(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
-        }
-
-        private async void Add(object obj)
-        {
-            Permission permission = new Permission();
-            permission.ModuleId = Module.Id;
-            permission.RoleId = Role.Id;
-            //permission.Action = SelectedPermission;
-            permission.ActionId = (int)AvailableAction;
+        
 
 
-            if (!PermissionRecords.Any(i => i.ModuleId == permission.ModuleId && i.RoleId == permission.RoleId && i.ActionId == permission.ActionId))
-            {
-                bool check = await PermissonRepository.Add(permission);
-
-                if (check)
-                {
-                    permission.Action = AvailableAction.ToString();
-                    permission.Module = Module;
-                    permission.Role = Role;
-                    PermissionRecords.Add(permission);
-                    PermissionFilterRecords.Add(permission);
-                    MessageBox.Show("Nova dozvola dodana", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else MessageBox.Show("Greška pri dodvanu nove dozvole", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else MessageBox.Show("Dozvola već postoji", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-
-        private bool CanShowAddWindow(object obj)
-        {
-            return CanCreatePermission(ModuleName);
-        }
-
-        private void ShowAddWindow(object obj)
-        {
-
-            AdminPanelEditView adminPanelEditView = new AdminPanelEditView();
-            adminPanelEditView.DataContext = this;
-            adminPanelEditView.Title = "Dodaj novu dozvolu";
-            ResetData();
-            IsAddButtonVisible = true;
-            IsUpdateButtonVisible = false;
-            adminPanelEditView.Show();
-
-        }
-
-
-
-        private bool CanDelete(object obj)
-        {
-            if (SelectedItem != null && CanDeletePermission("Admin panel")) return true;
-            return false;
-        }
-
-        private void Delete(object obj)
-        {
-
-
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati dozvolu: " + SelectedItem.Module.Name + " " + SelectedItem.Role.RoleName + " " + SelectedItem.Action + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                bool check = permissonRepository.RemoveById(SelectedItem.Id);
-                if (check)
-                {
-                    PermissionRecords.Remove(SelectedItem);
-                    PermissionFilterRecords.Remove(SelectedItem);
-                    MessageBox.Show("Dozvola uspješno obrisana");
-                }
-                else MessageBox.Show("Greška pri brisanju dozvole");
-
-
-                SelectedItem = null;
-            }
-
-
-        }
         private int _id;
         public int Id
         {
@@ -307,14 +312,14 @@ namespace Praksa_projectV1.ViewModels
 
 
 
-        public async void GetAllPermissionsAsync()
+        public async Task GetAllPermissionsAsync()
         {
             var permissions = await permissonRepository.GetAllPermissions();
             PermissionRecords = new ObservableCollection<Permission>(permissions);
             PermissionFilterRecords = new ObservableCollection<Permission>(permissions);
 
         }
-        public async void GetAllModulesAndRoles()
+        public async Task GetAllModulesAndRoles()
         {
             var roles = await permissonRepository.GetAllRoles();
             RoleRecords = new ObservableCollection<Role>(roles);

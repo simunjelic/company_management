@@ -137,7 +137,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> Add(Permission permission)
+        internal async Task<bool> AddAsync(Permission permission)
         {
             try
             {
@@ -233,6 +233,26 @@ namespace Praksa_projectV1.DataAccess
                     int rowsAffected = await context.SaveChangesAsync();
                     return rowsAffected > 0;
 
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        internal async Task<bool> RemoveAsync(Permission selectedItem)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    
+                        context.Permissions.Remove(selectedItem);
+                        var RowsAffected = await context.SaveChangesAsync();
+                        return RowsAffected > 0;
+                    
                 }
 
             }
