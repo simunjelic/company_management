@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Primitives;
+using Praksa_projectV1.Commands;
 using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.Validation;
@@ -23,12 +24,13 @@ namespace Praksa_projectV1.ViewModels
     {
         WorkingCardRepository cardRespository { get; set; }
         UserRepository userRepository { get; set; }
-        public ICommand DeleteCommand { get; }
-        public ICommand ShowAddWindowCommand { get; }
-        public ICommand AddCommand { get; }
-        public ICommand ShowUpdateWindowCommand { get; }
-        public ICommand UpdateCommand { get; }
-        public ICommand RefreshDateCommand { get; }
+        ProjectRepository ProjectRepository { get; set; }
+        public IAsyncCommand DeleteCommand { get; }
+        public IAsyncCommand ShowAddWindowCommand { get; }
+        public IAsyncCommand AddCommand { get; }
+        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public IAsyncCommand UpdateCommand { get; }
+        public IAsyncCommand RefreshDateCommand { get; }
         public string ModuleName = "Radna karta";
 
         public WorkingCardViewModel()
@@ -56,169 +58,186 @@ namespace Praksa_projectV1.ViewModels
         
         cardRespository = new();
             userRepository = new();
+            ProjectRepository = new();
             gettAllDataFromCard();
-            DeleteCommand = new ViewModelCommand(Delete, CanDelete);
-            ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
-            AddCommand = new ViewModelCommand(Add, CanAdd);
-            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
-            UpdateCommand = new ViewModelCommand(UpdateRecord, CanUpdateRecord);
-            RefreshDateCommand = new ViewModelCommand(RefreshDate, CanRefreshDate);
+            DeleteCommand = new AsyncCommand(DeleteAsync, CanDeleteAsync);
+            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            AddCommand = new AsyncCommand(AddAsync, CanAddAsync);
+            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowAsync);
+            UpdateCommand = new AsyncCommand(UpdateRecordAsync, CanUpdateRecordAsync);
+            RefreshDateCommand = new AsyncCommand(RefreshDateAsync, CanRefreshDateAsync);
             gettAllProjectsAndActivities();
 
 
         }
+       
 
-        private bool CanRefreshDate(object obj)
+        
+
+        private bool CanRefreshDateAsync()
         {
-            if (StartDate <= EndDate) return true;
-            return false;
-
+            return true;
         }
 
-        private async void RefreshDate(object obj)
+        private async Task RefreshDateAsync()
         {
-            if (IsValidDateWithinLast100Years((DateTime)StartDate) && IsValidDateWithinLast100Years((DateTime)EndDate))
+            if (IsValidDateWithinLast100Years((DateTime)StartDate) && IsValidDateWithinLast100Years((DateTime)EndDate) && StartDate <= EndDate)
             {
                 Application.Current.Resources["StartDate"] = StartDate;
                 Application.Current.Resources["EndDate"] = EndDate;
-                gettAllDataFromCard();
+                await gettAllDataFromCard();
             }
             else MessageBox.Show("Datumi nisu ispravni.");
         }
 
-        private bool CanUpdateRecord(object obj)
+        private bool CanAddAsync()
         {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
+            return true;
         }
 
-        private async void UpdateRecord(object obj)
+        private async Task AddAsync()
         {
-            WorkingCard updateCard = new();
-            updateCard.EmployeeId = SelectedItem.EmployeeId;
-            updateCard.Id = Id;
-            updateCard.ProjectId = SelectedProject.Id;
-            updateCard.ActivityId = SelectedActivity.Id;
-            updateCard.Hours = decimal.Parse(Hours);
-            updateCard.Description = Description;
-            updateCard.Date = new DateOnly(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day);
-            
-            
-            bool check = cardRespository.Edit(updateCard);
-            if (check)
+            if (Validator.TryValidateObject(this, new ValidationContext(this), null))
             {
-                gettAllDataFromCard();
-
-                ResetData();
-                MessageBox.Show("Podatak uspješno uređen.");
-            }
-            else
-            {
-                MessageBox.Show("Greška pri uređivanju podataka.");
-            }
-
-        }
-
-        private bool CanShowUpdateWindow(object obj)
-        {
-            if (SelectedItem != null && CanUpdatePermission(ModuleName)) return true;
-            else return false;
-        }
-
-        private void ShowUpdateWindow(object obj)
-        {
-            WorkingCardEdit workingCardEdit = new WorkingCardEdit();
-            workingCardEdit.DataContext = this;
-            workingCardEdit.Title = "Radna karta: uređivanje zapisa";
-            SelectedDate = SelectedItem.Date.HasValue ? new DateTime(SelectedItem.Date.Value.Year, SelectedItem.Date.Value.Month, SelectedItem.Date.Value.Day) : (DateTime?)null;
-            SelectedActivity = ActivityRecords.Where(i => i.Id == SelectedItem.ActivityId).Single();
-            SelectedProject = ProjectRecords.Where(i => i.Id == SelectedItem.ProjectId).Single();
-            Description = SelectedItem.Description;
-            Hours = SelectedItem.Hours.ToString();
-            Id = SelectedItem.Id;
-            IsAddButtonVisible = false;
-            IsUpdateButtonVisible = true;
-            workingCardEdit.Show();
-        }
-
-        private bool CanAdd(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
-        }
-
-        private async void Add(object obj)
-        {
-            WorkingCard newCard = new WorkingCard();
-            newCard.ProjectId = SelectedProject.Id;
-            newCard.ActivityId = SelectedActivity.Id;
-            newCard.Hours = decimal.Parse(Hours);
-            newCard.Description = Description;
-            newCard.Date = new DateOnly(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day);
-            var username = Thread.CurrentPrincipal?.Identity.Name.ToString();
-            var employee = userRepository.getEmployeeByUsername(username);
-            if (employee != null)
-            {
-                newCard.EmployeeId = employee.Id;
-
-                var check = await cardRespository.Add(newCard);
-                if (check)
+                WorkingCard newCard = new WorkingCard();
+                newCard.ProjectId = SelectedProject.Id;
+                newCard.ActivityId = SelectedActivity.Id;
+                newCard.Hours = decimal.Parse(Hours);
+                newCard.Description = Description;
+                newCard.Date = new DateOnly(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day);
+                var username = Thread.CurrentPrincipal?.Identity.Name.ToString();
+                var employee = await userRepository.getEmployeeByUsernameAsync(username);
+                if (employee != null)
                 {
-                    MessageBox.Show("Sati dodani.");
-                    gettAllDataFromCard();
-                    ResetData();
+                    newCard.EmployeeId = employee.Id;
+
+                    var check = await cardRespository.Add(newCard);
+                    if (check)
+                    {
+                        MessageBox.Show("Sati dodani.");
+                        gettAllDataFromCard();
+                        ResetData();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Greška pri unosu sati");
                 }
             }
-            else
-            {
-                MessageBox.Show("Greška pri unosu sati");
-            }
-            
+            else MessageBox.Show("Popunite polja označena crveno");
         }
 
-        
+        private bool CanUpdateRecordAsync()
+        {
+            return true;
+        }
 
-        private bool CanShowAddWindow(object obj)
+        private async Task UpdateRecordAsync()
+        {
+            if (Validator.TryValidateObject(this, new ValidationContext(this), null))
+            {
+                WorkingCard updateCard = new();
+                updateCard.EmployeeId = SelectedItem.EmployeeId;
+                updateCard.Id = Id;
+                updateCard.ProjectId = SelectedProject.Id;
+                updateCard.ActivityId = SelectedActivity.Id;
+                updateCard.Hours = decimal.Parse(Hours);
+                updateCard.Description = Description;
+                updateCard.Date = new DateOnly(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day);
+
+
+                bool check = await cardRespository.EditAsync(updateCard);
+                if (check)
+                {
+                    gettAllDataFromCard();
+
+                    ResetData();
+                    MessageBox.Show("Podatak uspješno uređen.");
+                }
+                else
+                {
+                    MessageBox.Show("Greška pri uređivanju podataka.");
+                }
+            }
+            else MessageBox.Show("Popunite polja označena crveno.");
+        }
+
+        private bool CanDeleteAsync()
+        {
+            return CanDeletePermission(ModuleName);
+        }
+
+        private async Task DeleteAsync()
+        {
+            if (SelectedItem != null)
+            {
+                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovu aktivnost: " + SelectedItem.Activity.Name + ". Datum: " + SelectedItem.Date + "", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    bool check = await cardRespository.DeleteByIdAsync(SelectedItem.Id);
+                    if (check)
+                    {
+                        CardRecords.Remove(SelectedItem);
+                        MessageBox.Show("Podatak obrisan.");
+                    }
+                    else MessageBox.Show("Nije moguće obrisati podatak.");
+
+
+
+                }
+                SelectedItem = null;
+
+            }
+            else MessageBox.Show("Odaberite redak koji želite urediti.");
+        }
+
+        private bool CanShowAddWindowAsync()
         {
             return CanCreatePermission(ModuleName);
         }
 
-        private void ShowAddWindow(object obj)
+        private async Task ShowAddWindowAsync()
         {
             WorkingCardEdit workingCardEdit = new WorkingCardEdit();
             workingCardEdit.DataContext = this;
             workingCardEdit.Title = "Radna karta: Novi zapis";
-            
+
             ResetData();
             IsAddButtonVisible = true;
             IsUpdateButtonVisible = false;
             workingCardEdit.Show();
         }
 
-
-        private bool CanDelete(object obj)
+        private bool CanShowUpdateWindowAsync()
         {
-            if (SelectedItem != null && CanDeletePermission(ModuleName)) return true;
-            return false;
+            return CanUpdatePermission(ModuleName);
         }
 
-        private async void Delete(object obj)
+        private async Task ShowUpdateWindowAsync()
         {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ovu aktivnost: " + SelectedItem.Activity.Name + ". Datum: " + SelectedItem.Date + "", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            if (SelectedItem != null)
             {
-                bool check = await cardRespository.DeleteByIdAsync(SelectedItem.Id);
-                if (check)
-                {
-                    CardRecords.Remove(SelectedItem);
-                    MessageBox.Show("Podatak obrisan.");
-                }
-                else MessageBox.Show("Nije moguće obrisati podatak.");
-
-
-
+                WorkingCardEdit workingCardEdit = new WorkingCardEdit();
+                workingCardEdit.DataContext = this;
+                workingCardEdit.Title = "Radna karta: uređivanje zapisa";
+                SelectedDate = SelectedItem.Date.HasValue ? new DateTime(SelectedItem.Date.Value.Year, SelectedItem.Date.Value.Month, SelectedItem.Date.Value.Day) : (DateTime?)null;
+                SelectedActivity = ActivityRecords.Where(i => i.Id == SelectedItem.ActivityId).Single();
+                SelectedProject = ProjectRecords.Where(i => i.Id == SelectedItem.ProjectId).Single();
+                Description = SelectedItem.Description;
+                Hours = SelectedItem.Hours.ToString();
+                Id = SelectedItem.Id;
+                IsAddButtonVisible = false;
+                IsUpdateButtonVisible = true;
+                workingCardEdit.Show();
             }
-            SelectedItem = null;
+            else MessageBox.Show("Odaberite redak koji želite urediti.");
         }
+
+        
+
+        
+       
 
         private ObservableCollection<Project> _projectRecords;
         public ObservableCollection<Project> ProjectRecords
@@ -438,7 +457,7 @@ namespace Praksa_projectV1.ViewModels
 
 
 
-        public async void gettAllDataFromCard()
+        public async Task gettAllDataFromCard()
         {
             var card =  await cardRespository.GetByStartAndEndDate(new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day), new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day));
             var hours = await cardRespository.GetSummarizedDataByMonth(new DateOnly(StartDate.Value.Year, StartDate.Value.Month, StartDate.Value.Day), new DateOnly(EndDate.Value.Year, EndDate.Value.Month, EndDate.Value.Day));
@@ -447,10 +466,10 @@ namespace Praksa_projectV1.ViewModels
             CardRecords = new ObservableCollection<WorkingCard>(card);
 
         }
-        public async void gettAllProjectsAndActivities()
+        public async Task gettAllProjectsAndActivities()
         {
-            ProjectRecords = new ObservableCollection<Project>(ProjectRepository.GetAll());
-            var Activities = await WorkingCardRepository.GetAllActivties();
+            ProjectRecords = new ObservableCollection<Project>(await ProjectRepository.GetAllAsync());
+            var Activities = await WorkingCardRepository.GetAllActivtiesAsync();
             ActivityRecords = new ObservableCollection<Activity>(Activities);
         }
         private async void ResetData()
@@ -470,9 +489,10 @@ namespace Praksa_projectV1.ViewModels
 
             // Calculate the earliest valid date (100 years ago from now)
             DateTime earliestValidDate = currentDate.AddYears(-100);
+            DateTime futureValidDate = currentDate.AddYears(10);
 
             // Check if the year, month, and day values are within valid ranges
-            if (date < earliestValidDate || date > currentDate)
+            if (date < earliestValidDate || date > futureValidDate)
             {
                 // Date falls outside the last 100 years
                 return false;

@@ -18,6 +18,8 @@ namespace Praksa_projectV1.Commands
         public event EventHandler CanExecuteChanged;
 
         private bool _isExecuting;
+        private Action<object> showAddWindow;
+        private Func<object, bool> canShowAddWindow;
         private readonly Func<Task> _execute;
         private readonly Func<bool> _canExecute;
         private readonly IErrorHandler _errorHandler;
@@ -30,6 +32,12 @@ namespace Praksa_projectV1.Commands
             _execute = execute;
             _canExecute = canExecute;
             _errorHandler = errorHandler;
+        }
+
+        public AsyncCommand(Action<object> showAddWindow, Func<object, bool> canShowAddWindow)
+        {
+            this.showAddWindow = showAddWindow;
+            this.canShowAddWindow = canShowAddWindow;
         }
 
         public bool CanExecute()

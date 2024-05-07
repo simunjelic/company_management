@@ -65,13 +65,13 @@ namespace Praksa_projectV1.DataAccess
 
             }
         }
-        public Employee getEmployeeByUsername(string username)
+        public async Task<Employee> getEmployeeByUsernameAsync(string username)
         {
             try
             {
                 using (var dbContext = new Context())
                 {
-                    return dbContext.Employees.FirstOrDefault(i => i.User.Username == username);
+                    return await dbContext.Employees.FirstOrDefaultAsync(i => i.User.Username == username);
                 }
 
             }

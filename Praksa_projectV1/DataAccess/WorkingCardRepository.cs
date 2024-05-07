@@ -13,24 +13,7 @@ namespace Praksa_projectV1.DataAccess
 {
     class WorkingCardRepository
     {
-        internal static async Task<IEnumerable<Activity>> GetAllActivties()
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-
-                    return await context.Activities
-                              .ToListAsync();
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
+        
 
         internal async Task<bool> Add(WorkingCard newCard)
         {
@@ -216,6 +199,44 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
+        internal async Task<bool> EditAsync(WorkingCard updateCard)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    context.WorkingCards.Update(updateCard);
+                    var RowsAffected = await context.SaveChangesAsync();
 
+                    return RowsAffected > 0;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                
+                return false;
+            }
+        }
+
+        internal static async Task<IEnumerable<Activity>> GetAllActivtiesAsync()
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+
+                    return await context.Activities
+                              .ToListAsync();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }
