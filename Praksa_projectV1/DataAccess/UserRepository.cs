@@ -169,7 +169,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> RemoveUserRole(UserRole selectedRole)
+        internal async Task<bool> RemoveUserRoleAsync(UserRole selectedRole)
         {
             try
             {
@@ -177,8 +177,8 @@ namespace Praksa_projectV1.DataAccess
                 {
 
                     context.UserRoles.Remove(selectedRole);
-                    await context.SaveChangesAsync();
-                    return true;
+                    var RowsAffected = await context.SaveChangesAsync();
+                    return RowsAffected > 0;
 
                 }
 
@@ -189,7 +189,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> AddUserRole(UserRole newUserRole)
+        internal async Task<bool> AddUserRoleAsync(UserRole newUserRole)
         {
             try
             {
@@ -281,14 +281,14 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> EditUser(NetworkCredential networkCredential, int id)
+        internal async Task<bool> EditUserAsync(NetworkCredential networkCredential, int id)
         {
             try
             {
                 using (var context = new Context())
                 {
 
-                    User user = await context.Users.FirstOrDefaultAsync(i => i.Username == networkCredential.UserName && i.Id == id);
+                    User user = await context.Users.FirstOrDefaultAsync(i =>  i.Id == id);
                     if (user != null)
                     {
                         user.Username = networkCredential.UserName;

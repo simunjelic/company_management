@@ -1,4 +1,5 @@
-﻿using Praksa_projectV1.DataAccess;
+﻿using Praksa_projectV1.Commands;
+using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.Validation;
 using Praksa_projectV1.Views;
@@ -21,16 +22,16 @@ namespace Praksa_projectV1.ViewModels
     {
         public readonly string ModuleName = "Korisnici";
         UserRepository UserRepository { get; set; }
-        public ICommand ShowUserRolesWindowCommand { get; }
-        public ICommand DeleteRoleCommand { get; }
-        public ICommand AddRoleCommand { get; }
-        public ICommand ShowAddWindowCommand { get; }
-        public ICommand AddUserCommand { get; }
-        public ICommand ShowUpdateWindowCommand { get; }
-        public ICommand UpdateUserCommand { get; }
-        public ICommand ShowUpdatePasswordWindowCommand { get; }
-        public ICommand UpdateUserPasswordCommand { get; }
-        public ICommand DeleteCommand { get; }
+        public IAsyncCommand ShowUserRolesWindowCommand { get; }
+        public IAsyncCommand DeleteRoleCommand { get; }
+        public IAsyncCommand AddRoleCommand { get; }
+        public IAsyncCommand ShowAddWindowCommand { get; }
+        public IAsyncCommand AddUserCommand { get; }
+        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public IAsyncCommand UpdateUserCommand { get; }
+        public IAsyncCommand ShowUpdatePasswordWindowCommand { get; }
+        public IAsyncCommand UpdateUserPasswordCommand { get; }
+        public IAsyncCommand DeleteCommand { get; }
 
 
 
@@ -39,161 +40,198 @@ namespace Praksa_projectV1.ViewModels
         {
             UserRepository = new UserRepository();
             GetAllUsersAsync();
-            ShowUserRolesWindowCommand = new ViewModelCommand(ShowUserRoles, CanShowUserRoles);
-            DeleteRoleCommand = new ViewModelCommand(DeleteRole, CanDeleteRole);
-            AddRoleCommand = new ViewModelCommand(AddRole, CanAddRole);
-            ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
-            AddUserCommand = new ViewModelCommand(AddUser, CanAddUser);
-            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
-            UpdateUserCommand = new ViewModelCommand(UpdateUser, CanUpdateUser);
-            ShowUpdatePasswordWindowCommand = new ViewModelCommand(ShowUpdatePasswordWindow, CanShowUpdatePasswordWindow);
-            UpdateUserPasswordCommand = new ViewModelCommand(UpdateUserPassword, CanUpdateUserPassword);
-            DeleteCommand = new ViewModelCommand(ExecuteDelete, CanDelete);
+            ShowUserRolesWindowCommand = new AsyncCommand(ShowUserRolesAsync, CanShowUserRolesAsync);
+            DeleteRoleCommand = new AsyncCommand(DeleteRoleAsync, CanDeleteRoleAsync);
+            AddRoleCommand = new AsyncCommand(AddRoleAsync, CanAddRoleAsync);
+            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            AddUserCommand = new AsyncCommand(AddUserAsync, CanAddUserAsync);
+            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowAsync);
+            UpdateUserCommand = new AsyncCommand(UpdateUserAsync, CanUpdateUserAsync);
+            ShowUpdatePasswordWindowCommand = new AsyncCommand(ShowUpdatePasswordWindowAsync, CanShowUpdatePasswordWindowAsync);
+            UpdateUserPasswordCommand = new AsyncCommand(UpdateUserPasswordAsync, CanUpdateUserPasswordAsync);
+            DeleteCommand = new AsyncCommand(ExecuteDeleteAsync, CanDeleteAsync);
         }
 
-        private bool CanDelete(object obj)
+        private bool CanAddRoleAsync()
         {
-            if (SelectedItem != null && CanDeletePermission(ModuleName)) 
-                return true;
-            return false;
+            return CanCreatePermission(ModuleName);
         }
 
-        private async void ExecuteDelete(object obj)
+        private async Task AddRoleAsync()
         {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati korsnika: " + SelectedItem.Username + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if(result == MessageBoxResult.Yes)
+           if(SelectedRole != null)
             {
-                bool check = await UserRepository.RemoveByIdAsync(SelectedItem.Id);
-                if (check)
+                if (!UserRolesRecords.Any(i => i.Role.RoleName == SelectedRole.RoleName))
                 {
-                    UsersRecords.Remove(SelectedItem);
-                    MessageBox.Show("Korisnik uspješno obrisan.");
-                    ResetData();
+                    var result = MessageBox.Show("Jeste li sigurni da želite dodati korisniku novu ulogu: " + SelectedRole.RoleName, "Potvrda", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        UserRole newUserRole = new UserRole();
+                        newUserRole.RoleId = SelectedRole.Id;
+                        newUserRole.UserId = SelectedItem.Id;
+                        bool check = await UserRepository.AddUserRoleAsync(newUserRole);
+                        if (check)
+                        {
+                            newUserRole.Role = SelectedRole;
+                            newUserRole.User = SelectedItem;
+                            //GetUserRoles(SelectedItem.Id);
+                            UserRolesRecords.Add(newUserRole);
+                            SelectedRole = null;
+
+
+                            //GetAllUsersAsync();
+                            MessageBox.Show("Nova uloga dodana korisniku");
+
+
+
+
+                        }
+                        else MessageBox.Show("Greška pri dodavanu nove uloge korisniku.");
+                    }
+
                 }
-                else MessageBox.Show("Greška pri brisanju korisnika.");
-
-
-                SelectedItem = null;
+                else MessageBox.Show("Korisnik već ima odabranu ulogu.");
             }
-
         }
 
-        private bool CanUpdateUserPassword(object obj)
+        private bool CanDeleteRoleAsync()
         {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null) && IsSecureStringLongerThan6(Password);
+            return CanDeletePermission(ModuleName);
         }
 
-        private async void UpdateUserPassword(object obj)
+        private async Task DeleteRoleAsync()
         {
-            if (SecureStringEquals(Password, CheckPassword))
+            if (SelectedUserRole != null)
             {
-                if (!UsersRecords.Any(i => i.Username == Username && i.Id != Id))
-                {
+                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati korisniku " + SelectedUserRole.User.Username + " ulogu: " + SelectedUserRole.Role.RoleName + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                    var check = await UserRepository.EditUser(new System.Net.NetworkCredential(Username, Password), Id);
+                if (result == MessageBoxResult.Yes)
+                {
+                    bool check = await UserRepository.RemoveUserRoleAsync(SelectedUserRole);
                     if (check)
                     {
-                        MessageBox.Show("Lozinka uređeno.");
+
+                        UserRolesRecords.Remove(SelectedUserRole);
+                        MessageBox.Show("Uloga uspješno obrisana");
+                        //GetAllUsersAsync();
+                    }
+                    else MessageBox.Show("Nije moguće obrisati ulogu");
+
+
+                    SelectedUserRole = null;
+                }
+
+            }
+            else MessageBox.Show("Odaberite ulogu za obrisati.");
+        }
+
+        private bool CanAddUserAsync()
+        {
+            return true;
+        }
+
+        private async Task AddUserAsync()
+        {
+            if (Validator.TryValidateObject(this, new ValidationContext(this), null) && IsSecureStringLongerThan6(Password))
+            {
+                if (SecureStringEquals(Password, CheckPassword))
+                {
+
+                    var check = await UserRepository.AddUser(new System.Net.NetworkCredential(Username, Password));
+                    if (check)
+                    {
+                        MessageBox.Show("Korisnik dodan");
                         GetAllUsersAsync();
                         ResetData();
                     }
                     else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
                 }
-                else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
+                else MessageBox.Show("Lozinke nisu jednake.");
             }
-            else MessageBox.Show("Lozinke nisu jednake.");
+            else MessageBox.Show("Unesite ispravne podatke");
         }
 
-        private bool CanShowUpdatePasswordWindow(object obj)
+        private bool CanUpdateUserAsync()
         {
-            return CanUpdatePermission(ModuleName);
+            return true;
         }
 
-        private async void ShowUpdatePasswordWindow(object obj)
+        private async Task UpdateUserAsync()
         {
-            UserAddView userEditView = new UserAddView();
-            userEditView.DataContext = this;
-            userEditView.Title = "Uredi lozinku";
-            IsAddButtonVisible = false;
-            IsUpdateButtonVisible = true;
-            Password = null;
-            CheckPassword = null;
-            Username = SelectedItem.Username;
-            Id = SelectedItem.Id;
-
-            userEditView.Show();
-        }
-
-        private bool CanUpdateUser(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null);
-        }
-
-        private async void UpdateUser(object obj)
-        {
-            if (!UsersRecords.Any(i => i.Username == Username && i.Id != Id))
+            if (!string.IsNullOrWhiteSpace(Username))
             {
-
-                var check = await UserRepository.EditUserUsername(Username, Id);
-                if (check)
+                if (!UsersRecords.Any(i => i.Username == Username && i.Id != Id))
                 {
-                    MessageBox.Show("Korisničko ime uređeno.");
-                    GetAllUsersAsync();
-                    ResetData();
+
+                    var check = await UserRepository.EditUserUsername(Username, Id);
+                    if (check)
+                    {
+                        MessageBox.Show("Korisničko ime uređeno.");
+                        GetAllUsersAsync();
+                        ResetData();
+                    }
+                    else MessageBox.Show("Greška prilikom uređivanja.");
                 }
                 else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
             }
-            else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
+            else MessageBox.Show("Neispravni podatci! Popunite polja označena crveno.");
         }
 
-        private bool CanShowUpdateWindow(object obj)
+        private bool CanDeleteAsync()
         {
-            return CanUpdatePermission(ModuleName) && SelectedItem != null;
+            return CanDeletePermission(ModuleName);
         }
 
-        private void ShowUpdateWindow(object obj)
+        private async Task ExecuteDeleteAsync()
         {
-            UserChangeUsernameView userEditView = new UserChangeUsernameView();
-            userEditView.DataContext = this;
-            userEditView.Title = "Uredi koriničko ime";
-            IsAddButtonVisible = false;
-            IsUpdateButtonVisible = true;
-            Username = SelectedItem.Username;
-            Id = SelectedItem.Id;
-
-            userEditView.Show();
-        }
-
-        private bool CanAddUser(object obj)
-        {
-            return Validator.TryValidateObject(this, new ValidationContext(this), null) && IsSecureStringLongerThan6(Password);
-        }
-
-
-
-        private async void AddUser(object obj)
-        {
-            if (SecureStringEquals(Password, CheckPassword))
+            if (SelectedItem != null)
             {
+                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati korsnika: " + SelectedItem.Username + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
-                var check = await UserRepository.AddUser(new System.Net.NetworkCredential(Username, Password));
-                if (check)
+                if (result == MessageBoxResult.Yes)
                 {
-                    MessageBox.Show("Korisnik dodan");
-                    GetAllUsersAsync();
+                    bool check = await UserRepository.RemoveByIdAsync(SelectedItem.Id);
+                    if (check)
+                    {
+                        UsersRecords.Remove(SelectedItem);
+                        MessageBox.Show("Korisnik uspješno obrisan.");
+                        ResetData();
+                    }
+                    else MessageBox.Show("Greška pri brisanju korisnika.");
+
+
+                    SelectedItem = null;
                 }
-                else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
             }
-            else MessageBox.Show("Lozinke nisu jednake.");
+            else MessageBox.Show("Odaberite korisnika.");
         }
 
-        private bool CanShowAddWindow(object obj)
+        private bool CanShowUserRolesAsync()
+        {
+            return true;
+        }
+
+        private async Task ShowUserRolesAsync()
+        {
+            if (SelectedItem != null)
+            {
+                UserRolesView userRolesView = new UserRolesView();
+                GetUserRoles(SelectedItem.Id);
+                GetRoles();
+                userRolesView.DataContext = this;
+                userRolesView.Title = "Uloge";
+                userRolesView.Show();
+            }
+            else MessageBox.Show("Odaberi korisnika.");
+        }
+
+        private bool CanShowAddWindowAsync()
         {
             return CanCreatePermission(ModuleName);
         }
 
-        private void ShowAddWindow(object obj)
+        private async Task ShowAddWindowAsync()
         {
             UserAddView userEditView = new UserAddView();
             userEditView.DataContext = this;
@@ -204,100 +242,89 @@ namespace Praksa_projectV1.ViewModels
             userEditView.Show();
         }
 
+        private bool CanShowUpdateWindowAsync()
+        {
+            return CanUpdatePermission(ModuleName);
+        }
+
+        private async Task ShowUpdateWindowAsync()
+        {
+            if (SelectedItem != null)
+            {
+                UserChangeUsernameView userEditView = new UserChangeUsernameView();
+                userEditView.DataContext = this;
+                userEditView.Title = "Uredi koriničko ime";
+                IsAddButtonVisible = false;
+                IsUpdateButtonVisible = true;
+                Username = SelectedItem.Username;
+                Id = SelectedItem.Id;
+
+                userEditView.Show();
+            }
+            else MessageBox.Show("Odaberite korisnika.");
+        }
+
+        private bool CanShowUpdatePasswordWindowAsync()
+        {
+            return CanUpdatePermission(ModuleName);
+        }
+
+        private async Task ShowUpdatePasswordWindowAsync()
+        {
+            if (SelectedItem != null)
+            {
+                UserAddView userEditView = new UserAddView();
+                userEditView.DataContext = this;
+                userEditView.Title = "Uredi lozinku";
+                IsAddButtonVisible = false;
+                IsUpdateButtonVisible = true;
+                Password = null;
+                CheckPassword = null;
+                Username = SelectedItem.Username;
+                Id = SelectedItem.Id;
+
+                userEditView.Show();
+            }
+            else MessageBox.Show("Odaberite korisnika kojem želite promjeniti šifru");
+        }
+
+        private bool CanUpdateUserPasswordAsync()
+        {
+            return true;
+        }
+
+        private async Task UpdateUserPasswordAsync()
+        {
+            if (Validator.TryValidateObject(this, new ValidationContext(this), null) && IsSecureStringLongerThan6(Password))
+            {
+                if (SecureStringEquals(Password, CheckPassword))
+                {
+                    if (!UsersRecords.Any(i => i.Username == Username && i.Id != Id))
+                    {
+
+                        var check = await UserRepository.EditUserAsync(new System.Net.NetworkCredential(Username, Password), Id);
+                        if (check)
+                        {
+                            MessageBox.Show("Lozinka uređeno.");
+                            GetAllUsersAsync();
+                            ResetData();
+                        }
+                        else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
+                    }
+                    else MessageBox.Show("Korisnik sa unesenim imenom već postoji.");
+                }
+                else MessageBox.Show("Lozinke nisu jednake.");
+
+            }
+            else MessageBox.Show("Unos nije valjan");
+        }
+
         private void ResetData()
         {
             Username = string.Empty;
             Password = null;
             CheckPassword = null;
             SelectedItem = null;
-        }
-
-        private bool CanAddRole(object obj)
-        {
-            if (SelectedRole != null && CanCreatePermission(ModuleName)) return true;
-            return false;
-        }
-        private async void AddRole(object obj)
-        {
-            if (!UserRolesRecords.Any(i => i.Role.RoleName == SelectedRole.RoleName))
-            {
-                var result = MessageBox.Show("Jeste li sigurni da želite dodati korisniku novu ulogu: " + SelectedRole.RoleName, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    UserRole newUserRole = new UserRole();
-                    newUserRole.RoleId = SelectedRole.Id;
-                    newUserRole.UserId = SelectedItem.Id;
-                    bool check = await UserRepository.AddUserRole(newUserRole);
-                    if (check)
-                    {
-                        newUserRole.Role = SelectedRole;
-                        newUserRole.User = SelectedItem;
-                        //GetUserRoles(SelectedItem.Id);
-                        UserRolesRecords.Add(newUserRole);
-                        SelectedRole = null;
-                        
-
-                        //GetAllUsersAsync();
-                        MessageBox.Show("Nova uloga dodana korisniku");
-
-
-
-
-                    }
-                    else MessageBox.Show("Greška pri dodavanu nove uloge korisniku.");
-                }
-
-            }
-            else MessageBox.Show("Korisnik već ima odabranu ulogu.");
-
-        }
-
-        private bool CanDeleteRole(object obj)
-        {
-            if (SelectedUserRole != null && CanReadPermission(ModuleName)) return true;
-            return false;
-        }
-
-        private async void DeleteRole(object obj)
-        {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati korisniku " + SelectedUserRole.User.Username + " ulogu: " + SelectedUserRole.Role.RoleName + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                bool check = await UserRepository.RemoveUserRole(SelectedUserRole);
-                if (check)
-                {
-
-                    UserRolesRecords.Remove(SelectedUserRole);
-                    MessageBox.Show("Uloga uspješno obrisana");
-                    //GetAllUsersAsync();
-                }
-                else MessageBox.Show("Nije moguće obrisati ulogu");
-
-
-                SelectedUserRole = null;
-            }
-        }
-
-        private bool CanShowUserRoles(object obj)
-        {
-            if (SelectedItem != null)
-                return true;
-            return false;
-        }
-
-        private void ShowUserRoles(object obj)
-        {
-            UserRolesView userRolesView = new UserRolesView();
-            GetUserRoles(SelectedItem.Id);
-            GetRoles();
-            userRolesView.DataContext = this;
-            userRolesView.Title = "Uloge";
-            userRolesView.Show();
-
-
-
         }
 
         private string _searchQuery;
@@ -442,6 +469,7 @@ namespace Praksa_projectV1.ViewModels
         }
         private SecureString _password = new SecureString();
         [SecureStringAttribute(6, ErrorMessage = "Polje mora sadržavati barem 6 znakova.")]
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public SecureString? Password
         {
             get
@@ -457,6 +485,7 @@ namespace Praksa_projectV1.ViewModels
         }
         private SecureString _checkPassword = new SecureString();
         [SecureStringAttribute(6, ErrorMessage = "Polje mora sadržavati barem 6 znakova.")]
+        [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public SecureString? CheckPassword
         {
             get
@@ -471,7 +500,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
-        public async void GetAllUsersAsync()
+        public async Task GetAllUsersAsync()
         {
             var users = await UserRepository.getAllUsersAsync();
             UsersRecords = new ObservableCollection<User>(users);
