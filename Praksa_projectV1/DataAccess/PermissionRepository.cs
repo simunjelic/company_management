@@ -42,7 +42,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<IEnumerable<Role>> GetAllRoles()
+        internal async Task<IEnumerable<Role>> GetAllRolesAsync()
         {
             try
             {
@@ -178,7 +178,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> RemoveRole(Role SelectedItem)
+        internal async Task<bool> RemoveRoleAsync(Role SelectedItem)
         {
             try
             {
@@ -186,8 +186,8 @@ namespace Praksa_projectV1.DataAccess
                 {
 
                     context.Roles.Remove(SelectedItem);
-                    context.SaveChanges();
-                    return true;
+                    var RowsAffected = await context.SaveChangesAsync();
+                    return RowsAffected > 0;
 
                 }
 
@@ -198,7 +198,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> UpdateRole(Role SelectedItem)
+        internal async Task<bool> UpdateRoleAsync(Role SelectedItem)
         {
             try
             {
@@ -219,7 +219,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> AddRole(Role SelectedItem)
+        internal async Task<bool> AddRoleAsync(Role SelectedItem)
         {
             try
             {

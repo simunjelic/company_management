@@ -321,7 +321,7 @@ namespace Praksa_projectV1.ViewModels
         }
         public async Task GetAllModulesAndRoles()
         {
-            var roles = await permissonRepository.GetAllRoles();
+            var roles = await permissonRepository.GetAllRolesAsync();
             RoleRecords = new ObservableCollection<Role>(roles);
             var modules = await permissonRepository.GetAllModules();
             ModuleRecords = new ObservableCollection<Module>(modules);

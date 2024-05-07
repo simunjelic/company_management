@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Tokens;
+using Praksa_projectV1.Commands;
 using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.ViewModels;
@@ -17,115 +18,132 @@ namespace Praksa_projectV1.ViewModels
 
     class RoleViewModel : ViewModelBase
     {
-        public ICommand DeleteCommand { get; }
+        public IAsyncCommand DeleteCommand { get; }
         public string ModuleName = "Uloge";
-        public ICommand UpdateCommand { get; }
-        public ICommand AddRoleCommand { get; }
+        public IAsyncCommand UpdateCommand { get; }
+        public IAsyncCommand AddRoleCommand { get; }
         public RoleViewModel()
         {
 
             PermissonRepository = new PermissonRepository();
-            GetAllRoles();
-            DeleteCommand = new ViewModelCommand(DeleteRole, CanDeleteRole);
-            UpdateCommand = new ViewModelCommand(UpdateRole, CanUpdateRole);
-            AddRoleCommand = new ViewModelCommand(AddRole, CanAddRole);
+            GetAllRolesAsync();
+            DeleteCommand = new AsyncCommand(DeleteRoleAsync, CanDeleteRoleAsync);
+            UpdateCommand = new AsyncCommand(UpdateRoleAsync, CanUpdateRoleAsync);
+            AddRoleCommand = new AsyncCommand(AddRoleAsync, CanAddRoleAsync);
 
 
         }
+       
 
-        private bool CanAddRole(object obj)
+
+        private bool CanAddRoleAsync()
         {
-            if (CanCreatePermission(ModuleName) && !string.IsNullOrWhiteSpace(Role))
-                return true;
-            return false;
+            return CanCreatePermission(ModuleName);
         }
 
-        private async void AddRole(object obj)
+        private async Task AddRoleAsync()
         {
-            if (RoleRecords.FirstOrDefault(i => i.RoleName == Role) == null)
+            if (!string.IsNullOrWhiteSpace(Role))
             {
-                var result = MessageBox.Show("Jeste li sigurni da želite dodati novu ulogu: " + Role, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
+                if (!RoleRecords.Any(i => i.RoleName == Role))
                 {
-                    Role newRole = new Role();
-                    newRole.RoleName = Role;
-                    bool check = await PermissonRepository.AddRole(newRole);
-                    if (check)
+                    var result = MessageBox.Show("Jeste li sigurni da želite dodati novu ulogu: " + Role, "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
                     {
-                        GetAllRoles();
-                        MessageBox.Show("Nova uloga dodana");
-                        SelectedItem = null;
-                        Role = null;
+                        Role newRole = new Role();
+                        newRole.RoleName = Role;
+                        bool check = await PermissonRepository.AddRoleAsync(newRole);
+                        if (check)
+                        {
+                            RoleRecords.Add(newRole);
+                            MessageBox.Show("Nova uloga dodana");
+                            
+                        }
+                        else MessageBox.Show("Greška pri dodavanu nove uloge.");
                     }
-                    else MessageBox.Show("Greška pri dodavanu nove uloge.");
-                }
-
-
-
-
-            }
-            else MessageBox.Show("Postoji već dozvola sa imenom " + Role);
-        }
-
-        private bool CanUpdateRole(object obj)
-        {
-            if (SelectedItem != null && CanUpdatePermission(ModuleName))
-                return true;
-            return false;
-        }
-
-        private async void UpdateRole(object obj)
-        {
-            if (!RoleRecords.Any(i => i.RoleName == Role))
-            {
-                var result = MessageBox.Show("Jeste li sigurni da želite promjeniti naziv iz: " + SelectedItem.RoleName + " u " + Role + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    SelectedItem.RoleName = Role;
-                    bool check = await PermissonRepository.UpdateRole(SelectedItem);
-                    if (check)
-                    {
-                        GetAllRoles();
-                        MessageBox.Show("Naziv promjenjen");
-
-                    }
-                    else MessageBox.Show("Greška pri mjenjaju naziva");
-
-
                     SelectedItem = null;
                     Role = null;
                 }
+                else MessageBox.Show("Postoji već dozvola sa imenom " + Role);
+
             }
-            else MessageBox.Show("Postoji već dozvola sa imenom " + Role);
+            else MessageBox.Show("Naziv nesipravan.");
         }
 
-        private bool CanDeleteRole(object obj)
+        private bool CanUpdateRoleAsync()
         {
-            if (SelectedItem != null && CanDeletePermission(ModuleName))
-                return true;
-            return false;
+            return CanUpdatePermission(ModuleName);
         }
 
-        private async void DeleteRole(object obj)
+        private async Task UpdateRoleAsync()
         {
-            var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ulogu: " + SelectedItem.RoleName + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            if (SelectedItem != null)
             {
-                bool check = await PermissonRepository.RemoveRole(SelectedItem);
-                if (check)
+                if (!RoleRecords.Any(i => i.RoleName == Role))
                 {
-                    RoleRecords.Remove(SelectedItem);
-                    MessageBox.Show("Uloga uspješno obrisana");
+                    var result = MessageBox.Show("Jeste li sigurni da želite promjeniti naziv iz: " + SelectedItem.RoleName + " u " + Role + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        SelectedItem.RoleName = Role;
+                        bool check = await PermissonRepository.UpdateRoleAsync(SelectedItem);
+                        if (check)
+                        {
+                            GetAllRolesAsync();
+                            MessageBox.Show("Naziv promjenjen");
+
+                        }
+                        else MessageBox.Show("Greška pri mjenjaju naziva");
+
+
+                        
+                    }
+                    SelectedItem = null;
+                    Role = null;
                 }
-                else MessageBox.Show("Nije moguće obrisati ulogu");
+                else MessageBox.Show("Postoji već dozvola sa imenom " + Role);
 
-
-                SelectedItem = null;
             }
+            else MessageBox.Show("Odaberite ulogu koju želite urediti.");
         }
+
+        private bool CanDeleteRoleAsync()
+        {
+            return CanDeletePermission(ModuleName);
+        }
+
+        private async Task DeleteRoleAsync()
+        {
+            if (SelectedItem != null)
+            {
+                var result = MessageBox.Show("Jeste li sigurni da želite izbrisati ulogu: " + SelectedItem.RoleName + "?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    bool check = await PermissonRepository.RemoveRoleAsync(SelectedItem);
+                    if (check)
+                    {
+                        RoleRecords.Remove(SelectedItem);
+                        MessageBox.Show("Uloga uspješno obrisana");
+                    }
+                    else MessageBox.Show("Nije moguće obrisati ulogu");
+
+
+                    
+                }
+                SelectedItem = null;
+                Role = null;
+
+            }
+            else MessageBox.Show("Odaberite ulogu koju želite ukloniti");
+        }
+
+        
+
+        
+
+        
 
         private ObservableCollection<Role> _roleRecords;
         public ObservableCollection<Role> RoleRecords
@@ -185,9 +203,9 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
-        public async Task GetAllRoles()
+        public async Task GetAllRolesAsync()
         {
-            var roles = await PermissonRepository.GetAllRoles();
+            var roles = await PermissonRepository.GetAllRolesAsync();
             RoleRecords = new ObservableCollection<Role>(roles);
 
         }
