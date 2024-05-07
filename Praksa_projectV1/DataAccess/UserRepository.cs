@@ -19,7 +19,7 @@ namespace Praksa_projectV1.DataAccess
             throw new NotImplementedException();
         }
 
-        public bool AuthenticateUser(NetworkCredential credential)
+        public async Task<bool> AuthenticateUserAsync(NetworkCredential credential)
         {
             bool validUser = false;
 
@@ -27,7 +27,7 @@ namespace Praksa_projectV1.DataAccess
             using (var dbContext = new Context())
             {
                 // Check if there is a user with the provided username and password
-                var user = dbContext.Users.FirstOrDefault(u => u.Username == credential.UserName && u.Password == HashPassword(credential.Password));
+                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == credential.UserName && u.Password == HashPassword(credential.Password));
 
                 // If a user is found, set validUser to true
                 if (user != null)
@@ -370,7 +370,27 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
+        internal async Task<IEnumerable<string>> GetUserRolesAsync(string username)
+        {
+            try
+            {
+                using (var dbContext = new Context())
+                {
+                    var roles = await dbContext.Users
+              .Where(u => u.Username == username)
+              .SelectMany(u => u.UserRoles)
+              .Select(ur => ur.Role.RoleName)
+              .ToListAsync();
 
+                    return roles;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("GREŠKA");
+                return null;
+            }
+        }
     }
 }
 

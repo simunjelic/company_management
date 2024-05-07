@@ -108,9 +108,8 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowUserView(object obj)
         {
-            var principal = Thread.CurrentPrincipal;
-            
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+           
+            if (RoleManager.Username != null)
             {
                
                 if (CanReadPermission("Korisnici"))
@@ -134,10 +133,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowRoleView(object obj)
         {
-            var principal = Thread.CurrentPrincipal;
-
-          
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+          if (RoleManager.Username != null)
             { 
                 
                 if (CanReadPermission("Uloge"))
@@ -166,10 +162,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowAdminPanel(object obj)
         {
-            var principal = Thread.CurrentPrincipal;
-
-            // Check if the principal is a GenericPrincipal and has an identity
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+           if (RoleManager.Username != null)
             {
                 
 
@@ -196,10 +189,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowWorkingCard(object obj)
         {
-            var principal = Thread.CurrentPrincipal;
-
-            // Check if the principal is a GenericPrincipal and has an identity
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+           if (RoleManager.Username != null)
             {
                 
 
@@ -226,10 +216,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowDepartmentsViewCommand(object obj)
         {
-            var principal = Thread.CurrentPrincipal;
-
-            // Check if the principal is a GenericPrincipal and has an identity
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+           if (RoleManager.Username != null)
             {
 
 
@@ -257,10 +244,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowJobsViewCommand(object obj)
         {
-            var principal = Thread.CurrentPrincipal;
-
-            // Check if the principal is a GenericPrincipal and has an identity
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+          if (RoleManager.Username != null)
             {
 
 
@@ -291,10 +275,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowWorkersViewCommand(object obj)
         {
-            var principal = Thread.CurrentPrincipal;
-
-            // Check if the principal is a GenericPrincipal and has an identity
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+          if (RoleManager.Username != null)
             {
 
 
@@ -321,10 +302,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowProjectsViewCommand(object obj)
         {
-            var principal = Thread.CurrentPrincipal;
-
-            // Check if the principal is a GenericPrincipal and has an identity
-            if (principal is GenericPrincipal genericPrincipal && genericPrincipal.Identity != null)
+          if (RoleManager.Username != null)
             {
 
 

@@ -1,4 +1,5 @@
-﻿using Praksa_projectV1.DataAccess;
+﻿using Praksa_projectV1.Commands;
+using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using System.Windows.Input;
 
 namespace Praksa_projectV1.ViewModels
 {
-    public class LoginViewModel: ViewModelBase
+    public class LoginViewModel : ViewModelBase
     {
         private string _username;
         private SecureString _password;
@@ -70,61 +71,65 @@ namespace Praksa_projectV1.ViewModels
             }
         }
         //-> Commands
-        public ICommand LoginCommand { get; }
+        public IAsyncCommand LoginCommand { get; }
         public ICommand ShowPasswordCommand { get; }
         public ICommand RememberPasswordCommand { get; }
 
         //Constructor
         public LoginViewModel()
         {
-            userRepository=new UserRepository();
-            LoginCommand = new ViewModelCommand(ExecuteLoginCommand, CanExecuteLoginCommand);
+            userRepository = new UserRepository();
+            LoginCommand = new AsyncCommand(ExecuteLoginCommandAsync, CanExecuteLoginCommandAsync);
         }
 
-        private bool CanExecuteLoginCommand(object obj)
+        private bool CanExecuteLoginCommandAsync()
         {
-            bool validData;
-            if (string.IsNullOrWhiteSpace(Username) || Username.Length < 1 ||
-                Password == null || Password.Length < 1)
-                validData = false;
-            else
-                validData = true;
-            return validData;
+            return true;
         }
 
-        private void ExecuteLoginCommand(object obj)
+        private async Task ExecuteLoginCommandAsync()
         {
-            try { 
-            var isValidUser = userRepository.AuthenticateUser(new System.Net.NetworkCredential(Username, Password));
-            if(isValidUser)
+            try
             {
-                    
-                var list = userRepository.GetUserRoles(Username).ToList();
-                RoleManager.Username = Username;
-                string[] roles = new string[list.Count];
-                int index = 0;
-                foreach (string item in list)
+                if (!(string.IsNullOrWhiteSpace(Username) || Username.Length < 1 ||
+                Password == null || Password.Length < 1))
                 {
-                    roles[index++] = item;
-                        RoleManager.Roles.Add(item);    
-                   
-                }
-                // Create a new identity with the username and roles
-                var identity = new GenericIdentity(Username);
-                var principal = new GenericPrincipal(identity, roles);
+                    var isValidUser = await userRepository.AuthenticateUserAsync(new System.Net.NetworkCredential(Username, Password));
+                    if (isValidUser)
+                    {
 
-                // Set the current principal
-                Thread.CurrentPrincipal = principal;
-                IsViewVisible = false;
-            }else
-            {
-                ErrorMessage = "*Neispravno korisničko ime ili lozinka";
+                        var list = await userRepository.GetUserRolesAsync(Username);
+                        RoleManager.Username = Username;
+                        string[] roles = new string[list.Count()];
+                        int index = 0;
+                        foreach (string item in list)
+                        {
+                            roles[index++] = item;
+                            RoleManager.Roles.Add(item);
+
+                        }
+                        // Create a new identity with the username and roles
+                        var identity = new GenericIdentity(Username);
+                        var principal = new GenericPrincipal(identity, roles);
+
+                        // Set the current principal
+                        Thread.CurrentPrincipal = principal;
+                        IsViewVisible = false;
+                    }
+                    else
+
+                        ErrorMessage = "*Neispravno korisničko ime ili lozinka";
+                }
+                else ErrorMessage = "*Unesi ime i lozinka";
             }
-            }catch (Exception e)
+            catch (Exception e)
             {
-                
+
             }
         }
+
+
+
     }
-    
+
 }

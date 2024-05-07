@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
@@ -105,13 +104,9 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    if (Thread.CurrentPrincipal?.Identity.Name != null)
+                    if (RoleManager.Username != null)
                     {
-                        var username = Thread.CurrentPrincipal?.Identity.Name.ToString();
-                        //var employee = await context.Employees.FirstOrDefaultAsync(i => i.User.Username == username);
-
-
-
+                        var username = RoleManager.Username;
                         return await context.WorkingCards
                                   .Include(p => p.Project)
                                   .Include(p => p.Activity)
@@ -135,9 +130,9 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    if (Thread.CurrentPrincipal?.Identity.Name != null)
+                    if (RoleManager.Username != null)
                     {
-                        var username = Thread.CurrentPrincipal?.Identity.Name.ToString();
+                        var username = RoleManager.Username;
 
                         var query = context.WorkingCards
                                             .Include(p => p.Project)
@@ -174,9 +169,9 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    if (Thread.CurrentPrincipal?.Identity.Name != null)
+                    if (RoleManager.Username != null)
                     {
-                        var username = Thread.CurrentPrincipal?.Identity.Name.ToString();
+                        var username = RoleManager.Username;
                         return await context.WorkingCards
                 .Where(p => p.Date >= startDate && p.Date <= endDate && p.Employee.User.Username == username)
                 .GroupBy(p => new { p.Date.Value.Year, p.Date.Value.Month })
