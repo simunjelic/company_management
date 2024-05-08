@@ -86,7 +86,7 @@ namespace Praksa_projectV1.ViewModels
             }
             else
             {
-                return PermissionAccess.ReadPermission.Any(i => i.Module.Name == modul);
+                return PermissionAccess.DeletePermission.Any(i => i.Module.Name == modul);
             }
         }
         public bool CanUpdatePermission(string modul)
@@ -98,10 +98,10 @@ namespace Praksa_projectV1.ViewModels
             }
             else
             {
-                return PermissionAccess.ReadPermission.Any(i => i.Module.Name == modul);
+                return PermissionAccess.UpdatePermission.Any(i => i.Module.Name == modul);
             }
         }
-        public bool CanCreatePermissionAsync(string modul)
+        public bool CanCreatePermission(string modul)
         {
             if (PermissionAccess.CreatePermission.IsNullOrEmpty())
             {

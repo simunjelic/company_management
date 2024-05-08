@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Input;
 using Praksa_projectV1.Commands;
 using Microsoft.Identity.Client.NativeInterop;
+using System.Security.Permissions;
 
 namespace Praksa_projectV1.ViewModels
 {
@@ -66,6 +67,17 @@ namespace Praksa_projectV1.ViewModels
                         PermissionRecords.Add(permission);
                         PermissionFilterRecords.Add(permission);
                         MessageBox.Show("Nova dozvola dodana", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
+                        if (LoggedUserData.RolesId.Contains((int)permission.RoleId))
+                        {
+                           if(permission.ActionId == 0)
+                                PermissionAccess.CreatePermission.Add(permission);
+                           else if(permission.ActionId == 1)
+                                PermissionAccess.UpdatePermission.Add(permission);
+                           else if (permission.ActionId == 2)
+                                PermissionAccess.DeletePermission.Add(permission);
+                           else if (permission.ActionId == 3)
+                                PermissionAccess.ReadPermission.Add(permission);
+                        }
                     }
                     else MessageBox.Show("Greška pri dodvanu nove dozvole", "Informacija", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -91,9 +103,21 @@ namespace Praksa_projectV1.ViewModels
                     bool check = await permissonRepository.RemoveAsync(SelectedItem);
                     if (check)
                     {
+                        if (LoggedUserData.RolesId.Contains((int)SelectedItem.RoleId))
+                        {
+                            if (SelectedItem.ActionId == 0)
+                                PermissionAccess.CreatePermission.RemoveAll(item => item.ModuleId == SelectedItem.ModuleId && item.RoleId == SelectedItem.RoleId);
+                            else if (SelectedItem.ActionId == 1)
+                                PermissionAccess.UpdatePermission.RemoveAll(item => item.ModuleId == SelectedItem.ModuleId && item.RoleId == SelectedItem.RoleId);
+                            else if (SelectedItem.ActionId == 2)
+                                PermissionAccess.DeletePermission.RemoveAll(item => item.ModuleId == SelectedItem.ModuleId && item.RoleId == SelectedItem.RoleId);
+                            else if (SelectedItem.ActionId == 3)
+                                PermissionAccess.ReadPermission.RemoveAll(item => item.ModuleId == SelectedItem.ModuleId && item.RoleId == SelectedItem.RoleId);
+                        }
                         PermissionRecords.Remove(SelectedItem);
                         PermissionFilterRecords.Remove(SelectedItem);
                         MessageBox.Show("Dozvola uspješno obrisana");
+                        
                     }
                     else MessageBox.Show("Greška pri brisanju dozvole");
 
@@ -107,7 +131,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowAddWindowAsync()
         {
-            return CanCreatePermissionAsync(ModuleName);
+            return CanCreatePermission(ModuleName);
         }
 
         private async Task ShowAddWindowAsync()

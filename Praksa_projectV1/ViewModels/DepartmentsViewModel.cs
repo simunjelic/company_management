@@ -164,7 +164,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowAddWindowAsync()
         {
-            return CanCreatePermissionAsync(ModuleName);
+            return CanCreatePermission(ModuleName);
         }
 
         private async Task ShowAddWindowAsync()

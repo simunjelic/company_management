@@ -54,7 +54,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanAddMemberAsync()
         {
-            return CanCreatePermissionAsync(ModuleName);
+            return CanCreatePermission(ModuleName);
         }
 
         private async Task AddMemberAsync()
@@ -241,7 +241,7 @@ namespace Praksa_projectV1.ViewModels
 
         private bool CanShowAddWindowAsync()
         {
-            return CanCreatePermissionAsync(ModuleName);
+            return CanCreatePermission(ModuleName);
         }
 
         private async Task ShowAddWindowAsync()
