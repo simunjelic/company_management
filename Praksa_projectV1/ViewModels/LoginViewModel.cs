@@ -123,11 +123,9 @@ namespace Praksa_projectV1.ViewModels
                 }
                 else ErrorMessage = "*Unesi ime i lozinka";
             }
-            catch (Exception e)
-            {
+            catch{
 
             }
-        }
 
 
 

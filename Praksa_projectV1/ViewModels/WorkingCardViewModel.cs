@@ -100,6 +100,7 @@ namespace Praksa_projectV1.ViewModels
             if (Validator.TryValidateObject(this, new ValidationContext(this), null))
             {
                 WorkingCard newCard = new WorkingCard();
+                SelectedProject = null;
                 newCard.ProjectId = SelectedProject.Id;
                 newCard.ActivityId = SelectedActivity.Id;
                 newCard.Hours = decimal.Parse(Hours);

@@ -132,6 +132,15 @@ ADD [roles] VARCHAR(255) NULL;
 ALTER TABLE Permissions
 ADD ActionId INT;
 
+CREATE TABLE ExceptionLogs (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Message NVARCHAR(MAX),
+    StackTrace NVARCHAR(MAX),
+    Source NVARCHAR(MAX),
+    Timestamp DATETIME
+);
+
+
 
 
 

@@ -31,6 +31,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[ExceptionLogs]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[job]",
          "ObjectType": 0
       },

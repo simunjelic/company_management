@@ -108,7 +108,6 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowUserView(object obj)
         {
-           
             if (LoggedUserData.Username != null)
             {
                

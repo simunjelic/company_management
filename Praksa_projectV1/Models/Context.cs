@@ -25,6 +25,8 @@ public partial class Context : DbContext
 
     public virtual DbSet<EmployeeProject> EmployeeProjects { get; set; }
 
+    public virtual DbSet<ExceptionLog> ExceptionLogs { get; set; }
+
     public virtual DbSet<Job> Jobs { get; set; }
 
     public virtual DbSet<Location> Locations { get; set; }
@@ -158,6 +160,13 @@ public partial class Context : DbContext
             entity.HasOne(d => d.Project).WithMany(p => p.EmployeeProjects)
                 .HasForeignKey(d => d.ProjectId)
                 .HasConstraintName("FK__employee___proje__5812160E");
+        });
+
+        modelBuilder.Entity<ExceptionLog>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Exceptio__3214EC07946A0876");
+
+            entity.Property(e => e.Timestamp).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Job>(entity =>
