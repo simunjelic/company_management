@@ -109,7 +109,7 @@ namespace Praksa_projectV1.ViewModels
         private void ExecuteShowUserView(object obj)
         {
            
-            if (RoleManager.Username != null)
+            if (LoggedUserData.Username != null)
             {
                
                 if (CanReadPermission("Korisnici"))
@@ -133,7 +133,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowRoleView(object obj)
         {
-          if (RoleManager.Username != null)
+          if (LoggedUserData.Username != null)
             { 
                 
                 if (CanReadPermission("Uloge"))
@@ -162,7 +162,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowAdminPanel(object obj)
         {
-           if (RoleManager.Username != null)
+           if (LoggedUserData.Username != null)
             {
                 
 
@@ -189,7 +189,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ShowWorkingCard(object obj)
         {
-           if (RoleManager.Username != null)
+           if (LoggedUserData.Username != null)
             {
                 
 
@@ -216,7 +216,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowDepartmentsViewCommand(object obj)
         {
-           if (RoleManager.Username != null)
+           if (LoggedUserData.Username != null)
             {
 
 
@@ -244,7 +244,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowJobsViewCommand(object obj)
         {
-          if (RoleManager.Username != null)
+          if (LoggedUserData.Username != null)
             {
 
 
@@ -275,7 +275,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowWorkersViewCommand(object obj)
         {
-          if (RoleManager.Username != null)
+          if (LoggedUserData.Username != null)
             {
 
 
@@ -302,7 +302,7 @@ namespace Praksa_projectV1.ViewModels
 
         private void ExecuteShowProjectsViewCommand(object obj)
         {
-          if (RoleManager.Username != null)
+          if (LoggedUserData.Username != null)
             {
 
 

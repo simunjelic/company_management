@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using Praksa_projectV1.DataAccess;
 using System.Security.Principal;
 using Praksa_projectV1.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Praksa_projectV1.ViewModels
 {
@@ -65,22 +66,46 @@ namespace Praksa_projectV1.ViewModels
 
         public bool CanReadPermission(string modul)
         {
+            if (PermissionAccess.ReadPermission.IsNullOrEmpty())
+            {
+                PermissionAccess.ReadPermission = PermissonRepository.GetUserRoles(3, LoggedUserData.RolesId);
+                return PermissionAccess.ReadPermission.Any(i => i.Module.Name == modul);
+            }
+            else
+            {
+                return PermissionAccess.ReadPermission.Any(i => i.Module.Name == modul);
+            }
 
-            return PermissonRepository.CheckAcess(modul, 3, RoleManager.Roles);
         }
         public bool CanDeletePermission(string modul)
         {
-            return PermissonRepository.CheckAcess(modul, 2, RoleManager.Roles);
+            if (PermissionAccess.DeletePermission.IsNullOrEmpty())
+            {
+                PermissionAccess.DeletePermission = PermissonRepository.GetUserRoles(2, LoggedUserData.RolesId);
+                return PermissionAccess.DeletePermission.Any(i => i.Module.Name == modul);
+            }
+            else
+            {
+                return PermissionAccess.ReadPermission.Any(i => i.Module.Name == modul);
+            }
         }
         public bool CanUpdatePermission(string modul)
         {
-            return PermissonRepository.CheckAcess(modul, 1, RoleManager.Roles);
+            if (PermissionAccess.UpdatePermission.IsNullOrEmpty())
+            {
+                PermissionAccess.UpdatePermission = PermissonRepository.GetUserRoles(1, LoggedUserData.RolesId);
+                return PermissionAccess.UpdatePermission.Any(i => i.Module.Name == modul);
+            }
+            else
+            {
+                return PermissionAccess.ReadPermission.Any(i => i.Module.Name == modul);
+            }
         }
         public bool CanCreatePermissionAsync(string modul)
         {
-            if (PermissionAccess.CreatePermission.Count == 0)
+            if (PermissionAccess.CreatePermission.IsNullOrEmpty())
             {
-                PermissionAccess.CreatePermission = PermissonRepository.GetUserRoles(0, RoleManager.RolesId);
+                PermissionAccess.CreatePermission = PermissonRepository.GetUserRoles(0, LoggedUserData.RolesId);
                 return PermissionAccess.CreatePermission.Any(i => i.Module.Name == modul);
             }
             else

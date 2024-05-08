@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Praksa_projectV1.Models
 {
-    public static class RoleManager
+    public static class LoggedUserData
     {
         private static List<string> _roles = new List<string>();
 

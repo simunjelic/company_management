@@ -104,9 +104,9 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    if (RoleManager.Username != null)
+                    if (LoggedUserData.Username != null)
                     {
-                        var username = RoleManager.Username;
+                        var username = LoggedUserData.Username;
                         return await context.WorkingCards
                                   .Include(p => p.Project)
                                   .Include(p => p.Activity)
@@ -130,9 +130,9 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    if (RoleManager.Username != null)
+                    if (LoggedUserData.Username != null)
                     {
-                        var username = RoleManager.Username;
+                        var username = LoggedUserData.Username;
 
                         var query = context.WorkingCards
                                             .Include(p => p.Project)
@@ -169,9 +169,9 @@ namespace Praksa_projectV1.DataAccess
             {
                 using (var context = new Context())
                 {
-                    if (RoleManager.Username != null)
+                    if (LoggedUserData.Username != null)
                     {
-                        var username = RoleManager.Username;
+                        var username = LoggedUserData.Username;
                         return await context.WorkingCards
                 .Where(p => p.Date >= startDate && p.Date <= endDate && p.Employee.User.Username == username)
                 .GroupBy(p => new { p.Date.Value.Year, p.Date.Value.Month })

@@ -105,7 +105,7 @@ namespace Praksa_projectV1.ViewModels
                 newCard.Hours = decimal.Parse(Hours);
                 newCard.Description = Description;
                 newCard.Date = new DateOnly(SelectedDate.Value.Year, SelectedDate.Value.Month, SelectedDate.Value.Day);
-                var username = RoleManager.Username;
+                var username = LoggedUserData.Username;
                 var employee = await userRepository.getEmployeeByUsernameAsync(username);
                 if (employee != null)
                 {
