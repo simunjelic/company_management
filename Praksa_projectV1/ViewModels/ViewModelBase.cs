@@ -124,11 +124,11 @@ namespace Praksa_projectV1.ViewModels
                 if (_isUpdateButtonVisible != value)
                 {
                     _isUpdateButtonVisible = value;
-                    OnPropertyChanged(nameof(IsUpdateButtonVisible)); // Notify property changed
+                    OnPropertyChanged(nameof(IsUpdateButtonVisible));
                 }
             }
         }
-        private bool _isAddButtonVisible = true; // Initially visible
+        private bool _isAddButtonVisible = true;
 
         public bool IsAddButtonVisible
         {
@@ -138,12 +138,10 @@ namespace Praksa_projectV1.ViewModels
                 if (_isAddButtonVisible != value)
                 {
                     _isAddButtonVisible = value;
-                    OnPropertyChanged(nameof(IsAddButtonVisible)); // Notify property changed
+                    OnPropertyChanged(nameof(IsAddButtonVisible));
                 }
             }
         }
-
-
-
+       
     }
 }

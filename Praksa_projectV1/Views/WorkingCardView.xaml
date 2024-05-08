@@ -277,10 +277,20 @@ VerticalAlignment="Top">
                         <Setter Property="Padding" Value="10,0,0,10"/>
                         <Setter Property="FontFamily" Value="Montserrat"/>
                         <Setter Property="FontSize" Value="15"/>
+                        <Setter Property="BorderThickness" Value="0 0 0 1"/>
+                        <Setter Property="BorderBrush" Value="LightGray" />
                     </Style>
                 </DataGrid.RowStyle>
+                <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderThickness" Value="1 1 1 0" />
+                            <!-- Add left and right border -->
+                            <Setter Property="BorderBrush" Value="LightGray" />
+                            <!-- Border color -->
+                        </Style>
+                    </DataGrid.CellStyle>
 
-                <DataGrid.Columns>
+                    <DataGrid.Columns>
                    <DataGridTextColumn Binding="{Binding Path=Project.Name}"  Header="Naziv projekta"/>
                     <DataGridTextColumn Binding="{Binding Path=Date ,StringFormat={}{0:dd.MM.yyyy}}"  Header="Datum" SortDirection="Descending"/>
                     <DataGridTextColumn Binding="{Binding Path=Hours}"  Header="Sati"/>

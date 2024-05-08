@@ -142,6 +142,13 @@ VerticalAlignment="Top">
                         <Setter Property="FontSize" Value="15"/>
                     </Style>
                 </DataGrid.RowStyle>
+                <DataGrid.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="BorderThickness" Value="1" />
+                        <!-- Add left and right border -->
+                        <Setter Property="BorderBrush" Value="LightGray" />
+                    </Style>
+                </DataGrid.CellStyle>
 
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Path=Module.Name}"  Header="Modul"/>

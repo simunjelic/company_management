@@ -111,9 +111,9 @@ namespace Praksa_projectV1.ViewModels
                     bool check = await UserRepository.RemoveUserRoleAsync(SelectedUserRole);
                     if (check)
                     {
-
                         UserRolesRecords.Remove(SelectedUserRole);
                         MessageBox.Show("Uloga uspješno obrisana");
+                        
                         //GetAllUsersAsync();
                     }
                     else MessageBox.Show("Nije moguće obrisati ulogu");
