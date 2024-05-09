@@ -2,7 +2,9 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
+using System.Security.AccessControl;
 using Microsoft.EntityFrameworkCore;
+using Praksa_projectV1.Enums;
 
 namespace Praksa_projectV1.Models;
 
@@ -18,6 +20,8 @@ public partial class Context : DbContext
     }
 
     public virtual DbSet<Activity> Activities { get; set; }
+
+    public virtual DbSet<Audit> Audits { get; set; }
 
     public virtual DbSet<Department> Departments { get; set; }
 
@@ -65,6 +69,18 @@ public partial class Context : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<Audit>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Audit__3214EC0765E6225F");
+
+            entity.ToTable("Audit");
+
+            entity.Property(e => e.DateTime).HasColumnType("datetime");
+            entity.Property(e => e.TableName).HasMaxLength(255);
+            entity.Property(e => e.Type).HasMaxLength(255);
+            entity.Property(e => e.UserId).HasMaxLength(255);
         });
 
         modelBuilder.Entity<Department>(entity =>
@@ -188,7 +204,7 @@ public partial class Context : DbContext
                 .HasConstraintName("FK__job__department___48CFD27E");
         });
 
-    modelBuilder.Entity<Location>(entity =>
+        modelBuilder.Entity<Location>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__location__3213E83F836C8D76");
 
@@ -389,4 +405,65 @@ public partial class Context : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    public override int SaveChanges()
+    {
+        BeforeSaveChanges();
+        return base.SaveChanges();
+    }
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        BeforeSaveChanges();
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+
+    private void BeforeSaveChanges()
+    {
+        ChangeTracker.DetectChanges();
+        var auditEntries = new List<AuditEntry>();
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (entry.Entity is Audit || entry.State == EntityState.Detached || entry.State == EntityState.Unchanged)
+                continue;
+            var auditEntry = new AuditEntry(entry);
+            auditEntry.TableName = entry.Entity.GetType().Name;
+            auditEntries.Add(auditEntry);
+            foreach (var property in entry.Properties)
+            {
+                string propertyName = property.Metadata.Name;
+                if (property.Metadata.IsPrimaryKey())
+                {
+                    auditEntry.KeyValues[propertyName] = property.CurrentValue;
+                    continue;
+                }
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        auditEntry.AuditType = AuditType.Create;
+                        auditEntry.NewValues[propertyName] = property.CurrentValue;
+                        auditEntry.UserId = LoggedUserData.Id.ToString();
+                        break;
+                    case EntityState.Deleted:
+                        auditEntry.AuditType = AuditType.Delete;
+                        auditEntry.OldValues[propertyName] = property.OriginalValue;
+                        auditEntry.UserId = LoggedUserData.Id.ToString();
+                        break;
+                    case EntityState.Modified:
+                        if (property.IsModified)
+                        {
+                            auditEntry.ChangedColumns.Add(propertyName);
+                            auditEntry.AuditType = AuditType.Update;
+                            auditEntry.OldValues[propertyName] = property.OriginalValue;
+                            auditEntry.NewValues[propertyName] = property.CurrentValue;
+                            auditEntry.UserId = LoggedUserData.Id.ToString();
+                        }
+                        break;
+                }
+            }
+        }
+        foreach (var auditEntry in auditEntries)
+        {
+            Audits.Add(auditEntry.ToAudit());
+        }
+    }
+
 }

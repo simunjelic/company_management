@@ -139,6 +139,17 @@ CREATE TABLE ExceptionLogs (
     Source NVARCHAR(MAX),
     Timestamp DATETIME
 );
+CREATE TABLE Audit (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    UserId NVARCHAR(255), -- Adjust length as needed
+    Type NVARCHAR(255), -- Adjust length as needed
+    TableName NVARCHAR(255), -- Adjust length as needed
+    DateTime DATETIME,
+    OldValues NVARCHAR(MAX),
+    NewValues NVARCHAR(MAX),
+    AffectedColumns NVARCHAR(MAX),
+    PrimaryKey NVARCHAR(MAX)
+);
 
 
 
