@@ -59,7 +59,7 @@ namespace Praksa_projectV1
 
                 dbContext.ExceptionLogs.Add(new ExceptionLog
                 {
-                    Message = exception.Message,
+                    Message = "User: " + LoggedUserData.Username + " Exception: " + exception.ToString(),
                     StackTrace = exception.StackTrace,
                     Source = source,
                     Timestamp = DateTime.UtcNow

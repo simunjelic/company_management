@@ -188,7 +188,7 @@ public partial class Context : DbContext
                 .HasConstraintName("FK__job__department___48CFD27E");
         });
 
-        modelBuilder.Entity<Location>(entity =>
+    modelBuilder.Entity<Location>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__location__3213E83F836C8D76");
 
