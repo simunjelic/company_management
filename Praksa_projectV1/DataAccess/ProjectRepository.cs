@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace Praksa_projectV1.DataAccess
 {
-    internal class ProjectRepository
+    public class ProjectRepository : IProjectRepository
     {
         Context _context = null;
         public static IEnumerable<Project> GetAll()
@@ -75,22 +75,7 @@ namespace Praksa_projectV1.DataAccess
                 return _context.Types.ToList();
             }
         }
-        public async Task<bool> UpdateProjectAsync(Project project)
-        {
-            try
-            {
-                using (_context = new Context())
-                {
-                    _context.Projects.Update(project);
-                    var RowsAffected = await _context.SaveChangesAsync();
-                    return RowsAffected > 0;
-                }
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
-        }
+        
         public async Task<Project> GetProjectByIdAsync(int projectId)
         {
             try
@@ -110,67 +95,25 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<IEnumerable<Project>> FilterData(string searchQuery)
+        public async Task<bool> AddAsync(Project newProject)
         {
             try
             {
-                using (var context = new Context())
+                using (var _context = new Context())
                 {
-                    return await context.Projects
-                              .Include(p => p.Type)
-                              .Include(p => p.Location)
-                              .Where(p => p.Name.Contains(searchQuery) || p.Id.ToString().Contains(searchQuery))
-                              .ToListAsync();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        internal async Task<IEnumerable<EmployeeProject>> GetTeam(int id)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    return await context.EmployeeProjects
-                              .Include(p => p.Project)
-                              .Include(p => p.Employee)
-                              .Where(p => p.ProjectId == id)
-                              .ToListAsync();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        internal async Task<bool> DeleteEmployeeFromProjectAsync(EmployeeProject member)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    context.EmployeeProjects.Remove(member);
-                    var RowsAffected = await context.SaveChangesAsync();
+                    await _context.Projects.AddAsync(newProject);
+                    var RowsAffected = await _context.SaveChangesAsync();
                     return RowsAffected > 0;
-
                 }
 
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
                 return false;
             }
         }
 
-        internal async Task<bool> AddMemberToProject(EmployeeProject teamMember)
+        public async Task<bool> AddMemberToProject(EmployeeProject teamMember)
         {
             try
             {
@@ -191,56 +134,44 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<IEnumerable<Project>> GetAllAsync()
+        public async Task<bool> DeleteEmployeeFromProjectAsync(EmployeeProject member)
         {
             try
             {
-                using (var _context = new Context())
+                using (var context = new Context())
                 {
-                    return await _context.Projects
-                        .Include(e => e.Type)
-                        .Include(e => e.Location)
-                        .ToListAsync();
+                    context.EmployeeProjects.Remove(member);
+                    var RowsAffected = await context.SaveChangesAsync();
+                    return RowsAffected > 0;
+
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
-                return Enumerable.Empty<Project>();
+                MessageBox.Show(ex.Message);
+                return false;
             }
         }
 
-        internal async Task<IEnumerable<Location>> GetAllLocationsAsync()
+        public async Task<bool> UpdateProjectAsync(Project project)
         {
             try
             {
                 using (_context = new Context())
                 {
-                    return await _context.Locations.ToListAsync();
+                    _context.Projects.Update(project);
+                    var RowsAffected = await _context.SaveChangesAsync();
+                    return RowsAffected > 0;
                 }
-
             }
-            catch
-            { return Enumerable.Empty<Location>(); }
-        }
-
-        internal async Task<IEnumerable<Models.Type>> GetAllTypesAsync()
-        {
-            try
+            catch (Exception ex)
             {
-                using (var _context = new Context())
-                {
-                    return await _context.Types.ToListAsync();
-                }
-
-            }
-            catch
-            {
-                return Enumerable.Empty<Models.Type>();
+                return false;
             }
         }
 
-        internal async Task<bool> DeleteAsync(Project selectedItem)
+        public async Task<bool> DeleteAsync(Project selectedItem)
         {
             try
             {
@@ -262,21 +193,92 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> AddAsync(Project newProject)
+        public async Task<IEnumerable<Project>> FilterData(string searchQuery)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return await context.Projects
+                              .Include(p => p.Type)
+                              .Include(p => p.Location)
+                              .Where(p => p.Name.Contains(searchQuery) || p.Id.ToString().Contains(searchQuery))
+                              .ToListAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<Project>> GetAllAsync()
         {
             try
             {
                 using (var _context = new Context())
                 {
-                    await _context.Projects.AddAsync(newProject);
-                    var RowsAffected = await _context.SaveChangesAsync();
-                    return RowsAffected > 0;
+                    return await _context.Projects
+                        .Include(e => e.Type)
+                        .Include(e => e.Location)
+                        .ToListAsync();
                 }
 
             }
             catch
             {
-                return false;
+                return Enumerable.Empty<Project>();
+            }
+        }
+
+        public async Task<IEnumerable<Location>> GetAllLocationsAsync()
+        {
+            try
+            {
+                using (_context = new Context())
+                {
+                    return await _context.Locations.ToListAsync();
+                }
+
+            }
+            catch
+            { return Enumerable.Empty<Location>(); }
+        }
+
+        public async Task<IEnumerable<Models.Type>> GetAllTypesAsync()
+        {
+            try
+            {
+                using (var _context = new Context())
+                {
+                    return await _context.Types.ToListAsync();
+                }
+
+            }
+            catch
+            {
+                return Enumerable.Empty<Models.Type>();
+            }
+        }
+
+        public async Task<IEnumerable<EmployeeProject>> GetTeam(int id)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    return await context.EmployeeProjects
+                              .Include(p => p.Project)
+                              .Include(p => p.Employee)
+                              .Where(p => p.ProjectId == id)
+                              .ToListAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
     }

@@ -39,30 +39,32 @@ namespace Praksa1.Tests
         [Fact]
         public async Task DeleteJobAsync_ValidData_JobDeletedSuccessfully()
         {
+            using(var mock = AutoMock.GetLoose()) { 
             // Arrange
             // Assuming you have a selected job to delete
-            var viewModel = new JobsViewModel();
+            var cls = mock.Create<JobsViewModel>();
             var fakeRepository = new Mock<IJobRepository>();
             var jobs = new List<Job>
     {
-        new Job { Id = 1, Name = "Job 1" },
+        new Job { Id = 6, Name = "Job 1" },
         new Job { Id = 2, Name = "Job 2" }
     };
             fakeRepository.Setup(repo => repo.GetAllJobsAsync()).ReturnsAsync(jobs);
             fakeRepository.Setup(repo => repo.RemoveJob(It.IsAny<Job>())).ReturnsAsync(true);
-            viewModel.repository = fakeRepository.Object;
-            viewModel.JobRecords = new ObservableCollection<Job>();
-            await viewModel.GetAll();
-            viewModel.SelectedJob = viewModel.JobRecords.LastOrDefault();
-            var idCheck = viewModel.SelectedJob.Id;
+                cls.repository = fakeRepository.Object;
+                cls.JobRecords = new ObservableCollection<Job>();
+            await cls.GetAll();
+                cls.SelectedJob = cls.JobRecords.LastOrDefault();
+            var idCheck = cls.SelectedJob.Id;
 
             // Act
-            await viewModel.DeleteJobAsync();
+            await cls.DeleteJobAsync();
 
             // Assert
             // Verify that the RemoveJob method was called with the correct job ID
             // Verify that the job was removed from the ViewModel's JobRecords collection
-            Assert.DoesNotContain(viewModel.JobRecords, job => job.Id == idCheck);
+            Assert.DoesNotContain(cls.JobRecords, job => job.Id == idCheck);
+            }
         }
 
         

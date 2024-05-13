@@ -19,7 +19,7 @@ namespace Praksa_projectV1.ViewModels
 {
     public class ProjectsViewModel : ViewModelBase
     {
-        ProjectRepository ProjectRepository;
+        public IProjectRepository ProjectRepository;
         EmployeeRepository EmployeeRepository { get; }
         public IAsyncCommand DeleteCommand { get; }
         public IAsyncCommand ShowAddWindowCommand { get; }
@@ -114,7 +114,7 @@ namespace Praksa_projectV1.ViewModels
             return true;
         }
 
-        private async Task AddProjectAsync()
+        public async Task AddProjectAsync()
         {
             Project newProject = new Project();
 
@@ -140,7 +140,7 @@ namespace Praksa_projectV1.ViewModels
             return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
-        private async Task UpdateProjectAsync()
+        public async Task UpdateProjectAsync()
         {
             if (ValidationData())
             {
@@ -173,7 +173,7 @@ namespace Praksa_projectV1.ViewModels
             return true;
         }
 
-        private async Task DeleteProjectAsync()
+        public async Task DeleteProjectAsync()
         {
             if (SelectedItem != null)
             {
@@ -550,7 +550,7 @@ namespace Praksa_projectV1.ViewModels
             return newProject;
         }
 
-        private bool ValidationData()
+        public bool ValidationData()
         {
             if (string.IsNullOrWhiteSpace(Name))
             {

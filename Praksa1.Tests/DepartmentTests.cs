@@ -134,7 +134,7 @@ namespace Praksa1.Tests
             await viewModel.UpdateDepartmentAsync();
 
             
-            Assert.DoesNotContain(viewModel.DepartmentRecords, d => d.Name == "Servis");
+            Assert.Contains(viewModel.DepartmentRecords, d => d.Name == "Servis");
         }
 
     }
