@@ -138,6 +138,32 @@ namespace Praksa1.Tests
             Assert.Contains(viewModel.ProjectRecords, p => p.Name == "Prvi projekt");
             Assert.DoesNotContain(viewModel.ProjectRecords, p => p.Name == "Old Project");
         }
+        [Fact]
+        public async Task DeleteMemberAsync_ValidData_EmployeeDeletedSuccessfully()
+        {
+            // Arrange
+            var viewModel = new ProjectsViewModel();
+            var selectedEmployee = new EmployeeProject
+            {
+                Employee = new Employee { Id = 1, Name = "John", Surname = "Doe" },
+                Project = new Project { Id = 1, Name = "Project 1" }
+            };
+            viewModel.SelectedEmployee = selectedEmployee;
+            viewModel.TeamRecords = new ObservableCollection<EmployeeProject> { selectedEmployee };
+
+            var fakeRepository = new Mock<IProjectRepository>();
+            fakeRepository.Setup(repo => repo.DeleteEmployeeFromProjectAsync(selectedEmployee)).ReturnsAsync(true);
+            viewModel.ProjectRepository = fakeRepository.Object;
+
+            // Act
+            await viewModel.DeleteMemberAsync();
+
+            // Assert
+            // Verify that the selected employee is removed from the TeamRecords collection
+            Assert.DoesNotContain(viewModel.TeamRecords, record => record == selectedEmployee);
+        }
+
+
 
 
 

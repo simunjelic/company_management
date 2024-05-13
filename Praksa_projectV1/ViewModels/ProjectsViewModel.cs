@@ -57,7 +57,7 @@ namespace Praksa_projectV1.ViewModels
             return CanCreatePermission(ModuleName);
         }
 
-        private async Task AddMemberAsync()
+        public async Task AddMemberAsync()
         {
             if(SelectedNewEmployee!= null) { 
             if (!TeamRecords.Any(i => i.ProjectId == SelectedItem.Id && i.EmployeeId == SelectedNewEmployee.Id))
@@ -87,7 +87,7 @@ namespace Praksa_projectV1.ViewModels
             return CanDeletePermission(ModuleName);
         }
 
-        private async Task DeleteMemberAsync()
+        public async Task DeleteMemberAsync()
         {
             if (SelectedEmployee != null)
             {
