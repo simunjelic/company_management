@@ -16,23 +16,7 @@ namespace Praksa_projectV1.DataAccess
         {
             jobContext = new Context();
         }
-        public async Task<List<Job>> GetAllJobsAsync()
-        {
-            try
-            {
-                using (var _context = new Context())
-                {
-                    var permissions = await _context.Jobs
-                        .Include(e => e.Department)
-                        .ToListAsync();
-                    return permissions;
-                }
-            }
-            catch
-            {
-                return null;
-            }
-        }
+        
         public bool AddJob(Job job)
         {
             using (jobContext = new Context())
@@ -47,20 +31,7 @@ namespace Praksa_projectV1.DataAccess
 
             }
         }
-        public async Task<bool> RemoveJob(Job job)
-        {
-            try { 
-            using (jobContext = new Context())
-            {
-                jobContext.Jobs.Remove(job);
-               var RowsAffected  = await jobContext.SaveChangesAsync();
-                    return RowsAffected > 0;
-            }
-            }catch(Exception ex)
-            {
-                return false;
-            }
-        }
+        
         public Job GetJob(int Id)
         {
             using (jobContext = new Context())
@@ -69,22 +40,7 @@ namespace Praksa_projectV1.DataAccess
                 return job;
             }
         }
-        public async Task<bool> updateJobAsync(Job job)
-        {
-            try { 
-            using (jobContext = new Context())
-            {
-                
-                    jobContext.Update(job);
-                    var isChanged = await jobContext.SaveChangesAsync();
-                    return isChanged > 0;   
-            }
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        
 
         public async Task<bool> AddJobAsync(Job newJob)
         {
@@ -102,6 +58,59 @@ namespace Praksa_projectV1.DataAccess
             catch (Exception ex)
             {
                 return false;
+            }
+        }
+
+        public async Task<bool> RemoveJob(Job job)
+        {
+            try
+            {
+                using (jobContext = new Context())
+                {
+                    jobContext.Jobs.Remove(job);
+                    var RowsAffected = await jobContext.SaveChangesAsync();
+                    return RowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> updateJobAsync(Job job)
+        {
+            try
+            {
+                using (jobContext = new Context())
+                {
+
+                    jobContext.Update(job);
+                    var isChanged = await jobContext.SaveChangesAsync();
+                    return isChanged > 0;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<List<Job>> GetAllJobsAsync()
+        {
+            try
+            {
+                using (var _context = new Context())
+                {
+                    var permissions = await _context.Jobs
+                        .Include(e => e.Department)
+                        .ToListAsync();
+                    return permissions;
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
     }

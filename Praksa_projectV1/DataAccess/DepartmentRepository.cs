@@ -9,17 +9,56 @@ using System.Threading.Tasks;
 
 namespace Praksa_projectV1.DataAccess
 {
-    public class DepartmentRepository
+    public class DepartmentRepository : IDepartmentRepository
     {
         private Context dContext = null;
         public DepartmentRepository()
         {
             dContext = new Context();
         }
+
+        public async Task<bool> AddAsync(Department newDepartment)
+        {
+            try
+            {
+                using (var dContext = new Context())
+                {
+
+                    await dContext.AddAsync(newDepartment);
+                    int rowsAffected = await dContext.SaveChangesAsync();
+                    return rowsAffected > 0;
+
+
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public List<Department> GetAllDepartments()
         {
             return dContext.Departments.ToList();
         }
+
+        public async Task<IEnumerable<Department>> GetAllDepartmentsAsync()
+        {
+            try
+            {
+                using (var dContext = new Context())
+                {
+                    return await dContext.Departments.Include(e => e.ParentDepartment).ToListAsync();
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                return Enumerable.Empty<Department>();
+            }
+        }
+
         public Department GetDepart(int? id)
         {
             using (var dContext = new Context())
@@ -47,44 +86,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> AddAsync(Department newDepartment)
-        {
-            try
-            {
-                using (var dContext = new Context())
-                {
-                    
-                        await dContext.AddAsync(newDepartment);
-                        int rowsAffected = await dContext.SaveChangesAsync();
-                        return rowsAffected > 0;
-                    
-
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        internal async Task<IEnumerable<Department>> GetAllDepartmentsAsync()
-        {
-            try
-            {
-                using (var dContext = new Context())
-                {
-                    return await dContext.Departments.Include(e => e.ParentDepartment).ToListAsync();
-                }
-                
-
-            }
-            catch (Exception ex)
-            {
-                return Enumerable.Empty<Department>();
-            }
-        }
-
-        internal async Task<bool> UpdateAsync(Department department)
+        public async Task<bool> UpdateAsync(Department department)
         {
             try
             {

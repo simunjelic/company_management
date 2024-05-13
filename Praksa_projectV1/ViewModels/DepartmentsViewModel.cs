@@ -18,6 +18,7 @@ namespace Praksa_projectV1.ViewModels
     {
 
         private DepartmentRepository departmentRepository;
+        public IDepartmentRepository IdepartmentRepository;
         public IAsyncCommand DeleteDepartmentCommand { get; }
         public IAsyncCommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddDepartmentCommand { get; }
@@ -28,6 +29,7 @@ namespace Praksa_projectV1.ViewModels
         public DepartmentsViewModel()
         {
             departmentRepository = new DepartmentRepository();
+            IdepartmentRepository = new DepartmentRepository();
             GetAllDepartmentsAsync();
             DeleteDepartmentCommand = new AsyncCommand(DeleteDepartmentAsync, CanDeleteDepartmentAsync);
             ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
@@ -44,7 +46,7 @@ namespace Praksa_projectV1.ViewModels
             return true;
         }
 
-        private async Task AddDepartmentAsync()
+        public async Task AddDepartmentAsync()
         {
             if (Validator.TryValidateObject(this, new ValidationContext(this), null))
             {
@@ -54,7 +56,7 @@ namespace Praksa_projectV1.ViewModels
                     newDepartment.Name = Name;
                     if (SelectedDepartment != null)
                         newDepartment.ParentDepartmentId = SelectedDepartment.Id;
-                    bool flag = await departmentRepository.AddAsync(newDepartment);
+                    bool flag = await IdepartmentRepository.AddAsync(newDepartment);
                     if (flag)
                     {
                         MessageBox.Show("Odjel s nazivom " + Name + " dodan.");
@@ -78,7 +80,7 @@ namespace Praksa_projectV1.ViewModels
             return Validator.TryValidateObject(this, new ValidationContext(this), null);
         }
 
-        private async Task UpdateDepartmentAsync()
+        public async Task UpdateDepartmentAsync()
         {
             if (!DepartmentRecords.Any(i => i.Id != Id && i.Name == Name))
             {
@@ -90,15 +92,15 @@ namespace Praksa_projectV1.ViewModels
                 MessageBoxResult result = MessageBox.Show("Jeste li sigurni da želite ažurirati ovaj zapis?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    bool isSuccessful = await departmentRepository.UpdateAsync(department);
+                    bool isSuccessful = await IdepartmentRepository.UpdateAsync(department);
                     if (isSuccessful)
                     {
                         string message = "Podatak ažuriran!";
+                        
                         int index = -1;
                         index = DepartmentRecords.IndexOf(DepartmentRecords.Where(x => x.Id == Id).Single());
                         department.ParentDepartment = SelectedDepartment;
                         DepartmentRecords[index] = department;
-
                         MessageBox.Show(message);
                         ResetData();
 
@@ -115,7 +117,7 @@ namespace Praksa_projectV1.ViewModels
             return CanDeletePermission(ModuleName);
         }
 
-        private async Task DeleteDepartmentAsync()
+        public async Task DeleteDepartmentAsync()
         {
             if (SelectedItem != null)
             {
@@ -124,7 +126,7 @@ namespace Praksa_projectV1.ViewModels
 
                 if (result == MessageBoxResult.Yes)
                 {
-                    bool res = await departmentRepository.RemoveAsync(SelectedItem);
+                    bool res = await IdepartmentRepository.RemoveAsync(SelectedItem);
                     if (res)
                     {
                         DepartmentRecords.Remove(SelectedItem);
@@ -324,7 +326,7 @@ namespace Praksa_projectV1.ViewModels
 
         public async Task GetAllDepartmentsAsync()
         {
-            var departments = await departmentRepository.GetAllDepartmentsAsync();
+            var departments = await IdepartmentRepository.GetAllDepartmentsAsync();
 
             DepartmentRecords = new ObservableCollection<Department>(departments);
 

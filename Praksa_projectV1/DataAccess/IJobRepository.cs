@@ -10,5 +10,8 @@ namespace Praksa_projectV1.DataAccess
     public interface IJobRepository
     {
         public Task<bool> AddJobAsync(Job newJob);
+        Task<bool> RemoveJob(Job job);
+        Task<bool> updateJobAsync(Job job);
+        Task<List<Job>> GetAllJobsAsync();
     }
 }

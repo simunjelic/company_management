@@ -19,7 +19,7 @@ namespace Praksa_projectV1.ViewModels
 {
     public class JobsViewModel : ViewModelBase
     {
-        public JobRepository repository;
+        public IJobRepository repository;
         private DepartmentRepository departmentRepository;
         public IAsyncCommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddjobCommand { get; }
