@@ -87,7 +87,7 @@ namespace Praksa_projectV1.ViewModels
             return true;
         }
 
-        private async Task ExecuteLoginCommandAsync()
+        public async Task ExecuteLoginCommandAsync()
         {
             try
             {

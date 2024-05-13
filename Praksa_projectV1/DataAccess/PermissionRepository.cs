@@ -13,9 +13,10 @@ using EntityState = Microsoft.EntityFrameworkCore.EntityState;
 
 namespace Praksa_projectV1.DataAccess
 {
-    public class PermissonRepository
+    public class PermissonRepository : IPermissonRepository
     {
-        internal async Task<IEnumerable<Permission>> GetAllPermissions()
+        
+         public async Task<IEnumerable<Permission>> GetAllPermissions()
         {
             try
             {
@@ -42,7 +43,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<IEnumerable<Role>> GetAllRolesAsync()
+        public async Task<IEnumerable<Role>> GetAllRolesAsync()
         {
             try
             {
@@ -75,67 +76,9 @@ namespace Praksa_projectV1.DataAccess
 
         }
 
-        internal List<Permission> getPermissionByModule(string modul,int action)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    return context.Permissions
-                        .Include(e => e.Role)
-                        .Include(e => e.Module)
-                        .Where(i => i.Module.Name == modul && i.ActionId == action)
-                        .ToList();
-                }
+        
 
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        internal bool CheckAcess(string modul, int action, List<string>? UserRoles)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    return context.Permissions
-                        .Include(e => e.Role)
-                        .Include(e => e.Module)
-                        .Any(i => i.Module.Name == modul && i.ActionId == action && UserRoles.Contains(i.Role.RoleName));    
-                }
-
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        internal bool RemoveById(int id)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    var check = context.Permissions.FirstOrDefault(i => i.Id == id);
-
-                    if (check != null)
-                    {
-                        context.Permissions.Remove(check);
-                        context.SaveChanges();
-                        return true;
-                    }
-                    return false;
-                }
-
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        
 
         internal async Task<bool> AddAsync(Permission permission)
         {
@@ -158,25 +101,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<IEnumerable<Permission>> FilterData(string searchQuery)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    return await context.Permissions
-                              .Include(e => e.Role)
-                             .Include(e => e.Module)
-                              .Where(p => p.Module.Name.Contains(searchQuery) || p.Role.RoleName.Contains(searchQuery) || p.Action.Contains(searchQuery))
-                              .ToListAsync();
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
+       
 
         internal async Task<bool> RemoveRoleAsync(Role SelectedItem)
         {
@@ -262,7 +187,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal List<Permission> GetUserRoles(int action, List<int> roles)
+        public List<Permission> GetUserRoles(int action, List<int> roles)
         {
             try
             {
@@ -280,5 +205,7 @@ namespace Praksa_projectV1.DataAccess
                 return null;
             }
         }
+
+        
     }
 }

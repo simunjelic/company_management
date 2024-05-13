@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace Praksa_projectV1.DataAccess
 {
-    public class JobRepository
+    public class JobRepository : IJobRepository
     {
         private Context jobContext = null;
         public JobRepository()
@@ -47,17 +47,14 @@ namespace Praksa_projectV1.DataAccess
 
             }
         }
-        public async Task<bool> RemoveJob(int Id)
+        public async Task<bool> RemoveJob(Job job)
         {
             try { 
             using (jobContext = new Context())
             {
-                Job jobToDelete = await  jobContext.Jobs.FirstOrDefaultAsync(i => i.Id == Id);
-
-                if (jobToDelete != null)
-                jobContext.Jobs.Remove(jobToDelete);
-                await jobContext.SaveChangesAsync();
-                    return true;
+                jobContext.Jobs.Remove(job);
+               var RowsAffected  = await jobContext.SaveChangesAsync();
+                    return RowsAffected > 0;
             }
             }catch(Exception ex)
             {
@@ -89,20 +86,15 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<bool> AddJobAsync(Job newJob)
+        public async Task<bool> AddJobAsync(Job newJob)
         {
             try
             {
                 using (jobContext = new Context())
                 {
-                    var checkJob = await jobContext.Jobs.AnyAsync(i => i.Name == newJob.Name);
-                    if (!checkJob)
-                    {
                         await jobContext.Jobs.AddAsync(newJob);
                         var isTrue = await jobContext.SaveChangesAsync();
                         return isTrue > 0;
-                    }
-                    else return false;
 
                 }
 
