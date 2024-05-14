@@ -20,7 +20,7 @@ namespace Praksa_projectV1.ViewModels
     public class JobsViewModel : ViewModelBase
     {
         public IJobRepository repository;
-        private DepartmentRepository departmentRepository;
+        public IDepartmentRepository departmentRepository;
         public IAsyncCommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddjobCommand { get; }
         public IAsyncCommand DeleteJobCommand { get; }
@@ -157,39 +157,54 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
-        private async Task EditJob()
+        public async Task EditJob()
         {
-            Job updateJob = new Job();
+            Job updateJob = new Job
+            {
+                Id = Id,
+                Name = AddName,
+                DepartmentId = SelectedDepartment?.Id ?? 0
+            };
 
-            updateJob.Name = AddName;
-            updateJob.DepartmentId = SelectedDepartment.Id;
-            updateJob.Id = Id;
-            var progress = false;
             if (!JobRecords.Any(i => i.Id != updateJob.Id && i.Name == updateJob.Name))
             {
                 MessageBoxResult result = MessageBox.Show("Jeste li sigurni da želite spremiti promjene?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    progress = await repository.updateJobAsync(updateJob);
-                    if (progress == true)
+                    var progress = await repository.updateJobAsync(updateJob);
+                    if (progress)
                     {
-                        string message = "Naziv promijenjen " + AddName;
+                        MessageBox.Show($"Naziv promijenjen {AddName}");
 
-                        MessageBox.Show(message);
+                        // Find the index of the existing job
+                        int index = JobRecords.IndexOf(JobRecords.FirstOrDefault(j => j.Id == updateJob.Id));
+
+                        if (index >= 0)
+                        {
+                            // Update department reference if needed
+                            updateJob.Department = SelectedDepartment;
+                            JobRecords[index] = updateJob;
+
+                            // Notify that the item at the index has changed
+                            OnPropertyChanged(nameof(JobRecords));
+                        }
+
                         _isViewVisible = false;
-                        await GetAll();
                         await ResetData();
                     }
                     else
                     {
                         MessageBox.Show("Greška pri uređivanju.");
                     }
-                    updateJob = null;
                 }
             }
-            else MessageBox.Show("Posao sa istim imenom već postoji");
-
+            else
+            {
+                MessageBox.Show("Posao sa istim imenom već postoji");
+            }
         }
+
+
 
         private bool CanEditJob()
         {
