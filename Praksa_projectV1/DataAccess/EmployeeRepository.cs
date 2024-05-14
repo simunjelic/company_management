@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace Praksa_projectV1.DataAccess
 {
-    public class EmployeeRepository
+    public class EmployeeRepository : IEmployeeRepository
     {
         private Context dContext = null;
         public List<Employee> GetAll()
@@ -56,8 +56,55 @@ namespace Praksa_projectV1.DataAccess
                 }
             }
         }
+        internal bool Update(Employee employee)
+        {
+            using (dContext = new Context())
+            {
 
-        internal Employee FindByUserId(int? userId)
+
+                dContext.Employees.Update(employee);
+                dContext.SaveChanges();
+                return true;
+
+
+
+            }
+        }
+
+        internal async Task<Employee> GetProjectByIdAsync(int id)
+        {
+            using (dContext = new Context())
+            {
+                return dContext.Employees
+                     .Include(e => e.Job)
+                     .Include(e => e.Department)
+                     .FirstOrDefault(i => i.Id == id);
+            }
+        }
+
+        
+
+       
+
+        public async Task<bool> AddAsync(Employee newEmployee)
+        {
+            try
+            {
+                using (dContext = new Context())
+                {
+                    await dContext.Employees.AddAsync(newEmployee);
+                    var RowsAffected = await dContext.SaveChangesAsync();
+                    return RowsAffected > 0;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public Employee FindByUserId(int? userId)
         {
             using (dContext = new Context())
             {
@@ -78,65 +125,31 @@ namespace Praksa_projectV1.DataAccess
                 }
             }
         }
-        internal bool Update(Employee employee)
-        {
-            using (dContext = new Context())
-            {
 
-
-                dContext.Employees.Update(employee);
-                dContext.SaveChanges();
-                return true;
-
-
-
-            }
-        }
-
-        internal Employee GetById(int id)
-        {
-            using (dContext = new Context())
-            {
-                return dContext.Employees
-                     .Include(e => e.Job)
-                     .Include(e => e.Department)
-                     .FirstOrDefault(i => i.Id == id);
-            }
-
-        }
-
-        internal async Task<Employee> GetProjectByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal IEnumerable<Employee> FilterByNameSurnameProjectId(string searchText, int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal async Task<IEnumerable<Employee>> GetAllAsync()
+        public async Task<bool> UpdateAsync(Employee selectedItem)
         {
             try
             {
                 using (dContext = new Context())
                 {
-
-                    return await dContext.Employees
-                                       .Include(e => e.Job)
-                                       .Include(e => e.Department)
-                                       .ToListAsync();
-
+                    dContext.Employees.Update(selectedItem);
+                    var RowsAffected = await dContext.SaveChangesAsync();
+                    return RowsAffected > 0;
                 }
 
             }
-            catch (Exception ex)
+            catch
             {
-                return Enumerable.Empty<Employee>();
+                return false;
             }
         }
 
-        internal async Task<bool> DeleteAsync(Employee selectedItem)
+        public Employee GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> DeleteAsync(Employee selectedItem)
         {
             try
             {
@@ -155,42 +168,26 @@ namespace Praksa_projectV1.DataAccess
             {
                 return false;
             }
-
         }
 
-        internal async Task<bool> UpdateAsync(Employee selectedItem)
+        public async Task<IEnumerable<Employee>> GetAllAsync()
         {
             try
             {
                 using (dContext = new Context())
                 {
-                    dContext.Employees.Update(selectedItem);
-                    var RowsAffected = await dContext.SaveChangesAsync();
-                    return RowsAffected > 0;
-                }
 
-            }
-            catch
-            {
-                return false;
-            }
-        }
+                    return await dContext.Employees
+                                       .Include(e => e.Job)
+                                       .Include(e => e.Department)
+                                       .ToListAsync();
 
-        internal async Task<bool> AddAsync(Employee newEmployee)
-        {
-            try
-            {
-                using (dContext = new Context())
-                {
-                    await dContext.Employees.AddAsync(newEmployee);
-                    var RowsAffected = await dContext.SaveChangesAsync();
-                    return RowsAffected > 0;
                 }
 
             }
             catch (Exception ex)
             {
-                return false;
+                return Enumerable.Empty<Employee>();
             }
         }
     }

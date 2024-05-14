@@ -21,7 +21,7 @@ namespace Praksa_projectV1.ViewModels
 
     public class WorkersViewModel : ViewModelBase
     {
-        EmployeeRepository EmpolyeeRepository { get; }
+        public IEmployeeRepository EmpolyeeRepository { get; set; }
         UserRepository UserRepository { get; }
         DepartmentRepository departmentRepository { get; }
         JobRepository jobRepository { get; }
@@ -56,7 +56,7 @@ namespace Praksa_projectV1.ViewModels
             return true;
         }
 
-        private async Task AddEmployeeAsync()
+        public async Task AddEmployeeAsync()
         {
             Employee newEmployee = new();
             if (ValidationInput())
@@ -231,7 +231,7 @@ namespace Praksa_projectV1.ViewModels
             return newEmployee;
         }
 
-        private bool ValidationInput()
+        public bool ValidationInput()
         {
             if (string.IsNullOrWhiteSpace(Name) || string.IsNullOrWhiteSpace(Surname))
             {
