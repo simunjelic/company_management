@@ -10,5 +10,6 @@ namespace Praksa_projectV1.DataAccess
     public interface IUserRepository
     {
         Task<IEnumerable<User>> getAllUsersAsync();
+        Task<Employee> getEmployeeByUsernameAsync(string username);
     }
 }

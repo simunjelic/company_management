@@ -61,27 +61,6 @@ namespace Praksa_projectV1.DataAccess
 
             }
         }
-        public async Task<Employee> getEmployeeByUsernameAsync(string username)
-        {
-            try
-            {
-                using (var dbContext = new Context())
-                {
-                    return await dbContext.Employees.FirstOrDefaultAsync(i => i.User.Username == username);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-
-            }
-        }
-
-
-
-
 
         public List<string> GetUserRoles(string username)
         {
@@ -386,6 +365,24 @@ namespace Praksa_projectV1.DataAccess
             {
 
                 return Enumerable.Empty<User>();
+            }
+        }
+
+        public async Task<Employee> getEmployeeByUsernameAsync(string username)
+        {
+            try
+            {
+                using (var dbContext = new Context())
+                {
+                    return await dbContext.Employees.FirstOrDefaultAsync(i => i.User.Username == username);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+
             }
         }
     }

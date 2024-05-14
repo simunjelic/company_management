@@ -10,54 +10,10 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Praksa_projectV1.DataAccess
 {
-    class WorkingCardRepository
+    public class WorkingCardRepository : IWorkingCardRepository
     {
         
 
-        internal async Task<bool> Add(WorkingCard newCard)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    await context.WorkingCards.AddAsync(newCard);
-                    await context.SaveChangesAsync();
-                    return true;
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                MessageBox.Show("Greška pri spremanju podataka: " + ex);
-                return false;
-            }
-        }
-
-        internal async Task<bool> DeleteByIdAsync(int id)
-        {
-            try
-            {
-
-                using (var _context = new Context())
-                {
-                    var check = await _context.WorkingCards.FirstOrDefaultAsync(i => i.Id == id);
-                    if (check != null)
-                    {
-                        _context.WorkingCards.Remove(check);
-                        await _context.SaveChangesAsync();
-                        return true;
-                    }
-                    return false;
-
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return false;
-            }
-        }
 
         internal bool Edit(WorkingCard card)
         {
@@ -124,7 +80,94 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        internal async Task<IEnumerable<WorkingCard>> GetByStartAndEndDate(DateOnly? startDate, DateOnly? endDate)
+        
+
+        internal static async Task<IEnumerable<Activity>> GetAllActivtiesAsync()
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+
+                    return await context.Activities
+                              .ToListAsync();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> Add(WorkingCard newCard)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    await context.WorkingCards.AddAsync(newCard);
+                    await context.SaveChangesAsync();
+                    return true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show("Greška pri spremanju podataka: " + ex);
+                return false;
+            };
+        }
+
+        public async Task<bool> EditAsync(WorkingCard updateCard)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+                    context.WorkingCards.Update(updateCard);
+                    var RowsAffected = await context.SaveChangesAsync();
+
+                    return RowsAffected > 0;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteByIdAsync(int id)
+        {
+            try
+            {
+
+                using (var _context = new Context())
+                {
+                    var check = await _context.WorkingCards.FirstOrDefaultAsync(i => i.Id == id);
+                    if (check != null)
+                    {
+                        _context.WorkingCards.Remove(check);
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    return false;
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<WorkingCard>> GetByStartAndEndDate(DateOnly? startDate, DateOnly? endDate)
         {
             try
             {
@@ -163,6 +206,7 @@ namespace Praksa_projectV1.DataAccess
                 return null;
             }
         }
+
         public async Task<IEnumerable<MonthlySummary>> GetSummarizedDataByMonth(DateOnly startDate, DateOnly endDate)
         {
             try
@@ -187,46 +231,6 @@ namespace Praksa_projectV1.DataAccess
                     }
                     return null;
                 }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-
-        internal async Task<bool> EditAsync(WorkingCard updateCard)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    context.WorkingCards.Update(updateCard);
-                    var RowsAffected = await context.SaveChangesAsync();
-
-                    return RowsAffected > 0;
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                
-                return false;
-            }
-        }
-
-        internal static async Task<IEnumerable<Activity>> GetAllActivtiesAsync()
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-
-                    return await context.Activities
-                              .ToListAsync();
-
-                }
-
             }
             catch (Exception ex)
             {

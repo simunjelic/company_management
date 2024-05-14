@@ -22,9 +22,9 @@ namespace Praksa_projectV1.ViewModels
 {
     public class WorkingCardViewModel : ViewModelBase
     {
-        WorkingCardRepository cardRespository { get; set; }
-        UserRepository userRepository { get; set; }
-        ProjectRepository ProjectRepository { get; set; }
+        public IWorkingCardRepository cardRespository { get; set; }
+        public IUserRepository userRepository { get; set; }
+        public IProjectRepository ProjectRepository { get; set; }
         public IAsyncCommand DeleteCommand { get; }
         public IAsyncCommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddCommand { get; }
@@ -33,32 +33,41 @@ namespace Praksa_projectV1.ViewModels
         public IAsyncCommand RefreshDateCommand { get; }
         public string ModuleName = "Radna karta";
 
-        public WorkingCardViewModel()
+        public WorkingCardViewModel(bool isTest = false)
         {
-            // Access StartDate and EndDate from Application resources
-            if (Application.Current.Resources["StartDate"] is DateTime startDate)
+            if (!isTest)
             {
-                StartDate = startDate;
-            }
-            else
-            {
-                // Handle case where StartDate resource is not found
-                StartDate = DateTime.Today.AddMonths(-1);
-            }
+                // Access StartDate and EndDate from Application resources
+                if (Application.Current?.Resources["StartDate"] is DateTime startDate)
+                {
+                    StartDate = startDate;
+                }
+                else
+                {
+                    // Handle case where StartDate resource is not found
+                    StartDate = DateTime.Today.AddMonths(-1);
+                }
 
-            if (Application.Current.Resources["EndDate"] is DateTime endDate)
-            {
-                EndDate = endDate;
+                if (Application.Current?.Resources["EndDate"] is DateTime endDate)
+                {
+                    EndDate = endDate;
+                }
+                else
+                {
+                    // Handle case where EndDate resource is not found
+                    EndDate = DateTime.Today;
+                }
             }
             else
             {
-                // Handle case where EndDate resource is not found
+                // Use default dates for testing
+                StartDate = DateTime.Today.AddMonths(-1);
                 EndDate = DateTime.Today;
             }
-        
-        cardRespository = new();
-            userRepository = new();
-            ProjectRepository = new();
+
+            cardRespository = new WorkingCardRepository();
+            userRepository = new UserRepository();
+            ProjectRepository = new ProjectRepository();
             gettAllDataFromCard();
             DeleteCommand = new AsyncCommand(DeleteAsync, CanDeleteAsync);
             ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
@@ -67,12 +76,10 @@ namespace Praksa_projectV1.ViewModels
             UpdateCommand = new AsyncCommand(UpdateRecordAsync, CanUpdateRecordAsync);
             RefreshDateCommand = new AsyncCommand(RefreshDateAsync, CanRefreshDateAsync);
             gettAllProjectsAndActivities();
-
-
         }
-       
 
-        
+
+
 
         private bool CanRefreshDateAsync()
         {
@@ -95,7 +102,7 @@ namespace Praksa_projectV1.ViewModels
             return true;
         }
 
-        private async Task AddAsync()
+        public async Task AddAsync()
         {
             if (Validator.TryValidateObject(this, new ValidationContext(this), null))
             {
@@ -132,7 +139,7 @@ namespace Praksa_projectV1.ViewModels
             return true;
         }
 
-        private async Task UpdateRecordAsync()
+        public async Task UpdateRecordAsync()
         {
             if (Validator.TryValidateObject(this, new ValidationContext(this), null))
             {
@@ -167,7 +174,7 @@ namespace Praksa_projectV1.ViewModels
             return CanDeletePermission(ModuleName);
         }
 
-        private async Task DeleteAsync()
+        public async Task DeleteAsync()
         {
             if (SelectedItem != null)
             {
@@ -304,7 +311,7 @@ namespace Praksa_projectV1.ViewModels
                 OnPropertyChanged(nameof(Id));
             }
         }
-        private bool _isAddButtonVisible = true;
+        public bool _isAddButtonVisible = true;
         public bool IsAddButtonVisible
         {
             get { return _isAddButtonVisible; }
