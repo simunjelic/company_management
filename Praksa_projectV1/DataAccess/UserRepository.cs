@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace Praksa_projectV1.DataAccess
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly Context _dbContext;
         public void add(User user)
@@ -106,25 +106,7 @@ namespace Praksa_projectV1.DataAccess
         }
 
 
-        internal async Task<IEnumerable<User>> getAllUsersAsync()
-        {
-            try
-            {
-                using (var dbContext = new Context())
-                {
-                    return await dbContext.Users
-                 .Include(u => u.Employees)
-                .Include(u => u.UserRoles)
-                .ToListAsync();
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-                return  Enumerable.Empty<User>();
-            }
-        }
+        
 
         internal async Task<IEnumerable<UserRole>> GetUserRolesObject(int id)
         {
@@ -384,6 +366,26 @@ namespace Praksa_projectV1.DataAccess
             {
                 MessageBox.Show("GREŠKA");
                 return null;
+            }
+        }
+
+        public async Task<IEnumerable<User>> getAllUsersAsync()
+        {
+            try
+            {
+                using (var dbContext = new Context())
+                {
+                    return await dbContext.Users
+                 .Include(u => u.Employees)
+                .Include(u => u.UserRoles)
+                .ToListAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return Enumerable.Empty<User>();
             }
         }
     }

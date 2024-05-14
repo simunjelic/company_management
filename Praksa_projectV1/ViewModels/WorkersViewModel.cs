@@ -22,9 +22,9 @@ namespace Praksa_projectV1.ViewModels
     public class WorkersViewModel : ViewModelBase
     {
         public IEmployeeRepository EmpolyeeRepository { get; set; }
-        UserRepository UserRepository { get; }
-        DepartmentRepository departmentRepository { get; }
-        JobRepository jobRepository { get; }
+        public IUserRepository UserRepository { get; set; }
+        public IDepartmentRepository departmentRepository { get; set; }
+        public IJobRepository jobRepository { get; set; }
         public IAsyncCommand ShowWindowCommand { get; }
         public IAsyncCommand DeleteCommand { get; }
         public IAsyncCommand AddEmployeeCommand { get; }
@@ -175,7 +175,7 @@ namespace Praksa_projectV1.ViewModels
 
 
 
-        private void PopulateUpdateWindow()
+        public void PopulateUpdateWindow()
         {
 
             Id = SelectedItem.Id;
