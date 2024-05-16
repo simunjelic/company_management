@@ -10,6 +10,7 @@ using Praksa_projectV1.DataAccess;
 using System.Security.Principal;
 using Praksa_projectV1.Models;
 using Microsoft.IdentityModel.Tokens;
+using Praksa_projectV1.Enums;
 
 namespace Praksa_projectV1.ViewModels
 {
@@ -68,7 +69,7 @@ namespace Praksa_projectV1.ViewModels
         {
             if (PermissionAccess.ReadPermission.IsNullOrEmpty())
             {
-                PermissionAccess.ReadPermission = PermissonRepository.GetUserRoles(3, LoggedUserData.RolesId);
+                PermissionAccess.ReadPermission = PermissonRepository.GetUserRoles((int)AvailableActions.Čitaj, LoggedUserData.RolesId);
                 return PermissionAccess.ReadPermission.Any(i => i.Module.Name == modul);
             }
             else
@@ -81,7 +82,7 @@ namespace Praksa_projectV1.ViewModels
         {
             if (PermissionAccess.DeletePermission.IsNullOrEmpty())
             {
-                PermissionAccess.DeletePermission = PermissonRepository.GetUserRoles(2, LoggedUserData.RolesId);
+                PermissionAccess.DeletePermission = PermissonRepository.GetUserRoles((int)AvailableActions.Obriši, LoggedUserData.RolesId);
                 return PermissionAccess.DeletePermission.Any(i => i.Module.Name == modul);
             }
             else
@@ -93,7 +94,7 @@ namespace Praksa_projectV1.ViewModels
         {
             if (PermissionAccess.UpdatePermission.IsNullOrEmpty())
             {
-                PermissionAccess.UpdatePermission = PermissonRepository.GetUserRoles(1, LoggedUserData.RolesId);
+                PermissionAccess.UpdatePermission = PermissonRepository.GetUserRoles((int)AvailableActions.Uredi, LoggedUserData.RolesId);
                 return PermissionAccess.UpdatePermission.Any(i => i.Module.Name == modul);
             }
             else
@@ -105,7 +106,7 @@ namespace Praksa_projectV1.ViewModels
         {
             if (PermissionAccess.CreatePermission.IsNullOrEmpty())
             {
-                PermissionAccess.CreatePermission = PermissonRepository.GetUserRoles(0, LoggedUserData.RolesId);
+                PermissionAccess.CreatePermission = PermissonRepository.GetUserRoles((int)AvailableActions.Dodaj, LoggedUserData.RolesId);
                 return PermissionAccess.CreatePermission.Any(i => i.Module.Name == modul);
             }
             else
