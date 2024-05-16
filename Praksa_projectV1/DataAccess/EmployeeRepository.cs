@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Praksa_projectV1.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Linq;
 using System.Windows;
 
 namespace Praksa_projectV1.DataAccess

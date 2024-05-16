@@ -22,14 +22,14 @@ namespace Praksa_projectV1.ViewModels
     {
         public readonly string ModuleName = "Korisnici";
         UserRepository UserRepository { get; set; }
-        public IAsyncCommand ShowUserRolesWindowCommand { get; }
+        public ICommand ShowUserRolesWindowCommand { get; }
         public IAsyncCommand DeleteRoleCommand { get; }
         public IAsyncCommand AddRoleCommand { get; }
-        public IAsyncCommand ShowAddWindowCommand { get; }
+        public ICommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddUserCommand { get; }
-        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public ICommand ShowUpdateWindowCommand { get; }
         public IAsyncCommand UpdateUserCommand { get; }
-        public IAsyncCommand ShowUpdatePasswordWindowCommand { get; }
+        public ICommand ShowUpdatePasswordWindowCommand { get; }
         public IAsyncCommand UpdateUserPasswordCommand { get; }
         public IAsyncCommand DeleteCommand { get; }
 
@@ -40,16 +40,86 @@ namespace Praksa_projectV1.ViewModels
         {
             UserRepository = new UserRepository();
             GetAllUsersAsync();
-            ShowUserRolesWindowCommand = new AsyncCommand(ShowUserRolesAsync, CanShowUserRolesAsync);
+            ShowUserRolesWindowCommand = new ViewModelCommand(ShowUserRoles, CanShowUserRoles);
             DeleteRoleCommand = new AsyncCommand(DeleteRoleAsync, CanDeleteRoleAsync);
             AddRoleCommand = new AsyncCommand(AddRoleAsync, CanAddRoleAsync);
-            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             AddUserCommand = new AsyncCommand(AddUserAsync, CanAddUserAsync);
-            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowAsync);
+            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             UpdateUserCommand = new AsyncCommand(UpdateUserAsync, CanUpdateUserAsync);
-            ShowUpdatePasswordWindowCommand = new AsyncCommand(ShowUpdatePasswordWindowAsync, CanShowUpdatePasswordWindowAsync);
+            ShowUpdatePasswordWindowCommand = new ViewModelCommand(ShowUpdatePasswordWindow, CanShowUpdatePasswordWindow);
             UpdateUserPasswordCommand = new AsyncCommand(UpdateUserPasswordAsync, CanUpdateUserPasswordAsync);
             DeleteCommand = new AsyncCommand(ExecuteDeleteAsync, CanDeleteAsync);
+        }
+
+        private bool CanShowUpdatePasswordWindow(object obj)
+        {
+            return CanUpdatePermission(ModuleName) && SelectedItem != null;
+        }
+
+        private void ShowUpdatePasswordWindow(object obj)
+        {
+            UserAddView userEditView = new UserAddView();
+            userEditView.DataContext = this;
+            userEditView.Title = "Uredi lozinku";
+            IsAddButtonVisible = false;
+            IsUpdateButtonVisible = true;
+            Password = null;
+            CheckPassword = null;
+            Username = SelectedItem.Username;
+            Id = SelectedItem.Id;
+
+            userEditView.Show();
+        }
+
+        private bool CanShowUpdateWindow(object obj)
+        {
+            return CanUpdatePermission(ModuleName) && SelectedItem != null;
+        }
+
+        private void ShowUpdateWindow(object obj)
+        {
+            UserChangeUsernameView userEditView = new UserChangeUsernameView();
+            userEditView.DataContext = this;
+            userEditView.Title = "Uredi koriničko ime";
+            IsAddButtonVisible = false;
+            IsUpdateButtonVisible = true;
+            Username = SelectedItem.Username;
+            Id = SelectedItem.Id;
+
+            userEditView.Show();
+        }
+
+        private bool CanShowAddWindow(object obj)
+        {
+            return CanCreatePermission(ModuleName);
+        }
+
+        private void ShowAddWindow(object obj)
+        {
+            UserAddView userEditView = new UserAddView();
+            userEditView.DataContext = this;
+            userEditView.Title = "Dodaj korisnika";
+            IsAddButtonVisible = true;
+            IsUpdateButtonVisible = false;
+            ResetData();
+            userEditView.Show();
+        }
+
+        private bool CanShowUserRoles(object obj)
+        {
+            return SelectedItem != null;
+        }
+
+        private void ShowUserRoles(object obj)
+        {
+
+            UserRolesView userRolesView = new UserRolesView();
+            GetUserRoles(SelectedItem.Id);
+            GetRoles();
+            userRolesView.DataContext = this;
+            userRolesView.Title = "Uloge";
+            userRolesView.Show();
         }
 
         private bool CanAddRoleAsync()
@@ -207,86 +277,6 @@ namespace Praksa_projectV1.ViewModels
             else MessageBox.Show("Odaberite korisnika.");
         }
 
-        private bool CanShowUserRolesAsync()
-        {
-            return true;
-        }
-
-        private async Task ShowUserRolesAsync()
-        {
-            if (SelectedItem != null)
-            {
-                UserRolesView userRolesView = new UserRolesView();
-                GetUserRoles(SelectedItem.Id);
-                GetRoles();
-                userRolesView.DataContext = this;
-                userRolesView.Title = "Uloge";
-                userRolesView.Show();
-            }
-            else MessageBox.Show("Odaberi korisnika.");
-        }
-
-        private bool CanShowAddWindowAsync()
-        {
-            return CanCreatePermission(ModuleName);
-        }
-
-        private async Task ShowAddWindowAsync()
-        {
-            UserAddView userEditView = new UserAddView();
-            userEditView.DataContext = this;
-            userEditView.Title = "Dodaj korisnika";
-            IsAddButtonVisible = true;
-            IsUpdateButtonVisible = false;
-            ResetData();
-            userEditView.Show();
-        }
-
-        private bool CanShowUpdateWindowAsync()
-        {
-            return CanUpdatePermission(ModuleName);
-        }
-
-        private async Task ShowUpdateWindowAsync()
-        {
-            if (SelectedItem != null)
-            {
-                UserChangeUsernameView userEditView = new UserChangeUsernameView();
-                userEditView.DataContext = this;
-                userEditView.Title = "Uredi koriničko ime";
-                IsAddButtonVisible = false;
-                IsUpdateButtonVisible = true;
-                Username = SelectedItem.Username;
-                Id = SelectedItem.Id;
-
-                userEditView.Show();
-            }
-            else MessageBox.Show("Odaberite korisnika.");
-        }
-
-        private bool CanShowUpdatePasswordWindowAsync()
-        {
-            return CanUpdatePermission(ModuleName);
-        }
-
-        private async Task ShowUpdatePasswordWindowAsync()
-        {
-            if (SelectedItem != null)
-            {
-                UserAddView userEditView = new UserAddView();
-                userEditView.DataContext = this;
-                userEditView.Title = "Uredi lozinku";
-                IsAddButtonVisible = false;
-                IsUpdateButtonVisible = true;
-                Password = null;
-                CheckPassword = null;
-                Username = SelectedItem.Username;
-                Id = SelectedItem.Id;
-
-                userEditView.Show();
-            }
-            else MessageBox.Show("Odaberite korisnika kojem želite promjeniti šifru");
-        }
 
         private bool CanUpdateUserPasswordAsync()
         {

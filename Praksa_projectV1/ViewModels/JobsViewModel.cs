@@ -21,10 +21,10 @@ namespace Praksa_projectV1.ViewModels
     {
         public IJobRepository repository;
         public IDepartmentRepository departmentRepository;
-        public IAsyncCommand ShowAddWindowCommand { get; }
+        public ICommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddjobCommand { get; }
         public IAsyncCommand DeleteJobCommand { get; }
-        public IAsyncCommand UpdateJobCommand { get; }
+        public ICommand UpdateJobCommand { get; }
         public IAsyncCommand EditJobCommand { get; private set; }
         public readonly string ModuleName = "Radno mjesto";
 
@@ -34,10 +34,10 @@ namespace Praksa_projectV1.ViewModels
         {
             repository = new JobRepository();
             departmentRepository = new DepartmentRepository();
-            ShowAddWindowCommand = new AsyncCommand(ShowWindowAsync, CanShowWindowAsync);
+            ShowAddWindowCommand = new ViewModelCommand(ShowWindow, CanShowWindow);
             AddjobCommand = new AsyncCommand(AddJobAsync, CanAddJobAsync);
             DeleteJobCommand = new AsyncCommand(DeleteJobAsync, CanDeleteJobAsync);
-            UpdateJobCommand = new AsyncCommand(ShowEditJobAsync, CanShowEditJobAsync);
+            UpdateJobCommand = new ViewModelCommand(ShowEditJob, CanShowEditJob);
             EditJobCommand = new AsyncCommand(EditJob, CanEditJob);
             GetAll();
             GetAllDepartmentsAsync();
@@ -45,12 +45,31 @@ namespace Praksa_projectV1.ViewModels
 
         }
 
-        private bool CanShowWindowAsync()
+        private bool CanShowEditJob(object obj)
+        {
+            return CanUpdatePermission(ModuleName) && SelectedJob != null;
+        }
+
+        private void ShowEditJob(object obj)
+        {
+            Job job = SelectedJob;
+            Id = SelectedJob.Id;
+            AddName = job.Name;
+            SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == job.DepartmentId).Single();
+            UpdateJobView update = new UpdateJobView();
+            update.DataContext = this;
+            _isViewVisible = true;
+            IsUpdateButtonVisible = true;
+            IsAddButtonVisible = false;
+            update.Show();
+        }
+
+        private bool CanShowWindow(object obj)
         {
             return CanCreatePermission(ModuleName);
         }
 
-        private async Task ShowWindowAsync()
+        private void ShowWindow(object obj)
         {
             AddJobView addJobView = new AddJobView();
             addJobView.DataContext = this;
@@ -58,13 +77,9 @@ namespace Praksa_projectV1.ViewModels
             _isViewVisible = true;
             IsAddButtonVisible = true;
             IsUpdateButtonVisible = false;
-            await ResetData();
+            ResetData();
             addJobView.Show();
         }
-
-
-
-
 
         private bool CanAddJobAsync()
         {
@@ -135,27 +150,7 @@ namespace Praksa_projectV1.ViewModels
             else MessageBox.Show("Odaberite podatak koji želite obrisati.");
         }
 
-        private bool CanShowEditJobAsync()
-        {
-            return CanUpdatePermission(ModuleName);
-        }
-
-        private async Task ShowEditJobAsync()
-        {
-            if (SelectedJob != null)
-            {
-                Job job = SelectedJob;
-                Id = SelectedJob.Id;
-                AddName = job.Name;
-                SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == job.DepartmentId).Single();
-                UpdateJobView update = new UpdateJobView();
-                update.DataContext = this;
-                _isViewVisible = true;
-                IsUpdateButtonVisible = true;
-                IsAddButtonVisible = false;
-                update.Show();
-            }
-        }
+       
 
         public async Task EditJob()
         {
@@ -190,7 +185,7 @@ namespace Praksa_projectV1.ViewModels
                         }
 
                         _isViewVisible = false;
-                        await ResetData();
+                        ResetData();
                     }
                     else
                     {
@@ -339,12 +334,11 @@ namespace Praksa_projectV1.ViewModels
             DepartmentRecords = new ObservableCollection<Department>(await departmentRepository.GetAllDepartmentsAsync());
 
         }
-        private Task ResetData()
+        private void ResetData()
         {
             AddName = null;
             SelectedDepartment = null;
             SelectedJob = null;
-            return Task.CompletedTask;
         }
     }
 

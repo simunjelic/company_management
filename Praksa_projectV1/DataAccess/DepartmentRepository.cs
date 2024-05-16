@@ -37,10 +37,7 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        public List<Department> GetAllDepartments()
-        {
-            return dContext.Departments.ToList();
-        }
+        
 
         public async Task<IEnumerable<Department>> GetAllDepartmentsAsync()
         {
@@ -56,14 +53,6 @@ namespace Praksa_projectV1.DataAccess
             catch (Exception ex)
             {
                 return Enumerable.Empty<Department>();
-            }
-        }
-
-        public Department GetDepart(int? id)
-        {
-            using (var dContext = new Context())
-            {
-                return dContext.Departments.FirstOrDefault(i => i.Id == id);
             }
         }
 

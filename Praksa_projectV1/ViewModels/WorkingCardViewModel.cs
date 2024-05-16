@@ -26,9 +26,9 @@ namespace Praksa_projectV1.ViewModels
         public IUserRepository userRepository { get; set; }
         public IProjectRepository ProjectRepository { get; set; }
         public IAsyncCommand DeleteCommand { get; }
-        public IAsyncCommand ShowAddWindowCommand { get; }
+        public ICommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddCommand { get; }
-        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public ICommand ShowUpdateWindowCommand { get; }
         public IAsyncCommand UpdateCommand { get; }
         public IAsyncCommand RefreshDateCommand { get; }
         public string ModuleName = "Radna karta";
@@ -70,16 +70,51 @@ namespace Praksa_projectV1.ViewModels
             ProjectRepository = new ProjectRepository();
             gettAllDataFromCard();
             DeleteCommand = new AsyncCommand(DeleteAsync, CanDeleteAsync);
-            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             AddCommand = new AsyncCommand(AddAsync, CanAddAsync);
-            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowAsync);
+            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             UpdateCommand = new AsyncCommand(UpdateRecordAsync, CanUpdateRecordAsync);
             RefreshDateCommand = new AsyncCommand(RefreshDateAsync, CanRefreshDateAsync);
             gettAllProjectsAndActivities();
         }
 
+        private bool CanShowUpdateWindow(object obj)
+        {
+            return CanUpdatePermission(ModuleName) && SelectedItem != null;
+        }
 
+        private void ShowUpdateWindow(object obj)
+        {
+            WorkingCardEdit workingCardEdit = new WorkingCardEdit();
+            workingCardEdit.DataContext = this;
+            workingCardEdit.Title = "Radna karta: uređivanje zapisa";
+            SelectedDate = SelectedItem.Date.HasValue ? new DateTime(SelectedItem.Date.Value.Year, SelectedItem.Date.Value.Month, SelectedItem.Date.Value.Day) : (DateTime?)null;
+            SelectedActivity = ActivityRecords.Where(i => i.Id == SelectedItem.ActivityId).Single();
+            SelectedProject = ProjectRecords.Where(i => i.Id == SelectedItem.ProjectId).Single();
+            Description = SelectedItem.Description;
+            Hours = SelectedItem.Hours.ToString();
+            Id = SelectedItem.Id;
+            IsAddButtonVisible = false;
+            IsUpdateButtonVisible = true;
+            workingCardEdit.Show();
+        }
 
+        private bool CanShowAddWindow(object obj)
+        {
+            return CanCreatePermission(ModuleName);
+        }
+
+        private void ShowAddWindow(object obj)
+        {
+            WorkingCardEdit workingCardEdit = new WorkingCardEdit();
+            workingCardEdit.DataContext = this;
+            workingCardEdit.Title = "Radna karta: Novi zapis";
+
+            ResetData();
+            IsAddButtonVisible = true;
+            IsUpdateButtonVisible = false;
+            workingCardEdit.Show();
+        }
 
         private bool CanRefreshDateAsync()
         {
@@ -199,52 +234,6 @@ namespace Praksa_projectV1.ViewModels
             else MessageBox.Show("Odaberite redak koji želite urediti.");
         }
 
-        private bool CanShowAddWindowAsync()
-        {
-            return CanCreatePermission(ModuleName);
-        }
-
-        private async Task ShowAddWindowAsync()
-        {
-            WorkingCardEdit workingCardEdit = new WorkingCardEdit();
-            workingCardEdit.DataContext = this;
-            workingCardEdit.Title = "Radna karta: Novi zapis";
-
-            ResetData();
-            IsAddButtonVisible = true;
-            IsUpdateButtonVisible = false;
-            workingCardEdit.Show();
-        }
-
-        private bool CanShowUpdateWindowAsync()
-        {
-            return CanUpdatePermission(ModuleName);
-        }
-
-        private async Task ShowUpdateWindowAsync()
-        {
-            if (SelectedItem != null)
-            {
-                WorkingCardEdit workingCardEdit = new WorkingCardEdit();
-                workingCardEdit.DataContext = this;
-                workingCardEdit.Title = "Radna karta: uređivanje zapisa";
-                SelectedDate = SelectedItem.Date.HasValue ? new DateTime(SelectedItem.Date.Value.Year, SelectedItem.Date.Value.Month, SelectedItem.Date.Value.Day) : (DateTime?)null;
-                SelectedActivity = ActivityRecords.Where(i => i.Id == SelectedItem.ActivityId).Single();
-                SelectedProject = ProjectRecords.Where(i => i.Id == SelectedItem.ProjectId).Single();
-                Description = SelectedItem.Description;
-                Hours = SelectedItem.Hours.ToString();
-                Id = SelectedItem.Id;
-                IsAddButtonVisible = false;
-                IsUpdateButtonVisible = true;
-                workingCardEdit.Show();
-            }
-            else MessageBox.Show("Odaberite redak koji želite urediti.");
-        }
-
-        
-
-        
-       
 
         private ObservableCollection<Project> _projectRecords;
         public ObservableCollection<Project> ProjectRecords

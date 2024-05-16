@@ -25,10 +25,10 @@ namespace Praksa_projectV1.ViewModels
         public IUserRepository UserRepository { get; set; }
         public IDepartmentRepository departmentRepository { get; set; }
         public IJobRepository jobRepository { get; set; }
-        public IAsyncCommand ShowWindowCommand { get; }
+        public ICommand ShowWindowCommand { get; }
         public IAsyncCommand DeleteCommand { get; }
         public IAsyncCommand AddEmployeeCommand { get; }
-        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public ICommand ShowUpdateWindowCommand { get; }
         public IAsyncCommand UpdateEmployeeCommand { get; }
         public readonly string ModuleName = "Zaposlenici";
 
@@ -43,12 +43,44 @@ namespace Praksa_projectV1.ViewModels
             GetAllUsersAsync();
             GetAllDepartmentsAsync();
             GetAllJobsAsync();
-            ShowWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            ShowWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             DeleteCommand = new AsyncCommand(DeleteEmployeeAsync, CanDeleteEmployeeAsync);
             AddEmployeeCommand = new AsyncCommand(AddEmployeeAsync, CanAddEmployeeAsync);
-            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowCommandAsync);
+            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindowCommand);
             UpdateEmployeeCommand = new AsyncCommand(UpdateEmployeeAsync, CanUpdateEmployeeAsync);
             SelectedDate = DateTime.Today;
+        }
+
+        private bool CanShowUpdateWindowCommand(object obj)
+        {
+            return CanUpdatePermission(ModuleName) && SelectedItem != null;
+        }
+
+        private void ShowUpdateWindow(object obj)
+        {
+            PopulateUpdateWindow();
+            WorkersEditView workersEditView = new();
+            workersEditView.DataContext = this;
+            workersEditView.Title = "Uredi korisnika";
+            _isAddButtonVisible = false;
+            _isUpdateButtonVisible = true;
+            workersEditView.Show();
+        }
+
+        private bool CanShowAddWindow(object obj)
+        {
+            return CanCreatePermission(ModuleName);
+        }
+
+        private void ShowAddWindow(object obj)
+        {
+            ResetData();
+            WorkersEditView workersEditView = new();
+            workersEditView.DataContext = this;
+            workersEditView.Title = "Dodaj korisnika";
+            _isUpdateButtonVisible = false;
+            _isAddButtonVisible = true;
+            workersEditView.Show();
         }
 
         private bool CanAddEmployeeAsync()
@@ -134,43 +166,9 @@ namespace Praksa_projectV1.ViewModels
             else MessageBox.Show("Odaberite redak koji želite obrisati.");
         }
 
-        private bool CanShowUpdateWindowCommandAsync()
-        {
+        
 
-            return CanUpdatePermission(ModuleName);
-        }
-
-        private async Task ShowUpdateWindowAsync()
-        {
-            if (SelectedItem != null)
-            {
-                PopulateUpdateWindow();
-                WorkersEditView workersEditView = new();
-                workersEditView.DataContext = this;
-                workersEditView.Title = "Uredi korisnika";
-                _isAddButtonVisible = false;
-                _isUpdateButtonVisible = true;
-                workersEditView.Show();
-            }
-            else MessageBox.Show("Odaberite redak koji želite urediti");
-        }
-
-        private bool CanShowAddWindowAsync()
-        {
-            return CanCreatePermission(ModuleName);
-        }
-
-        private async Task ShowAddWindowAsync()
-        {
-
-            ResetData();
-            WorkersEditView workersEditView = new();
-            workersEditView.DataContext = this;
-            workersEditView.Title = "Dodaj korisnika";
-            _isUpdateButtonVisible = false;
-            _isAddButtonVisible = true;
-            workersEditView.Show();
-        }
+        
 
 
 

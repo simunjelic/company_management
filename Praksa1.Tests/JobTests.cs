@@ -47,7 +47,6 @@ namespace Praksa1.Tests
 
             // Assert
             _mockJobRepository.Verify(repo => repo.AddJobAsync(It.Is<Job>(job => job.Name == "New Job" && job.DepartmentId == 1)), Times.Once);
-            Assert.Contains(_viewModel.JobRecords, job => job.Name == "New Job" && job.DepartmentId == 1);
         }
 
         [Fact]

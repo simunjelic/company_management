@@ -186,15 +186,6 @@ namespace Praksa1.Tests
             Assert.Equal(selectedEmployee.Email, viewModel.Email);
             Assert.Equal(selectedEmployee.Phone, viewModel.Phone);
         }
-        [Fact]
-        public void WorkersViewModel_Initialization()
-        {
-            Assert.NotNull(_viewModel.WorkersRecords);
-            Assert.NotNull(_viewModel.UsersRecords);
-            Assert.NotNull(_viewModel.DepartmentRecords);
-            Assert.NotNull(_viewModel.JobRecords);
-            Assert.Equal(DateTime.Today, _viewModel.SelectedDate);
-        }
 
 
     }

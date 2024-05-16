@@ -18,11 +18,11 @@ using System.Security.Permissions;
 
 namespace Praksa_projectV1.ViewModels
 {
-    class AdminPanelViewModel : ViewModelBase
+    public class AdminPanelViewModel : ViewModelBase
     {
-        public PermissonRepository permissonRepository;
+        public IPermissonRepository permissonRepository;
         public IAsyncCommand DeleteCommand { get; }
-        public IAsyncCommand ShowAddWindowCommand { get; }
+        public ICommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddCommand { get; }
         public string ModuleName = "Admin panel";
 
@@ -30,14 +30,34 @@ namespace Praksa_projectV1.ViewModels
         public AdminPanelViewModel()
         {
             permissonRepository = new PermissonRepository();
-            GetAllPermissionsAsync();
-            GetAllModulesAndRoles();
             DeleteCommand = new AsyncCommand(DeleteAsync, CanDeleteAsync);
-            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             ShowPermissionRecords = new ObservableCollection<string>(GetAvailableActions());
             AddCommand = new AsyncCommand(AddAsync, CanAddAsync);
+            OnLoadAsync();
 
 
+        }
+        public async Task OnLoadAsync()
+        {
+            await GetAllPermissionsAsync();
+            await GetAllModulesAndRoles();
+        }
+
+        private bool CanShowAddWindow(object obj)
+        {
+            return CanCreatePermission(ModuleName);
+        }
+
+        private void ShowAddWindow(object obj)
+        {
+            AdminPanelEditView adminPanelEditView = new AdminPanelEditView();
+            adminPanelEditView.DataContext = this;
+            adminPanelEditView.Title = "Dodaj novu dozvolu";
+            ResetData();
+            IsAddButtonVisible = true;
+            IsUpdateButtonVisible = false;
+            adminPanelEditView.Show();
         }
 
         private bool CanAddAsync()
@@ -45,7 +65,7 @@ namespace Praksa_projectV1.ViewModels
             return true;
         }
 
-        private async Task AddAsync()
+        public async Task AddAsync()
         {
             if (Validator.TryValidateObject(this, new ValidationContext(this), null))
             {
@@ -92,7 +112,7 @@ namespace Praksa_projectV1.ViewModels
             return CanDeletePermission("Admin panel");
         }
 
-        private async Task DeleteAsync()
+        public async Task DeleteAsync()
         {
             if (SelectedItem != null)
             {
@@ -103,7 +123,7 @@ namespace Praksa_projectV1.ViewModels
                     bool check = await permissonRepository.RemoveAsync(SelectedItem);
                     if (check)
                     {
-                        if (LoggedUserData.RolesId.Contains((int)SelectedItem.RoleId))
+                        if (LoggedUserData.RolesId.Contains(SelectedItem.RoleId?? 0))
                         {
                             if (SelectedItem.ActionId == 0)
                                 PermissionAccess.CreatePermission.RemoveAll(item => item.ModuleId == SelectedItem.ModuleId && item.RoleId == SelectedItem.RoleId);
@@ -129,21 +149,7 @@ namespace Praksa_projectV1.ViewModels
             else MessageBox.Show("Odaberite redak koji želite urediti");
         }
 
-        private bool CanShowAddWindowAsync()
-        {
-            return CanCreatePermission(ModuleName);
-        }
-
-        private async Task ShowAddWindowAsync()
-        {
-            AdminPanelEditView adminPanelEditView = new AdminPanelEditView();
-            adminPanelEditView.DataContext = this;
-            adminPanelEditView.Title = "Dodaj novu dozvolu";
-            ResetData();
-            IsAddButtonVisible = true;
-            IsUpdateButtonVisible = false;
-            adminPanelEditView.Show();
-        }
+       
 
         public List<string> GetAvailableActions()
         {

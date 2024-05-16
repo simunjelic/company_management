@@ -22,10 +22,10 @@ namespace Praksa_projectV1.ViewModels
         public IProjectRepository ProjectRepository;
         EmployeeRepository EmployeeRepository { get; }
         public IAsyncCommand DeleteCommand { get; }
-        public IAsyncCommand ShowAddWindowCommand { get; }
+        public ICommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddCommand { get; }
         public IAsyncCommand UpdateCommand { get; }
-        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public ICommand ShowUpdateWindowCommand { get; }
         public IAsyncCommand ShowProjectTeamWindowCommand { get; }
         public IAsyncCommand AddMemberCommand { get; }
         public IAsyncCommand DeleteMemberCommand { get; }
@@ -41,15 +41,51 @@ namespace Praksa_projectV1.ViewModels
             getLocationsAndTypesAsync();
             GetAllEmployeesAsync();
             DeleteCommand = new AsyncCommand(DeleteProjectAsync, CanDeleteProjectAsync);
-            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             AddCommand = new AsyncCommand(AddProjectAsync, CanAddProjectAsync);
             UpdateCommand = new AsyncCommand(UpdateProjectAsync, CanUpdateProjectAsync);
-            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowAsync);
+            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             ShowProjectTeamWindowCommand = new AsyncCommand(ShowProjectTeamWindowAsync, CanShowProjectTeamWindowAsync);
             AddMemberCommand = new AsyncCommand(AddMemberAsync, CanAddMemberAsync);
             DeleteMemberCommand = new AsyncCommand(DeleteMemberAsync, CanDeleteMemberAsync);
 
 
+        }
+
+        private bool CanShowUpdateWindow(object obj)
+        {
+            return CanUpdatePermission(ModuleName) && SelectedItem != null;
+        }
+
+        private void ShowUpdateWindow(object obj)
+        {
+            ProjectEditView projectEditView = new ProjectEditView();
+            projectEditView.DataContext = this;
+            projectEditView.Title = "Uredi projekt";
+            _isUpdateButtonVisible = true;
+            _isAddButtonVisible = false;
+            this.Location = null;
+            this.Type = null;
+            this.Status = null;
+            FillUpdateForm();
+
+            projectEditView.Show();
+        }
+
+        private bool CanShowAddWindow(object obj)
+        {
+            return CanCreatePermission(ModuleName);
+        }
+
+        private void ShowAddWindow(object obj)
+        {
+            ProjectEditView projectEditView = new ProjectEditView();
+            projectEditView.DataContext = this;
+            projectEditView.Title = "Dodaj projekt";
+            _isUpdateButtonVisible = false;
+            _isAddButtonVisible = true;
+            ResetData();
+            projectEditView.Show();
         }
 
         private bool CanAddMemberAsync()
@@ -214,54 +250,7 @@ namespace Praksa_projectV1.ViewModels
             else MessageBox.Show("Odaberite projekt prvo da bi vidjeli članove tima.");
         }
 
-        private bool CanShowUpdateWindowAsync()
-        {
-            return CanUpdatePermission(ModuleName);
-        }
-
-        private async Task ShowUpdateWindowAsync()
-        {
-            if (SelectedItem != null)
-            {
-                ProjectEditView projectEditView = new ProjectEditView();
-                projectEditView.DataContext = this;
-                projectEditView.Title = "Uredi projekt";
-                _isUpdateButtonVisible = true;
-                _isAddButtonVisible = false;
-                this.Location = null;
-                this.Type = null;
-                this.Status = null;
-                FillUpdateForm();
-
-                projectEditView.Show();
-
-            }
-            else MessageBox.Show("Odaberite redak koji želite urediti.");
-        }
-
-        private bool CanShowAddWindowAsync()
-        {
-            return CanCreatePermission(ModuleName);
-        }
-
-        private async Task ShowAddWindowAsync()
-        {
-            ProjectEditView projectEditView = new ProjectEditView();
-            projectEditView.DataContext = this;
-            projectEditView.Title = "Dodaj projekt";
-            _isUpdateButtonVisible = false;
-            _isAddButtonVisible = true;
-            ResetData();
-            projectEditView.Show();
-        }
-
-
-
-
-
-
-
-
+        
         private int _id;
         public int Id
         {

@@ -20,9 +20,9 @@ namespace Praksa_projectV1.ViewModels
         private DepartmentRepository departmentRepository;
         public IDepartmentRepository IdepartmentRepository;
         public IAsyncCommand DeleteDepartmentCommand { get; }
-        public IAsyncCommand ShowAddWindowCommand { get; }
+        public ICommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddDepartmentCommand { get; }
-        public IAsyncCommand ShowUpdateWindowCommand { get; }
+        public ICommand ShowUpdateWindowCommand { get; }
         public IAsyncCommand UpdateDepartmentCommand { get; }
         public string ModuleName = "Odjel";
 
@@ -32,14 +32,46 @@ namespace Praksa_projectV1.ViewModels
             IdepartmentRepository = new DepartmentRepository();
             GetAllDepartmentsAsync();
             DeleteDepartmentCommand = new AsyncCommand(DeleteDepartmentAsync, CanDeleteDepartmentAsync);
-            ShowAddWindowCommand = new AsyncCommand(ShowAddWindowAsync, CanShowAddWindowAsync);
+            ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             AddDepartmentCommand = new AsyncCommand(AddDepartmentAsync, CanAddDepartmentAsync);
-            ShowUpdateWindowCommand = new AsyncCommand(ShowUpdateWindowAsync, CanShowUpdateWindowAsync);
+            ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             UpdateDepartmentCommand = new AsyncCommand(UpdateDepartmentAsync, CanUpdateDepartmentCommandAsync);
         }
 
+        private bool CanShowUpdateWindow(object obj)
+        {
+            return CanUpdatePermission(ModuleName) && SelectedItem != null;
+        }
 
+        private void ShowUpdateWindow(object obj)
+        {
+                if (SelectedItem.ParentDepartmentId != null)
+                    SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == SelectedItem.ParentDepartmentId).Single();
+                Name = SelectedItem.Name;
+                Id = SelectedItem.Id;
+                DepartmentsEditView view = new DepartmentsEditView();
+                _isUpdateButtonVisible = true;
+                _isAddButtonVisible = false;
+                view.Title = "Uredi odjel.";
+                view.DataContext = this;
+                view.Show();
+        }
 
+        private bool CanShowAddWindow(object obj)
+        {
+            return CanCreatePermission(ModuleName);
+        }
+
+        private void ShowAddWindow(object obj)
+        {
+            DepartmentsEditView view = new DepartmentsEditView();
+            view.Title = "Dodaj novi odjel.";
+            ResetData();
+            _isUpdateButtonVisible = false;
+            _isAddButtonVisible = true;
+            view.DataContext = this;
+            view.Show();
+        }
 
         private bool CanAddDepartmentAsync()
         {
@@ -141,44 +173,9 @@ namespace Praksa_projectV1.ViewModels
             else MessageBox.Show("Odaberite redak koji želite obrisati.");
         }
 
-        private bool CanShowUpdateWindowAsync()
-        {
-            return CanUpdatePermission(ModuleName);
-        }
+        
 
-        private async Task ShowUpdateWindowAsync()
-        {
-            if (SelectedItem != null)
-            {
-                if (SelectedItem.ParentDepartmentId != null)
-                    SelectedDepartment = (Department)DepartmentRecords.Where(x => x.Id == SelectedItem.ParentDepartmentId).Single();
-                Name = SelectedItem.Name;
-                Id = SelectedItem.Id;
-                DepartmentsEditView view = new DepartmentsEditView();
-                _isUpdateButtonVisible = true;
-                _isAddButtonVisible = false;
-                view.Title = "Uredi odjel.";
-                view.DataContext = this;
-                view.Show();
-            }
-            else MessageBox.Show("Odaberite redak koji želite urediti.");
-        }
-
-        private bool CanShowAddWindowAsync()
-        {
-            return CanCreatePermission(ModuleName);
-        }
-
-        private async Task ShowAddWindowAsync()
-        {
-            DepartmentsEditView view = new DepartmentsEditView();
-            view.Title = "Dodaj novi odjel.";
-            ResetData();
-            _isUpdateButtonVisible = false;
-            _isAddButtonVisible = true;
-            view.DataContext = this;
-            view.Show();
-        }
+        
 
 
         private int _id;
