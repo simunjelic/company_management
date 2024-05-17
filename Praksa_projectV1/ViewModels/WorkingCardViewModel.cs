@@ -99,7 +99,7 @@ namespace Praksa_projectV1.ViewModels
             SelectedActivity = ActivityRecords.Where(i => i.Id == SelectedItem.ActivityId).Single();
             SelectedProject = ProjectRecords.Where(i => i.Id == SelectedItem.ProjectId).Single();
             Description = SelectedItem.Description;
-            Hours = SelectedItem.Hours.ToString();
+            Hours = SelectedItem.Hours.ToString() ?? "0";
             Id = SelectedItem.Id;
             IsAddButtonVisible = false;
             IsUpdateButtonVisible = true;

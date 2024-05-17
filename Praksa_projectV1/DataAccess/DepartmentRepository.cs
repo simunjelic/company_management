@@ -68,6 +68,8 @@ namespace Praksa_projectV1.DataAccess
                 }
                 catch (Exception ex)
                 {
+                    await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+                    
                     return false;
 
                 }
