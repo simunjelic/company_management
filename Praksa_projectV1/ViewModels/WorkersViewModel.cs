@@ -98,7 +98,8 @@ namespace Praksa_projectV1.ViewModels
                 if (IsTrue)
                 {
                     MessageBox.Show("Dodan novi zaposlenik.");
-                    WorkersRecords.Add(EmpolyeeRepository.FindByUserId(newEmployee.UserId));
+                    newEmployee.IsActiveText = IsActive ? "Da" : "Ne";
+                    WorkersRecords.Add(newEmployee);
                     ResetData();
                 }
                 else
@@ -117,16 +118,17 @@ namespace Praksa_projectV1.ViewModels
         {
             if (ValidationInput())
             {
-
-                SelectedItem = populateEmployeeData(SelectedItem);
-                bool IsTrue = await EmpolyeeRepository.UpdateAsync(SelectedItem);
+                Employee UpdateEmployee = new();
+                UpdateEmployee = populateEmployeeData(SelectedItem);
+                bool IsTrue = await EmpolyeeRepository.UpdateAsync(UpdateEmployee);
                 if (IsTrue)
                 {
                     MessageBox.Show("Zaposlenik ažuriran.");
+                    UpdateEmployee.IsActiveText = IsActive ? "Da" : "Ne";
+
                     int index = -1;
                     index = WorkersRecords.IndexOf(WorkersRecords.Where(x => x.Id == Id).Single());
-
-                    WorkersRecords[index] = EmpolyeeRepository.GetById(Id);
+                    WorkersRecords[index] = await EmpolyeeRepository.GetByIdAsync(Id);
                     ResetData();
                 }
                 else
@@ -191,6 +193,7 @@ namespace Praksa_projectV1.ViewModels
             Address = SelectedItem.Address;
             Email = SelectedItem.Email;
             Phone = SelectedItem.Phone;
+            IsActive = SelectedItem.IsActive;
 
 
 
@@ -224,6 +227,7 @@ namespace Praksa_projectV1.ViewModels
                 newEmployee.Email = Email;
             if (Phone != null)
                 newEmployee.Phone = Phone;
+            newEmployee.IsActive = IsActive;
 
 
             return newEmployee;
@@ -305,6 +309,19 @@ namespace Praksa_projectV1.ViewModels
             {
                 _id = value;
                 OnPropertyChanged(nameof(Id));
+            }
+        }
+        private bool _isActive = true;
+        public bool IsActive
+        {
+            get
+            {
+                return _isActive;
+            }
+            set
+            {
+                _isActive = value;
+                OnPropertyChanged(nameof(IsActive));
             }
         }
 
@@ -594,6 +611,7 @@ namespace Praksa_projectV1.ViewModels
             SelectedJob = null;
             SelectedUser = null;
             SelectedItem = null;
+            IsActive = true;
 
         }
     }

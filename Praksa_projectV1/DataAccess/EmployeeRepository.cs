@@ -23,63 +23,6 @@ namespace Praksa_projectV1.DataAccess
             }
         }
 
-        public bool Add(Employee newEmployee)
-        {
-            using (dContext = new Context())
-            {
-                var userCheck = dContext.Employees.FirstOrDefault(i => i.UserId == newEmployee.UserId);
-                if (userCheck == null)
-                {
-                    dContext.Employees.Add(newEmployee);
-                    dContext.SaveChanges();
-                    return true;
-                }
-                else return false;
-
-
-            }
-        }
-        internal void DeleteById(int id)
-        {
-            using (dContext = new Context())
-            {
-                var record = dContext.Employees.FirstOrDefault(i => i.Id == id);
-                if (record != null)
-                {
-                    dContext.Employees.Remove(record);
-                    dContext.SaveChanges();
-                }
-            }
-        }
-        internal bool Update(Employee employee)
-        {
-            using (dContext = new Context())
-            {
-
-
-                dContext.Employees.Update(employee);
-                dContext.SaveChanges();
-                return true;
-
-
-
-            }
-        }
-
-        internal async Task<Employee> GetProjectByIdAsync(int id)
-        {
-            using (dContext = new Context())
-            {
-                return dContext.Employees
-                     .Include(e => e.Job)
-                     .Include(e => e.Department)
-                     .FirstOrDefault(i => i.Id == id);
-            }
-        }
-
-        
-
-       
 
         public async Task<bool> AddAsync(Employee newEmployee)
         {
@@ -109,7 +52,7 @@ namespace Praksa_projectV1.DataAccess
                     return dContext.Employees
                                    .Include(e => e.Job)
                                    .Include(e => e.Department)
-                                   .FirstOrDefault(i => i.UserId == userId);
+                                   .FirstOrDefault(i => i.UserId == userId) ?? new Employee();
 
                 }
                 catch (Exception ex)
@@ -137,11 +80,6 @@ namespace Praksa_projectV1.DataAccess
             {
                 return false;
             }
-        }
-
-        public Employee GetById(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteAsync(Employee selectedItem)
@@ -172,10 +110,18 @@ namespace Praksa_projectV1.DataAccess
                 using (dContext = new Context())
                 {
 
-                    return await dContext.Employees
-                                       .Include(e => e.Job)
-                                       .Include(e => e.Department)
-                                       .ToListAsync();
+                    var employees = await dContext.Employees
+                                          .Include(e => e.Job)
+                                          .Include(e => e.Department)
+                                          .OrderByDescending(e => e.IsActive)
+                                          .ToListAsync();
+
+                    foreach (var employee in employees)
+                    {
+                        employee.IsActiveText = employee.IsActive ? "Da" : "Ne";
+                    }
+
+                    return employees;
 
                 }
 
@@ -183,6 +129,59 @@ namespace Praksa_projectV1.DataAccess
             catch (Exception ex)
             {
                 return Enumerable.Empty<Employee>();
+            }
+        }
+        public async Task<IEnumerable<Employee>> GetAllActiveAsync()
+        {
+            try
+            {
+                using (dContext = new Context())
+                {
+
+                    var employees = await dContext.Employees
+                                          .Include(e => e.Job)
+                                          .Include(e => e.Department)
+                                          .Where(e => e.IsActive == true)
+                                          .ToListAsync();
+
+                    foreach (var employee in employees)
+                    {
+                        employee.IsActiveText = employee.IsActive ? "Da" : "Ne";
+                    }
+
+                    return employees;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Enumerable.Empty<Employee>();
+            }
+        }
+
+        public async Task<Employee> GetByIdAsync(int id)
+        {
+            try
+            {
+                using (dContext = new Context())
+                {
+
+                    var employee = await dContext.Employees
+                                          .Include(e => e.Job)
+                                          .Include(e => e.Department)
+                                          .FirstOrDefaultAsync(i => i.Id == id) ?? new Employee();
+
+                        employee.IsActiveText = employee.IsActive ? "Da" : "Ne";
+
+                    return employee;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return new Employee();
             }
         }
     }

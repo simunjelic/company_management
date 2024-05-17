@@ -680,7 +680,7 @@ namespace Praksa_projectV1.ViewModels
         }
         public async Task GetAllEmployeesAsync()
         {
-            var employes = await EmployeeRepository.GetAllAsync();
+            var employes = await EmployeeRepository.GetAllActiveAsync();
             EmployeeRecords = new ObservableCollection<Employee>(employes);
             EmployeeShow = new ObservableCollection<Employee>(employes);
         }

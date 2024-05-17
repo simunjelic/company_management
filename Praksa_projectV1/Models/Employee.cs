@@ -31,6 +31,10 @@ public partial class Employee
 
     public string FullName { get; set; }
 
+    public bool IsActive { get; set; }
+
+    public string IsActiveText { get; set; }
+
     public virtual Department Department { get; set; }
 
     public virtual ICollection<EmployeeProject> EmployeeProjects { get; set; } = new List<EmployeeProject>();

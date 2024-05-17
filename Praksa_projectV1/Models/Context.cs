@@ -2,7 +2,6 @@
 #nullable disable
 using System;
 using System.Collections.Generic;
-using System.Security.AccessControl;
 using Microsoft.EntityFrameworkCore;
 using Praksa_projectV1.Enums;
 
@@ -124,6 +123,10 @@ public partial class Context : DbContext
                 .HasMaxLength(101)
                 .IsUnicode(false)
                 .HasComputedColumnSql("(([name]+' ')+[surname])", false);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.IsActiveText)
+                .HasMaxLength(10)
+                .IsUnicode(false);
             entity.Property(e => e.Jmbg).HasColumnName("jmbg");
             entity.Property(e => e.JobId).HasColumnName("job_id");
             entity.Property(e => e.Name)
@@ -405,6 +408,7 @@ public partial class Context : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
     public override int SaveChanges()
     {
         BeforeSaveChanges();
@@ -465,5 +469,4 @@ public partial class Context : DbContext
             Audits.Add(auditEntry.ToAudit());
         }
     }
-
 }

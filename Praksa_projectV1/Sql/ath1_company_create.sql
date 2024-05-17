@@ -122,7 +122,6 @@ CREATE TABLE Permissions (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     ModuleId INT,
     RoleId INT,
-    Action NVARCHAR(10) CHECK (Action IN ('Dodaj', 'Citaj', 'Uredi', 'Obrisi')),
     CONSTRAINT FK_Module FOREIGN KEY (ModuleId) REFERENCES Module(Id),
     CONSTRAINT FK_Role FOREIGN KEY (RoleId) REFERENCES roles(Id)
 );
@@ -150,6 +149,9 @@ CREATE TABLE Audit (
     AffectedColumns NVARCHAR(MAX),
     PrimaryKey NVARCHAR(MAX)
 );
+ALTER TABLE employee
+ADD IsActive BIT NOT NULL DEFAULT 1;
+
 
 
 

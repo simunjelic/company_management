@@ -127,6 +127,15 @@ FontFamily="Montserrat"
                   
  >
         </TextBox>
+        <CheckBox                        FontSize="13"
+   Height="24"
+       VerticalAlignment="Top"                 
+FontWeight="Medium"
+FontFamily="Montserrat"       
+Margin="21,364,-1,0"
+Foreground="white"
+
+BorderThickness="0,0,0,1" Content="Aktivan" IsChecked="{Binding IsActive}" />
 
 
 

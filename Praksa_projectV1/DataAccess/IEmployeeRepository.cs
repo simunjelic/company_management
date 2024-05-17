@@ -12,10 +12,9 @@ namespace Praksa_projectV1.DataAccess
         Task<bool> AddAsync(Employee newEmployee);
         Employee FindByUserId(int? userId);
         Task<bool> UpdateAsync(Employee selectedItem);
-        Employee GetById(int id);
         Task<bool> DeleteAsync(Employee selectedItem);
         Task<IEnumerable<Employee>> GetAllAsync();
-
-
+        Task<Employee> GetByIdAsync(int id);
+        Task<IEnumerable<Employee>> GetAllActiveAsync();
     }
 }

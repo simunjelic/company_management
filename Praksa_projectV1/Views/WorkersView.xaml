@@ -184,6 +184,7 @@ VerticalAlignment="Top">
                     <DataGridTextColumn Binding="{Binding Path=Address}"  Header="Adresa"/>
                     <DataGridTextColumn Binding="{Binding Path=Birthday}"  Header="Datum rođenja"/>
                     <DataGridTextColumn Binding="{Binding Path=Jmbg}"  Header="Jmbg"/>
+                    <DataGridTextColumn Binding="{Binding Path=IsActiveText}"  Header="Aktivan"/>
 
                 </DataGrid.Columns>
             </DataGrid>
