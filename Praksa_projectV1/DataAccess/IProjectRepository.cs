@@ -19,5 +19,6 @@ namespace Praksa_projectV1.DataAccess
         Task<IEnumerable<Location>> GetAllLocationsAsync();
         Task<IEnumerable<Models.Type>> GetAllTypesAsync();
         Task<IEnumerable<EmployeeProject>> GetTeam(int id);
+        Task<bool> UpdateMemberToProject(EmployeeProject projectHasManager);
     }
 }

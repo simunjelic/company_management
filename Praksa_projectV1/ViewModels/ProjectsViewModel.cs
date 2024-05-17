@@ -95,27 +95,45 @@ namespace Praksa_projectV1.ViewModels
 
         public async Task AddMemberAsync()
         {
-            if(SelectedNewEmployee!= null) { 
-            if (!TeamRecords.Any(i => i.ProjectId == SelectedItem.Id && i.EmployeeId == SelectedNewEmployee.Id))
+            if (SelectedNewEmployee != null)
             {
-                EmployeeProject teamMember = new EmployeeProject();
-                teamMember.ProjectId = SelectedItem.Id;
-                teamMember.EmployeeId = SelectedNewEmployee.Id;
-                if (IsManager) teamMember.Manager = "Da";
-                else teamMember.Manager = "Ne";
-                var check = await ProjectRepository.AddMemberToProject(teamMember);
-
-                if (check)
+                if (!TeamRecords.Any(i => i.ProjectId == SelectedItem.Id && i.EmployeeId == SelectedNewEmployee.Id))
                 {
-                    teamMember.Project = ProjectRecords.Where(i => i.Id == SelectedItem.Id).FirstOrDefault();
-                    teamMember.Employee = SelectedNewEmployee;
-                    TeamRecords.Add(teamMember);
-                    IsManager = false;
-                    SelectedNewEmployee = null;
+                    
+
+
+                        EmployeeProject teamMember = new EmployeeProject();
+                        teamMember.ProjectId = SelectedItem.Id;
+                        teamMember.EmployeeId = SelectedNewEmployee.Id;
+                    if (IsManager)
+                    {
+                        
+                        
+                        var ProjectHasManager = TeamRecords.FirstOrDefault(i => i.Manager == "Da");
+                        if (ProjectHasManager != null)
+                        {
+                            ProjectHasManager.Manager = "Ne";
+                            await ProjectRepository.UpdateMemberToProject(ProjectHasManager);
+                        }
+                        teamMember.Manager = "Da";
+                    } else teamMember.Manager = "Ne";
+
+                    var check = await ProjectRepository.AddMemberToProject(teamMember);
+
+                        if (check)
+                        {
+                            teamMember.Project = ProjectRecords.Where(i => i.Id == SelectedItem.Id).FirstOrDefault();
+                            teamMember.Employee = SelectedNewEmployee;
+                            await GetTeamAsync();
+                            IsManager = false;
+                            SelectedNewEmployee = null;
+                        }
+                    
+                   
                 }
+                else MessageBox.Show("Zaposlenik već dodan na projekt.");
             }
-            else MessageBox.Show("Zaposlenik već dodan na projekt.");
-            } else MessageBox.Show("Odaberite zaposlenika.");
+            else MessageBox.Show("Odaberite zaposlenika.");
         }
 
         private bool CanDeleteMemberAsync()
@@ -250,7 +268,7 @@ namespace Praksa_projectV1.ViewModels
             else MessageBox.Show("Odaberite projekt prvo da bi vidjeli članove tima.");
         }
 
-        
+
         private int _id;
         public int Id
         {

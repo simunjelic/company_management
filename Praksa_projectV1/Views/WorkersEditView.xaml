@@ -132,7 +132,7 @@ FontFamily="Montserrat"
        VerticalAlignment="Top"                 
 FontWeight="Medium"
 FontFamily="Montserrat"       
-Margin="21,364,-1,0"
+Margin="21,364,407,0"
 Foreground="white"
 
 BorderThickness="0,0,0,1" Content="Aktivan" IsChecked="{Binding IsActive}" />

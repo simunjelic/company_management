@@ -85,7 +85,7 @@ namespace Praksa_projectV1.DataAccess
                     return await context.Projects
                               .Include(p => p.Type)
                               .Include(p => p.Location)
-                              .FirstOrDefaultAsync(p => p.Id == projectId);
+                              .FirstOrDefaultAsync(p => p.Id == projectId) ?? new Project();
                 }
             }
             catch (Exception ex)
@@ -279,6 +279,27 @@ namespace Praksa_projectV1.DataAccess
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        public async Task<bool> UpdateMemberToProject(EmployeeProject projectHasManager)
+        {
+            try
+            {
+                using (var context = new Context())
+                {
+
+                    context.EmployeeProjects.Update(projectHasManager);
+                    var RowsAffected = await context.SaveChangesAsync();
+                    return RowsAffected > 0;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return false;
             }
         }
     }
