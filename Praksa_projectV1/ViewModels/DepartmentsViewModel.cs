@@ -24,18 +24,24 @@ namespace Praksa_projectV1.ViewModels
         public IAsyncCommand AddDepartmentCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
         public IAsyncCommand UpdateDepartmentCommand { get; }
+        public IAsyncCommand LoadedCommand { get; }
         public string ModuleName = "Odjel";
 
         public DepartmentsViewModel()
         {
             departmentRepository = new DepartmentRepository();
             IdepartmentRepository = new DepartmentRepository();
-            GetAllDepartmentsAsync();
             DeleteDepartmentCommand = new AsyncCommand(DeleteDepartmentAsync, CanDeleteDepartmentAsync);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             AddDepartmentCommand = new AsyncCommand(AddDepartmentAsync, CanAddDepartmentAsync);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             UpdateDepartmentCommand = new AsyncCommand(UpdateDepartmentAsync, CanUpdateDepartmentCommandAsync);
+            LoadedCommand = new AsyncCommand(OnLoadAsync);
+        }
+
+        private async Task OnLoadAsync()
+        {
+          await GetAllDepartmentsAsync();
         }
 
         private bool CanShowUpdateWindow(object obj)

@@ -31,6 +31,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowUpdateWindowCommand { get; }
         public IAsyncCommand UpdateCommand { get; }
         public IAsyncCommand RefreshDateCommand { get; }
+        public IAsyncCommand LoadedCommand { get; }
         public string ModuleName = "Radna karta";
 
         public WorkingCardViewModel(bool isTest = false)
@@ -68,14 +69,20 @@ namespace Praksa_projectV1.ViewModels
             cardRespository = new WorkingCardRepository();
             userRepository = new UserRepository();
             ProjectRepository = new ProjectRepository();
-            gettAllDataFromCard();
             DeleteCommand = new AsyncCommand(DeleteAsync, CanDeleteAsync);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             AddCommand = new AsyncCommand(AddAsync, CanAddAsync);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindow);
             UpdateCommand = new AsyncCommand(UpdateRecordAsync, CanUpdateRecordAsync);
             RefreshDateCommand = new AsyncCommand(RefreshDateAsync, CanRefreshDateAsync);
-            gettAllProjectsAndActivities();
+            LoadedCommand = new AsyncCommand(OnLoadAsync);
+            
+        }
+
+        private async Task OnLoadAsync()
+        {
+            await gettAllDataFromCard();
+            await gettAllProjectsAndActivities();
         }
 
         private bool CanShowUpdateWindow(object obj)

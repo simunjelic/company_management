@@ -24,6 +24,7 @@ namespace Praksa_projectV1.ViewModels
         public IAsyncCommand DeleteCommand { get; }
         public ICommand ShowAddWindowCommand { get; }
         public IAsyncCommand AddCommand { get; }
+        public IAsyncCommand LoadedCommand { get; }
         public string ModuleName = "Admin panel";
 
 
@@ -34,7 +35,7 @@ namespace Praksa_projectV1.ViewModels
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             ShowPermissionRecords = new ObservableCollection<string>(GetAvailableActions());
             AddCommand = new AsyncCommand(AddAsync, CanAddAsync);
-            OnLoadAsync();
+            LoadedCommand = new AsyncCommand(OnLoadAsync);
 
 
         }

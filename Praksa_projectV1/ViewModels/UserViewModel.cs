@@ -32,6 +32,7 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowUpdatePasswordWindowCommand { get; }
         public IAsyncCommand UpdateUserPasswordCommand { get; }
         public IAsyncCommand DeleteCommand { get; }
+        public IAsyncCommand LoadedCommand { get; }
 
 
 
@@ -39,7 +40,6 @@ namespace Praksa_projectV1.ViewModels
         public UserViewModel()
         {
             UserRepository = new UserRepository();
-            GetAllUsersAsync();
             ShowUserRolesWindowCommand = new ViewModelCommand(ShowUserRoles, CanShowUserRoles);
             DeleteRoleCommand = new AsyncCommand(DeleteRoleAsync, CanDeleteRoleAsync);
             AddRoleCommand = new AsyncCommand(AddRoleAsync, CanAddRoleAsync);
@@ -50,6 +50,12 @@ namespace Praksa_projectV1.ViewModels
             ShowUpdatePasswordWindowCommand = new ViewModelCommand(ShowUpdatePasswordWindow, CanShowUpdatePasswordWindow);
             UpdateUserPasswordCommand = new AsyncCommand(UpdateUserPasswordAsync, CanUpdateUserPasswordAsync);
             DeleteCommand = new AsyncCommand(ExecuteDeleteAsync, CanDeleteAsync);
+            LoadedCommand = new AsyncCommand(OnLoadAsync);
+        }
+
+        private async Task OnLoadAsync()
+        {
+            await GetAllUsersAsync();
         }
 
         private bool CanShowUpdatePasswordWindow(object obj)

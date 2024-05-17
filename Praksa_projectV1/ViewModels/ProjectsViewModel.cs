@@ -29,6 +29,7 @@ namespace Praksa_projectV1.ViewModels
         public IAsyncCommand ShowProjectTeamWindowCommand { get; }
         public IAsyncCommand AddMemberCommand { get; }
         public IAsyncCommand DeleteMemberCommand { get; }
+        public IAsyncCommand LoadedCommand { get; }
         private readonly string ModuleName = "Projekti";
 
 
@@ -37,9 +38,6 @@ namespace Praksa_projectV1.ViewModels
         {
             ProjectRepository = new ProjectRepository();
             EmployeeRepository = new EmployeeRepository();
-            gatAllProjectsAsync();
-            getLocationsAndTypesAsync();
-            GetAllEmployeesAsync();
             DeleteCommand = new AsyncCommand(DeleteProjectAsync, CanDeleteProjectAsync);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             AddCommand = new AsyncCommand(AddProjectAsync, CanAddProjectAsync);
@@ -48,8 +46,16 @@ namespace Praksa_projectV1.ViewModels
             ShowProjectTeamWindowCommand = new AsyncCommand(ShowProjectTeamWindowAsync, CanShowProjectTeamWindowAsync);
             AddMemberCommand = new AsyncCommand(AddMemberAsync, CanAddMemberAsync);
             DeleteMemberCommand = new AsyncCommand(DeleteMemberAsync, CanDeleteMemberAsync);
+            LoadedCommand = new AsyncCommand(OnLoadAsync);
 
 
+        }
+
+        private async Task OnLoadAsync()
+        {
+            await gatAllProjectsAsync();
+            await getLocationsAndTypesAsync();
+            await GetAllEmployeesAsync();
         }
 
         private bool CanShowUpdateWindow(object obj)

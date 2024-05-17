@@ -30,6 +30,7 @@ namespace Praksa_projectV1.ViewModels
         public IAsyncCommand AddEmployeeCommand { get; }
         public ICommand ShowUpdateWindowCommand { get; }
         public IAsyncCommand UpdateEmployeeCommand { get; }
+        public IAsyncCommand LoadedCommand { get; }
         public readonly string ModuleName = "Zaposlenici";
 
 
@@ -39,16 +40,21 @@ namespace Praksa_projectV1.ViewModels
             UserRepository = new UserRepository();
             departmentRepository = new DepartmentRepository();
             jobRepository = new JobRepository();
-            GetAllWorkersAsync();
-            GetAllUsersAsync();
-            GetAllDepartmentsAsync();
-            GetAllJobsAsync();
             ShowWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
             DeleteCommand = new AsyncCommand(DeleteEmployeeAsync, CanDeleteEmployeeAsync);
             AddEmployeeCommand = new AsyncCommand(AddEmployeeAsync, CanAddEmployeeAsync);
             ShowUpdateWindowCommand = new ViewModelCommand(ShowUpdateWindow, CanShowUpdateWindowCommand);
             UpdateEmployeeCommand = new AsyncCommand(UpdateEmployeeAsync, CanUpdateEmployeeAsync);
+            LoadedCommand = new AsyncCommand(OnLoadAsync);
             SelectedDate = DateTime.Today;
+        }
+
+        private async Task OnLoadAsync()
+        {
+            await GetAllWorkersAsync();
+            await GetAllUsersAsync();
+            await GetAllDepartmentsAsync();
+            await GetAllJobsAsync();
         }
 
         private bool CanShowUpdateWindowCommand(object obj)

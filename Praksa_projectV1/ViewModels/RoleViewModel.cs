@@ -22,19 +22,23 @@ namespace Praksa_projectV1.ViewModels
         public string ModuleName = "Uloge";
         public IAsyncCommand UpdateCommand { get; }
         public IAsyncCommand AddRoleCommand { get; }
+        public IAsyncCommand LoadedCommand { get; }
         public RoleViewModel()
         {
 
             PermissonRepository = new PermissonRepository();
-            GetAllRolesAsync();
             DeleteCommand = new AsyncCommand(DeleteRoleAsync, CanDeleteRoleAsync);
             UpdateCommand = new AsyncCommand(UpdateRoleAsync, CanUpdateRoleAsync);
             AddRoleCommand = new AsyncCommand(AddRoleAsync, CanAddRoleAsync);
+            LoadedCommand = new AsyncCommand(OnLoadAsync);
 
 
         }
-       
 
+        private async Task OnLoadAsync()
+        {
+            await GetAllRolesAsync();
+        }
 
         private bool CanAddRoleAsync()
         {

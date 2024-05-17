@@ -6,9 +6,17 @@
              xmlns:local="clr-namespace:Praksa_projectV1.Views" 
              xmlns:Praksa_projectV1.viewModels="clr-namespace:Praksa_projectV1.ViewModels" xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp" d:DataContext="{d:DesignInstance Type=Praksa_projectV1.viewModels:JobsViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    
-    
+             d:DesignHeight="450" d:DesignWidth="800"
+                      xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity">
+
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>

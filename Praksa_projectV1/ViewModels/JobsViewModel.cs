@@ -26,6 +26,7 @@ namespace Praksa_projectV1.ViewModels
         public IAsyncCommand DeleteJobCommand { get; }
         public ICommand UpdateJobCommand { get; }
         public IAsyncCommand EditJobCommand { get; private set; }
+        public IAsyncCommand LoadedCommand { get; }
         public readonly string ModuleName = "Radno mjesto";
 
 
@@ -39,10 +40,15 @@ namespace Praksa_projectV1.ViewModels
             DeleteJobCommand = new AsyncCommand(DeleteJobAsync, CanDeleteJobAsync);
             UpdateJobCommand = new ViewModelCommand(ShowEditJob, CanShowEditJob);
             EditJobCommand = new AsyncCommand(EditJob, CanEditJob);
-            GetAll();
-            GetAllDepartmentsAsync();
-            ResetData();
+            LoadedCommand = new AsyncCommand(OnLoadAsync);
 
+        }
+
+        private async Task OnLoadAsync()
+        {
+            ResetData();
+            await GetAll();
+            await GetAllDepartmentsAsync();
         }
 
         private bool CanShowEditJob(object obj)
