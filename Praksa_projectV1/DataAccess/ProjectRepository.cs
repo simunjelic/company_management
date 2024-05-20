@@ -14,86 +14,8 @@ namespace Praksa_projectV1.DataAccess
     public class ProjectRepository : IProjectRepository
     {
         Context _context = null;
-        public static IEnumerable<Project> GetAll()
-        {
-            using (var _context = new Context())
-            {
-                return _context.Projects
-                    .Include(e => e.Type)
-                    .Include(e => e.Location)
-                    .ToList();
-            }
 
-        }
 
-        internal void Add(Project newProject)
-        {
-            using (var _context = new Context())
-            {
-                _context.Projects.Add(newProject);
-                _context.SaveChanges();
-            }
-        }
-
-        internal async Task<bool> DeleteByIdAsync(int id)
-        {
-            try
-            {
-
-                using (var _context = new Context())
-                {
-                    var check = await _context.Projects.FirstOrDefaultAsync(i => i.Id == id);
-                    if (check != null)
-                    {
-                        _context.Projects.Remove(check);
-                        await _context.SaveChangesAsync();
-                        return true;
-                    }
-                    return false;
-
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return false;
-            }
-        }
-
-        internal IEnumerable<Location> GetAllLocations()
-        {
-            using (_context = new Context())
-            {
-                return _context.Locations.ToList();
-            }
-        }
-
-        internal IEnumerable<Models.Type> GetAllTypes()
-        {
-            using (var _context = new Context())
-            {
-                return _context.Types.ToList();
-            }
-        }
-        
-        public async Task<Project> GetProjectByIdAsync(int projectId)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    return await context.Projects
-                              .Include(p => p.Type)
-                              .Include(p => p.Location)
-                              .FirstOrDefaultAsync(p => p.Id == projectId) ?? new Project();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Greška pri dohvaćanju projekta: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return null; // Or throw the exception if you want to handle it differently
-            }
-        }
 
         public async Task<bool> AddAsync(Project newProject)
         {
@@ -107,8 +29,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -129,7 +52,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -149,7 +72,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -167,6 +90,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -188,7 +112,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -209,6 +133,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -226,8 +151,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return Enumerable.Empty<Project>();
             }
         }
@@ -242,8 +168,11 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
-            { return Enumerable.Empty<Location>(); }
+            catch (Exception ex)
+            {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+                return Enumerable.Empty<Location>(); 
+            }
         }
 
         public async Task<IEnumerable<Models.Type>> GetAllTypesAsync()
@@ -256,8 +185,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return Enumerable.Empty<Models.Type>();
             }
         }
@@ -278,6 +208,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -298,7 +229,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }

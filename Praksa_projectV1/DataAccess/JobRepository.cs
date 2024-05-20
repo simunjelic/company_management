@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Praksa_projectV1.Enums;
 using Praksa_projectV1.Models;
 using System;
@@ -17,30 +18,6 @@ namespace Praksa_projectV1.DataAccess
             jobContext = new Context();
         }
         
-        public bool AddJob(Job job)
-        {
-            using (jobContext = new Context())
-            {
-                Job checkJob = jobContext.Jobs.FirstOrDefault(i => i.Name == job.Name);
-                if (checkJob == null)
-                {
-                    jobContext.Jobs.Add(job);
-                    jobContext.SaveChanges();
-                    return true;
-                }else return false;
-
-            }
-        }
-        
-        public Job GetJob(int Id)
-        {
-            using (jobContext = new Context())
-            {
-                Job job = jobContext.Jobs.FirstOrDefault(i => i.Id == Id);
-                return job;
-            }
-        }
-        
 
         public async Task<bool> AddJobAsync(Job newJob)
         {
@@ -57,6 +34,8 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return false;
             }
         }
@@ -74,6 +53,8 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return false;
             }
         }
@@ -90,8 +71,10 @@ namespace Praksa_projectV1.DataAccess
                     return isChanged > 0;
                 }
             }
-            catch
+            catch (Exception ex) 
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return false;
             }
         }
@@ -108,9 +91,10 @@ namespace Praksa_projectV1.DataAccess
                     return permissions;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+                return (List<Job>)Enumerable.Empty<Job>();
             }
         }
     }

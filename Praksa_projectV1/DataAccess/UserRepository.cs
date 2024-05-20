@@ -14,33 +14,42 @@ namespace Praksa_projectV1.DataAccess
     public class UserRepository : IUserRepository
     {
         private readonly Context _dbContext;
-        public void add(User user)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<User> AuthenticateUserAsync(NetworkCredential credential)
         {
             bool validUser = false;
-
-            // Create a new instance of your DbContext
-            using (var dbContext = new Context())
+            try
             {
-                // Check if there is a user with the provided username and password
-                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == credential.UserName && u.Password == HashPassword(credential.Password));
 
-                return user;
+                // Create a new instance of your DbContext
+                using (var dbContext = new Context())
+                {
+                    // Check if there is a user with the provided username and password
+                    var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == credential.UserName && u.Password == HashPassword(credential.Password));
+
+                    return user;
+                }
+            }catch (Exception ex)
+            {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+                return null;
             }
 
-            return null;
+            
 
         }
 
         public IEnumerable<User> getAllUsers()
         {
+            try { 
             using (var dbContext = new Context())
             {
                 return dbContext.Users.ToList();
+            }
+            }catch (Exception ex)
+            {
+                ExceptionHandlerRepository.LogUnhandledExceptionSync(ex, ex.Source ?? "Source null");
+                return Enumerable.Empty<User>();
             }
         }
 
@@ -56,7 +65,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show("User not found");
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
 
             }
@@ -79,7 +88,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show("GREŠKA");
+                ExceptionHandlerRepository.LogUnhandledExceptionSync(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -103,7 +112,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -121,7 +130,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -140,8 +149,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -165,7 +175,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -186,6 +196,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -202,7 +213,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show("User not found");
+                ExceptionHandlerRepository.LogUnhandledExceptionSync(ex, ex.Source ?? "Source null");
                 return null;
 
             }
@@ -233,7 +244,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -261,7 +272,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -289,7 +300,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -312,8 +323,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -343,7 +355,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                MessageBox.Show("GREŠKA");
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -363,7 +375,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return Enumerable.Empty<User>();
             }
         }
@@ -380,7 +392,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
 
             }

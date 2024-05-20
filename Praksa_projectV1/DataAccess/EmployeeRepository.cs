@@ -7,22 +7,7 @@ namespace Praksa_projectV1.DataAccess
     public class EmployeeRepository : IEmployeeRepository
     {
         private Context dContext = null;
-        public List<Employee> GetAll()
-        {
-            using (dContext = new Context())
-            {
-
-                var emps = dContext.Employees
-                                   .Include(e => e.Job)
-                                   .Include(e => e.Department)
-                                   .ToList();
-
-
-
-                return emps;
-            }
-        }
-
+        
 
         public async Task<bool> AddAsync(Employee newEmployee)
         {
@@ -38,29 +23,9 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return false;
-            }
-        }
-
-        public Employee FindByUserId(int? userId)
-        {
-            using (dContext = new Context())
-            {
-                try
-                {
-
-                    return dContext.Employees
-                                   .Include(e => e.Job)
-                                   .Include(e => e.Department)
-                                   .FirstOrDefault(i => i.UserId == userId) ?? new Employee();
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("No user in database: " + ex);
-
-                    return null;
-                }
             }
         }
 
@@ -76,8 +41,10 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return false;
             }
         }
@@ -97,8 +64,11 @@ namespace Praksa_projectV1.DataAccess
 
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
+
                 return false;
             }
         }
@@ -128,6 +98,8 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return Enumerable.Empty<Employee>();
             }
         }
@@ -156,6 +128,8 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return Enumerable.Empty<Employee>();
             }
         }
@@ -181,6 +155,8 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return new Employee();
             }
         }

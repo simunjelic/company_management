@@ -12,73 +12,6 @@ namespace Praksa_projectV1.DataAccess
 {
     public class WorkingCardRepository : IWorkingCardRepository
     {
-        
-
-
-        internal bool Edit(WorkingCard card)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    context.WorkingCards.Update(card);
-                    context.SaveChanges();
-
-                    return true;
-
-                }
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return false;
-            }
-        }
-
-        internal async Task<WorkingCard> FindByIdAsync(int id)
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    return await context.WorkingCards.Include(p => p.Project)
-                                  .Include(p => p.Activity)
-                                  .Include(p => p.Employee).FirstOrDefaultAsync(i => i.Id == id);
-                }
-
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        internal async Task<IEnumerable<WorkingCard>> GetAllData()
-        {
-            try
-            {
-                using (var context = new Context())
-                {
-                    if (LoggedUserData.Username != null)
-                    {
-                        var username = LoggedUserData.Username;
-                        return await context.WorkingCards
-                                  .Include(p => p.Project)
-                                  .Include(p => p.Activity)
-                                  .Include(p => p.Employee)
-                                  .Where(p => p.Employee.User.Username == username)
-                                  .ToListAsync();
-                    }
-                    return null;
-                }
-
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
 
         
 
@@ -97,6 +30,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -116,7 +50,7 @@ namespace Praksa_projectV1.DataAccess
             catch (Exception ex)
             {
 
-                MessageBox.Show("Greška pri spremanju podataka: " + ex);
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             };
         }
@@ -137,7 +71,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -162,7 +96,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -202,7 +136,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
-                // Log or handle the exception as needed
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -234,6 +168,7 @@ namespace Praksa_projectV1.DataAccess
             }
             catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }

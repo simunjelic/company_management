@@ -24,5 +24,20 @@ namespace Praksa_projectV1.DataAccess
                 await dbContext.SaveChangesAsync();
             }
         }
+        public static void LogUnhandledExceptionSync(Exception exception, string source)
+        {
+            using (var dbContext = new Context())
+            {
+
+                dbContext.ExceptionLogs.Add(new ExceptionLog
+                {
+                    Message = "User: " + LoggedUserData.Username + " Exception: " + exception.ToString(),
+                    StackTrace = exception.StackTrace,
+                    Source = source,
+                    Timestamp = DateTime.UtcNow
+                });
+                dbContext.SaveChanges();
+            }
+        }
     }
 }

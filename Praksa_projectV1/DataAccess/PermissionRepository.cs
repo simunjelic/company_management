@@ -30,8 +30,10 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex) 
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return false;
             }
         }
@@ -53,8 +55,10 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return false;
             }
         }
@@ -72,8 +76,10 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                ExceptionHandlerRepository.LogUnhandledExceptionSync(ex, ex.Source ?? "Source null");
+
                 return null;
             }
         }
@@ -99,8 +105,9 @@ namespace Praksa_projectV1.DataAccess
                     return permissions;
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -115,8 +122,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -131,8 +139,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex) 
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return null;
             }
         }
@@ -152,8 +161,10 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
+
                 return false;
             }
         }
@@ -172,8 +183,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch (Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }
@@ -192,8 +204,9 @@ namespace Praksa_projectV1.DataAccess
                 }
 
             }
-            catch
+            catch(Exception ex)
             {
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
                 return false;
             }
         }

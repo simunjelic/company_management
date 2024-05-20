@@ -123,9 +123,9 @@ namespace Praksa_projectV1.ViewModels
                 }
                 else ErrorMessage = "*Unesi ime i lozinka";
             }
-            catch
+            catch (Exception ex) 
             {
-
+                await ExceptionHandlerRepository.LogUnhandledException(ex, ex.Source ?? "Source null");
             }
 
         }

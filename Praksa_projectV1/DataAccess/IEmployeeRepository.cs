@@ -10,7 +10,6 @@ namespace Praksa_projectV1.DataAccess
     public interface IEmployeeRepository
     {
         Task<bool> AddAsync(Employee newEmployee);
-        Employee FindByUserId(int? userId);
         Task<bool> UpdateAsync(Employee selectedItem);
         Task<bool> DeleteAsync(Employee selectedItem);
         Task<IEnumerable<Employee>> GetAllAsync();
