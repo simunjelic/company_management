@@ -27,6 +27,7 @@ namespace Praksa_projectV1.ViewModels
         public IAsyncCommand LoadedCommand { get; }
         public string ModuleName = "Odjel";
 
+       
         public DepartmentsViewModel()
         {
             departmentRepository = new DepartmentRepository();
@@ -56,8 +57,8 @@ namespace Praksa_projectV1.ViewModels
                 Name = SelectedItem.Name;
                 Id = SelectedItem.Id;
                 DepartmentsEditView view = new DepartmentsEditView();
-                _isUpdateButtonVisible = true;
-                _isAddButtonVisible = false;
+                IsUpdateButtonVisible = true;
+                IsAddButtonVisible = false;
                 view.Title = "Uredi odjel.";
                 view.DataContext = this;
                 view.Show();
@@ -73,8 +74,8 @@ namespace Praksa_projectV1.ViewModels
             DepartmentsEditView view = new DepartmentsEditView();
             view.Title = "Dodaj novi odjel.";
             ResetData();
-            _isUpdateButtonVisible = false;
-            _isAddButtonVisible = true;
+            IsUpdateButtonVisible = false;
+            IsAddButtonVisible = true;
             view.DataContext = this;
             view.Show();
         }
@@ -198,7 +199,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
-        private string _name;
+        private string? _name;
         [Required(ErrorMessage = "Polje ne može biti prazno.")]
         public string? Name
         {
@@ -295,34 +296,6 @@ namespace Praksa_projectV1.ViewModels
             {
                 _errorMessage = value;
                 OnPropertyChanged(nameof(ErrorMessage));
-            }
-        }
-        private bool _isUpdateButtonVisible = true; // Initially visible
-
-        public bool IsUpdateButtonVisible
-        {
-            get { return _isUpdateButtonVisible; }
-            set
-            {
-                if (_isUpdateButtonVisible != value)
-                {
-                    _isUpdateButtonVisible = value;
-                    OnPropertyChanged(nameof(IsUpdateButtonVisible)); // Notify property changed
-                }
-            }
-        }
-        private bool _isAddButtonVisible = true; // Initially visible
-
-        public bool IsAddButtonVisible
-        {
-            get { return _isAddButtonVisible; }
-            set
-            {
-                if (_isAddButtonVisible != value)
-                {
-                    _isAddButtonVisible = value;
-                    OnPropertyChanged(nameof(IsAddButtonVisible)); // Notify property changed
-                }
             }
         }
 

@@ -68,8 +68,8 @@ namespace Praksa_projectV1.ViewModels
             WorkersEditView workersEditView = new();
             workersEditView.DataContext = this;
             workersEditView.Title = "Uredi korisnika";
-            _isAddButtonVisible = false;
-            _isUpdateButtonVisible = true;
+            IsAddButtonVisible = false;
+            IsUpdateButtonVisible = true;
             workersEditView.Show();
         }
 
@@ -84,8 +84,8 @@ namespace Praksa_projectV1.ViewModels
             WorkersEditView workersEditView = new();
             workersEditView.DataContext = this;
             workersEditView.Title = "Dodaj korisnika";
-            _isUpdateButtonVisible = false;
-            _isAddButtonVisible = true;
+            IsUpdateButtonVisible = false;
+            IsAddButtonVisible = true;
             workersEditView.Show();
         }
 
@@ -545,34 +545,6 @@ namespace Praksa_projectV1.ViewModels
                 {
                     _selectedDate = value;
                     OnPropertyChanged(nameof(SelectedDate));
-                }
-            }
-        }
-        private bool _isUpdateButtonVisible = true; // Initially visible
-
-        public bool IsUpdateButtonVisible
-        {
-            get { return _isUpdateButtonVisible; }
-            set
-            {
-                if (_isUpdateButtonVisible != value)
-                {
-                    _isUpdateButtonVisible = value;
-                    OnPropertyChanged(nameof(IsUpdateButtonVisible)); // Notify property changed
-                }
-            }
-        }
-        private bool _isAddButtonVisible = true; // Initially visible
-
-        public bool IsAddButtonVisible
-        {
-            get { return _isAddButtonVisible; }
-            set
-            {
-                if (_isAddButtonVisible != value)
-                {
-                    _isAddButtonVisible = value;
-                    OnPropertyChanged(nameof(IsAddButtonVisible)); // Notify property changed
                 }
             }
         }

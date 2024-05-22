@@ -68,8 +68,8 @@ namespace Praksa_projectV1.ViewModels
             ProjectEditView projectEditView = new ProjectEditView();
             projectEditView.DataContext = this;
             projectEditView.Title = "Uredi projekt";
-            _isUpdateButtonVisible = true;
-            _isAddButtonVisible = false;
+            IsUpdateButtonVisible = true;
+            IsAddButtonVisible = false;
             this.Location = null;
             this.Type = null;
             this.Status = null;
@@ -88,8 +88,8 @@ namespace Praksa_projectV1.ViewModels
             ProjectEditView projectEditView = new ProjectEditView();
             projectEditView.DataContext = this;
             projectEditView.Title = "Dodaj projekt";
-            _isUpdateButtonVisible = false;
-            _isAddButtonVisible = true;
+            IsUpdateButtonVisible = false;
+            IsAddButtonVisible = true;
             ResetData();
             projectEditView.Show();
         }
@@ -299,34 +299,6 @@ namespace Praksa_projectV1.ViewModels
                 {
                     _selectedItem = value;
                     OnPropertyChanged(nameof(SelectedItem));
-                }
-            }
-        }
-        private bool _isUpdateButtonVisible = true; // Initially visible
-
-        public bool IsUpdateButtonVisible
-        {
-            get { return _isUpdateButtonVisible; }
-            set
-            {
-                if (_isUpdateButtonVisible != value)
-                {
-                    _isUpdateButtonVisible = value;
-                    OnPropertyChanged(nameof(IsUpdateButtonVisible)); // Notify property changed
-                }
-            }
-        }
-        private bool _isAddButtonVisible = true; // Initially visible
-
-        public bool IsAddButtonVisible
-        {
-            get { return _isAddButtonVisible; }
-            set
-            {
-                if (_isAddButtonVisible != value)
-                {
-                    _isAddButtonVisible = value;
-                    OnPropertyChanged(nameof(IsAddButtonVisible)); // Notify property changed
                 }
             }
         }

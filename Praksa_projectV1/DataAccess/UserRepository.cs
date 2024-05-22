@@ -13,11 +13,10 @@ namespace Praksa_projectV1.DataAccess
 {
     public class UserRepository : IUserRepository
     {
-        private readonly Context _dbContext;
-
+        
         public async Task<User> AuthenticateUserAsync(NetworkCredential credential)
         {
-            bool validUser = false;
+            
             try
             {
 

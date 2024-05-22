@@ -329,7 +329,7 @@ namespace Praksa_projectV1.ViewModels
             }
         }
 
-        private async void FilterData()
+        private void FilterData()
         {
             //if(!string.IsNullOrWhiteSpace(SearchQuery))
             PermissionFilterRecords = new ObservableCollection<Permission>(PermissionRecords.Where(i =>

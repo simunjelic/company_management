@@ -2,6 +2,7 @@
 using System.Data;
 using System.Diagnostics;
 using System.Windows;
+using Praksa_projectV1.DataAccess;
 using Praksa_projectV1.Models;
 using Praksa_projectV1.Views;
 
@@ -26,7 +27,9 @@ namespace Praksa_projectV1
                         var mainView = new MainView();
                         mainView.Show();
                         loginView.Close();
-                    }catch(Exception ex) { }
+                    }catch(Exception ex) {
+                        ExceptionHandlerRepository.LogUnhandledExceptionSync(ex, ex.Source ?? "Source null");
+                    }
                 }
             };
             

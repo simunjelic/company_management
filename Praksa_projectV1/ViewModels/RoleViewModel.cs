@@ -94,7 +94,7 @@ namespace Praksa_projectV1.ViewModels
                         bool check = await PermissonRepository.UpdateRoleAsync(SelectedItem);
                         if (check)
                         {
-                            GetAllRolesAsync();
+                            await GetAllRolesAsync();
                             MessageBox.Show("Naziv promjenjen");
 
                         }

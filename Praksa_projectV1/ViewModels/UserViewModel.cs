@@ -22,7 +22,7 @@ namespace Praksa_projectV1.ViewModels
     {
         public readonly string ModuleName = "Korisnici";
         UserRepository UserRepository { get; set; }
-        public ICommand ShowUserRolesWindowCommand { get; }
+        public IAsyncCommand ShowUserRolesWindowCommand { get; }
         public IAsyncCommand DeleteRoleCommand { get; }
         public IAsyncCommand AddRoleCommand { get; }
         public ICommand ShowAddWindowCommand { get; }
@@ -40,7 +40,7 @@ namespace Praksa_projectV1.ViewModels
         public UserViewModel()
         {
             UserRepository = new UserRepository();
-            ShowUserRolesWindowCommand = new ViewModelCommand(ShowUserRoles, CanShowUserRoles);
+            ShowUserRolesWindowCommand = new AsyncCommand(ShowUserRolesAsync, CanShowUserRolesAsync);
             DeleteRoleCommand = new AsyncCommand(DeleteRoleAsync, CanDeleteRoleAsync);
             AddRoleCommand = new AsyncCommand(AddRoleAsync, CanAddRoleAsync);
             ShowAddWindowCommand = new ViewModelCommand(ShowAddWindow, CanShowAddWindow);
@@ -51,6 +51,23 @@ namespace Praksa_projectV1.ViewModels
             UpdateUserPasswordCommand = new AsyncCommand(UpdateUserPasswordAsync, CanUpdateUserPasswordAsync);
             DeleteCommand = new AsyncCommand(ExecuteDeleteAsync, CanDeleteAsync);
             LoadedCommand = new AsyncCommand(OnLoadAsync);
+        }
+
+        private bool CanShowUserRolesAsync()
+        {
+            return true;
+        }
+
+        private async Task ShowUserRolesAsync()
+        {
+            if(SelectedItem != null) { 
+            UserRolesView userRolesView = new UserRolesView();
+            await GetUserRoles(SelectedItem!.Id);
+            await GetRoles();
+            userRolesView.DataContext = this;
+            userRolesView.Title = "Uloge";
+            userRolesView.Show();
+            } MessageBox.Show("Odaberite korisnika");
         }
 
         private async Task OnLoadAsync()
@@ -72,7 +89,7 @@ namespace Praksa_projectV1.ViewModels
             IsUpdateButtonVisible = true;
             Password = null;
             CheckPassword = null;
-            Username = SelectedItem.Username;
+            Username = SelectedItem!.Username;
             Id = SelectedItem.Id;
 
             userEditView.Show();
@@ -112,21 +129,7 @@ namespace Praksa_projectV1.ViewModels
             userEditView.Show();
         }
 
-        private bool CanShowUserRoles(object obj)
-        {
-            return SelectedItem != null;
-        }
-
-        private void ShowUserRoles(object obj)
-        {
-
-            UserRolesView userRolesView = new UserRolesView();
-            GetUserRoles(SelectedItem.Id);
-            GetRoles();
-            userRolesView.DataContext = this;
-            userRolesView.Title = "Uloge";
-            userRolesView.Show();
-        }
+        
 
         private bool CanAddRoleAsync()
         {
@@ -244,7 +247,7 @@ namespace Praksa_projectV1.ViewModels
                     if (check)
                     {
                         MessageBox.Show("Korisničko ime uređeno.");
-                        GetAllUsersAsync();
+                        await GetAllUsersAsync();
                         ResetData();
                     }
                     else MessageBox.Show("Greška prilikom uređivanja.");
