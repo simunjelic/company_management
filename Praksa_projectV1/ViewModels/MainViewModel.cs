@@ -85,6 +85,8 @@ namespace Praksa_projectV1.ViewModels
         public ICommand ShowAdminPanelViewCommand { get; }
         public ICommand ShowRoleViewCommand { get; }
         public ICommand ShowUserViewCommand { get; }
+        public ICommand ToggleProjectsMenuCommand { get; }
+        public ICommand ShowLocationViewCommand { get; }
 
 
         public MainViewModel()
@@ -100,13 +102,44 @@ namespace Praksa_projectV1.ViewModels
             ShowAdminPanelViewCommand = new ViewModelCommand(ShowAdminPanel, CanShowAdminPanel);
             ShowRoleViewCommand = new ViewModelCommand(ShowRoleView);
             ShowUserViewCommand = new ViewModelCommand(ExecuteShowUserView);
+            ToggleProjectsMenuCommand = new ViewModelCommand(ToggleProjectsMenu);
+            ShowLocationViewCommand = new ViewModelCommand(ShowLocationView);
             //Default view
             //ExecuteShowProjectsViewCommand(null);
 
             LoadCurrentUserData();
         }
 
-        private void ExecuteShowUserView(object obj)
+        private void ShowLocationView(object obj)
+        {
+            if (LoggedUserData.Username != null)
+            {
+
+                if (CanReadPermission("Lokacije"))
+                {
+                    CurrentChildView = new LocationViewModel();
+                    Caption = "Lokacije";
+                    Icon = IconChar.Location;
+                }
+                else
+                {
+
+                    MessageBox.Show("Nemate pravo pristupa", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                }
+            }
+            else
+            {
+                MessageBox.Show("Niste se pravilno prijavili", "Pristup odbijen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void ToggleProjectsMenu(object obj)
+        {
+            IsProjectsMenuVisible = !IsProjectsMenuVisible;
+        }
+
+            private void ExecuteShowUserView(object obj)
         {
             if (LoggedUserData.Username != null)
             {
@@ -340,6 +373,22 @@ namespace Praksa_projectV1.ViewModels
             }
 
         }
+        private bool _isProjectsMenuVisible = false;
+
+        public bool IsProjectsMenuVisible
+        {
+            get { return _isProjectsMenuVisible; }
+            set
+            {
+                if (_isProjectsMenuVisible != value)
+                {
+                    _isProjectsMenuVisible = value;
+                    OnPropertyChanged(nameof(IsProjectsMenuVisible));
+                }
+            }
+        }
+
+
 
     }
 }

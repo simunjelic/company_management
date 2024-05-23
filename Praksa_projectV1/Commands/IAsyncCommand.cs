@@ -19,6 +19,7 @@ namespace Praksa_projectV1.Commands
         private bool _isExecuting;
         private Action<object> showAddWindow;
         private Func<object, bool> canShowAddWindow;
+        private IAsyncCommand? loadedCommand;
         private readonly Func<Task> _execute;
         private readonly Func<bool> _canExecute;
         private readonly IErrorHandler _errorHandler;
@@ -37,6 +38,11 @@ namespace Praksa_projectV1.Commands
         {
             this.showAddWindow = showAddWindow;
             this.canShowAddWindow = canShowAddWindow;
+        }
+
+        public AsyncCommand(IAsyncCommand? loadedCommand)
+        {
+            this.loadedCommand = loadedCommand;
         }
 
         public bool CanExecute()

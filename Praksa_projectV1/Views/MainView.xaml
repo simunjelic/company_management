@@ -16,6 +16,7 @@
         <viewModel:MainViewModel></viewModel:MainViewModel>
     </Window.DataContext>
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
         <DataTemplate DataType="{x:Type viewModel:ProjectsViewModel}">
             <local:ProjectsView/>
@@ -40,6 +41,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewModel:UserViewModel}">
             <local:UserView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModel:LocationViewModel}">
+            <local:LocationView/>
         </DataTemplate>
 
     </Window.Resources>
@@ -89,14 +93,39 @@
                     <!--Menu buttons-->
                     <RadioButton Style="{StaticResource menuButton}"
                                  Tag="{StaticResource color1}"
-                                 Command="{Binding ShowProjectsViewCommand}">
+                                 Command="{Binding ToggleProjectsMenuCommand}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="Table" Style="{StaticResource menuButtonIcon}"/>
                             <TextBlock Text="Projekti" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
-                        
                     </RadioButton>
-                    <RadioButton Style="{StaticResource menuButton}"
+                        <StackPanel Visibility="{Binding IsProjectsMenuVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <RadioButton Style="{StaticResource dropdownButton}"
+                                         Tag="{StaticResource color1}"
+                                Command="{Binding ShowProjectsViewCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconImage Icon="List" Style="{StaticResource dropdownButtonIcon}"/>
+                                    <TextBlock Text="Popis projekata" Style="{StaticResource menuButtonText}"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton Style="{StaticResource dropdownButton}"
+                                         Tag="{StaticResource color1}"
+                                Command="{Binding ShowLocationViewCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconImage Icon="Location" Style="{StaticResource dropdownButtonIcon}"/>
+                                    <TextBlock Text="Lokacije" Style="{StaticResource menuButtonText}"/>
+                                </StackPanel>
+                            </RadioButton>
+                            <RadioButton Style="{StaticResource dropdownButton}"
+                                         Tag="{StaticResource color1}"
+                                Command="{Binding ShowTypeViewCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:IconImage Icon="ListAlt" Style="{StaticResource dropdownButtonIcon}"/>
+                                    <TextBlock Text="Tipovi projekata" Style="{StaticResource menuButtonText}"/>
+                                </StackPanel>
+                            </RadioButton>
+                        </StackPanel>
+                        <RadioButton Style="{StaticResource menuButton}"
                                   Tag="{StaticResource color2}"
                                  Command="{Binding ShowWorkersViewCommand}">
                         <StackPanel Orientation="Horizontal">

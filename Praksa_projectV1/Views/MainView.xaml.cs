@@ -63,5 +63,6 @@ namespace Praksa_projectV1.Views
                 this.WindowState = WindowState.Minimized;
             
         }
+
     }
 }
